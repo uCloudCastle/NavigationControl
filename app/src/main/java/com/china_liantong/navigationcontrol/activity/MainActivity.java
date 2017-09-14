@@ -22,7 +22,7 @@ public class MainActivity extends Activity {
         mNavigationControl = (NavigationControl) findViewById(R.id.mainactivity_navigationcontrol);
 
         NavigationControl.DataHolder ncHolder = new NavigationControl.DataHolder()
-                .navigationBarWidth(1000)
+                .navigationBarWidth(700)
                 .navigationBarHeight(50);
 
         NavigationBar.DataHolder nbHolder = new NavigationBar.DataHolder()

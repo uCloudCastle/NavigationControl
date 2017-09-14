@@ -1,7 +1,6 @@
 package com.china_liantong.navigationcontrol;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -23,14 +22,15 @@ public class NavigationControl extends RelativeLayout {
     public NavigationControl(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        setBackgroundColor(Color.BLUE);
+        //setBackgroundColor(Color.BLUE);
     }
 
     public void show() {
         mNavBar = new NavigationBar(mContext);
         mNavBar.setDataHolder(mNavigationBarHolder);
+        mNavBar.setVisibleWidth(mNavigationControlHolder.navigationBarWidth);
         RelativeLayout.LayoutParams nblp = new RelativeLayout.LayoutParams(
-                mNavigationControlHolder.navigationBarWidth,
+                RelativeLayout.LayoutParams.MATCH_PARENT,
                 mNavigationControlHolder.navigationBarHeight);
         nblp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         nblp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);

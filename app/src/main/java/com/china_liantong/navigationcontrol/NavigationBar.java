@@ -2,7 +2,6 @@ package com.china_liantong.navigationcontrol;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -10,6 +9,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -26,6 +26,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
     private DataHolder mDataHolder;
     private NavigationBarListener mListener;
     private int mTagFirstItem;
+    private int mVisibleWidth;
 
     public NavigationBar(Context context) {
         this(context, null);
@@ -36,7 +37,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         mContext = context;
         ViewTreeObserver vto = getViewTreeObserver();
         vto.addOnGlobalFocusChangeListener(this);
-        setBackgroundColor(Color.GREEN);
+        //setBackgroundColor(Color.GREEN);
     }
 
     public void setDataHolder(DataHolder holder) {
@@ -46,11 +47,20 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         }
     }
 
+    public void setVisibleWidth(int width) {
+        mVisibleWidth = width;
+    }
+
     public void setNavigationBarListener(NavigationBarListener l) {
         if (l != null) mListener = l;
     }
 
     private void initView() {
+        ScrollView scrollView = new ScrollView(mContext);
+        RelativeLayout.LayoutParams scrollViewParams = new RelativeLayout.LayoutParams(
+                mVisibleWidth, RelativeLayout.LayoutParams.MATCH_PARENT);
+        addView(scrollView, scrollViewParams);
+
         LinearLayout itemLayout = new LinearLayout(mContext);
         itemLayout.setOrientation(LinearLayout.HORIZONTAL);
         itemLayout.setGravity(Gravity.BOTTOM);
@@ -85,7 +95,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
         RelativeLayout.LayoutParams itemLayoutParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        addView(itemLayout, itemLayoutParams);
+        scrollView.addView(itemLayout, itemLayoutParams);
     }
 
     @Override
