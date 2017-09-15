@@ -28,7 +28,6 @@ public class NavigationControl extends RelativeLayout {
     public void show() {
         mNavBar = new NavigationBar(mContext);
         mNavBar.setDataHolder(mNavigationBarHolder);
-        mNavBar.setVisibleWidth(mNavigationControlHolder.navigationBarWidth);
         RelativeLayout.LayoutParams nblp = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 mNavigationControlHolder.navigationBarHeight);
@@ -60,15 +59,9 @@ public class NavigationControl extends RelativeLayout {
     }
 
     public static class DataHolder {
-        private int navigationBarWidth;
         private int navigationBarHeight;
 
         public DataHolder() {}
-
-        public DataHolder navigationBarWidth(int w) {
-            navigationBarWidth = w;
-            return this;
-        }
 
         public DataHolder navigationBarHeight(int h) {
             navigationBarHeight = h;

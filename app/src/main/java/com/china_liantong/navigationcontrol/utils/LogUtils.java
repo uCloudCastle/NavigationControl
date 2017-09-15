@@ -1,4 +1,4 @@
-package com.china_liantong.navigationcontrol;
+package com.china_liantong.navigationcontrol.utils;
 
 import android.os.SystemClock;
 
