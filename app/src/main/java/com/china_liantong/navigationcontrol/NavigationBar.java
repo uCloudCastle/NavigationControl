@@ -1,11 +1,15 @@
 package com.china_liantong.navigationcontrol;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.text.BoringLayout;
+import android.text.Layout;
+import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
@@ -23,18 +27,19 @@ import java.util.List;
  */
 
 public class NavigationBar extends RelativeLayout implements ViewTreeObserver.OnGlobalFocusChangeListener {
-    private static final int CONTENT_SPACING_DP = 10;
+    private static final int CONTENT_SPACING_DP = 20;
+    private static final int FOCUS_DRAWABLE_MARGIN = 32;
 
     Context mContext;
     ArrayList<TextView> mTextViews = new ArrayList<>();
     ArrayList<Rect> mRects = new ArrayList<>();
-    //LinearLayout itemLayout;
     View mGetFocusView;
     View mFocusView;
 
     private DataHolder mDataHolder;
     private NavigationBarListener mListener;
     private int mFirstItemTag;
+    private int mLastPaddingLeft;
 
     public NavigationBar(Context context) {
         this(context, null);
@@ -62,7 +67,9 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
     private void initView() {
         mFocusView = new View(mContext);
         mFocusView.setBackground(mDataHolder.focusDrawable);
-        RelativeLayout.LayoutParams focusViewParams = new RelativeLayout.LayoutParams(100, 62);
+        RelativeLayout.LayoutParams focusViewParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        focusViewParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
         addView(mFocusView, focusViewParams);
 
         for (int i = 0; i < mDataHolder.titles.size(); ++i) {
@@ -103,32 +110,26 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
                     RelativeLayout.LayoutParams itemParams = (RelativeLayout.LayoutParams) mTextViews.get(i).getLayoutParams();
                     itemParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-                    itemParams.setMargins(rect.left - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP)
-                            , 0, 0, DensityUtils.dp2px(mContext, CONTENT_SPACING_DP));
+                    itemParams.setMargins(rect.left - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP),
+                            0, 0, DensityUtils.dp2px(mContext, CONTENT_SPACING_DP));
                     mTextViews.get(i).setLayoutParams(itemParams);
 
                     if (i == mDataHolder.fullDisplayNumber) {
                         RelativeLayout.LayoutParams mainParams = (RelativeLayout.LayoutParams) getLayoutParams();
-                        mainParams.width = rect.centerX() - mRects.get(0).left;
+                        mainParams.width = rect.centerX() - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP);
                         setLayoutParams(mainParams);
                     }
                 }
-                moveFocusView(0);
-            }
-        }, 200);
-    }
 
-    private void moveFocusView(int pos) {
-        RelativeLayout.LayoutParams focusViewParams = (RelativeLayout.LayoutParams) mFocusView.getLayoutParams();
-        focusViewParams.addRule(RelativeLayout.ALIGN_LEFT, mTextViews.get(pos).getId());
-        focusViewParams.addRule(RelativeLayout.ALIGN_TOP, mTextViews.get(pos).getId());
-        focusViewParams.addRule(RelativeLayout.ALIGN_RIGHT, mTextViews.get(pos).getId());
-        focusViewParams.addRule(RelativeLayout.ALIGN_BOTTOM, mTextViews.get(pos).getId());
-        focusViewParams.setMargins(-20, -20, -20, -20);
-//        focusViewParams.width = (int) mRects.get(0).width() * 1.5;
-//        focusViewParams.height = mRects.get(0).height() * 2;
-//        focusViewParams.setMargins(-mRects.get(0).width() / 3, 0, 0, -mRects.get(0).height() / 3);
-        mFocusView.setLayoutParams(focusViewParams);
+                RelativeLayout.LayoutParams focusViewParams = (RelativeLayout.LayoutParams) mFocusView.getLayoutParams();
+                focusViewParams.addRule(RelativeLayout.ALIGN_BOTTOM, mTextViews.get(0).getId());
+                focusViewParams.width = getTextViewWidth(0) + 2 * FOCUS_DRAWABLE_MARGIN;
+                focusViewParams.height = mTextViews.get(0).getHeight() + 2 * FOCUS_DRAWABLE_MARGIN;
+                focusViewParams.setMargins(DensityUtils.dp2px(mContext, CONTENT_SPACING_DP) - FOCUS_DRAWABLE_MARGIN,
+                        0, 0, -FOCUS_DRAWABLE_MARGIN);
+                mFocusView.setLayoutParams(focusViewParams);
+            }
+        }, 50);
     }
 
     @Override
@@ -148,7 +149,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             mGetFocusView = newFocus;
             setNormalStyle((TextView) oldFocus);
             setFocusStyle((TextView) newFocus);
-            moveFocusView((int)oldFocus.getTag() - mFirstItemTag, (int)newFocus.getTag() - mFirstItemTag);
+            asyncMoveViews((int)oldFocus.getTag() - mFirstItemTag, (int)newFocus.getTag() - mFirstItemTag);
         }
     }
 
@@ -157,7 +158,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             return false;
         }
         int tag = (int) view.getTag();
-        return ((tag >= mFirstItemTag) && (tag <= mFirstItemTag + mDataHolder.titles.size() - 1));
+        return ((tag >= mFirstItemTag) && (tag <= mFirstItemTag + mTextViews.size() - 1));
     }
 
     private void setNormalStyle(TextView v) {
@@ -175,51 +176,90 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         v.setTextColor(mDataHolder.textFocusColor);
         v.setTextSize(mDataHolder.textFocusSize);
         mFocusView.setBackground(mDataHolder.focusDrawable);
+        //mFocusView.setBackgroundColor(Color.CYAN);
         if (mListener != null) {
             mListener.onItemGetFocus((int) v.getTag() - mFirstItemTag);
         }
     }
 
-    private void moveFocusView(int oldPos, int newPos) {
+    private void asyncMoveViews(final int oldPos, final int newPos) {
         if (oldPos < 0 || newPos < 0 || oldPos >= mRects.size()
-                || newPos >= mRects.size()) {
+                || newPos >= mRects.size() || Math.abs(oldPos - newPos) != 1) {
             return;
         }
 
-        if (oldPos >= mDataHolder.fullDisplayNumber - 1 && newPos >= mDataHolder.fullDisplayNumber - 1) {
-            // move scrollView
-//            final int shifting = (mRects.get(newPos).left - mRects.get(oldPos).left);
-//            //LogUtils.d("111 " + (mRects.get(newPos).left - mRects.get(oldPos).left));
-//            final RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) itemLayout.getLayoutParams();
-////            final int start = mFocusView.getLeft();
-////            final int end = v.getLeft();
-//            ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
-//            anim.setDuration(300);
-//            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                @Override
-//                public void onAnimationUpdate(ValueAnimator animation) {
-//                    float currentValue = (float) animation.getAnimatedValue();
-//                    itemLayout.setPadding((int) (0 + (shifting) * currentValue), 0, 0, 0);
-//                    mFocusView.setLayoutParams(lp);
-//                }
-//            });
-//            anim.start();
-        }
+        // async for get really textview width
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                moveMainLayout(oldPos, newPos);
+                moveFocusView(oldPos, newPos);
+            }
+        }, 50);
+    }
 
-//        final RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mFocusView.getLayoutParams();
-//        final int start = mFocusView.getLeft();
-//        final int end = v.getLeft();
-//        ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
-//        anim.setDuration(300);
-//        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                float currentValue = (float) animation.getAnimatedValue();
-//                lp.setMargins((int)(start + (end - start) * currentValue), 0, 0, 0);
-//                mFocusView.setLayoutParams(lp);
-//            }
-//        });
-//        anim.start();
+    private void moveMainLayout(final int oldPos, final int newPos) {
+        int shifting = 0;
+        if (oldPos >= mDataHolder.fullDisplayNumber - 1 && newPos >= mDataHolder.fullDisplayNumber - 1) {
+            if (newPos == mTextViews.size() - 1) {
+                shifting = mRects.get(newPos).centerX() - mRects.get(newPos).right - DensityUtils.dp2px(mContext, FOCUS_DRAWABLE_MARGIN + CONTENT_SPACING_DP);
+            } else if (oldPos == mTextViews.size() - 1) {
+                shifting = -mRects.get(oldPos).centerX() + mRects.get(oldPos).right + DensityUtils.dp2px(mContext, FOCUS_DRAWABLE_MARGIN + CONTENT_SPACING_DP);
+            } else if (newPos > oldPos) {
+                shifting = mRects.get(newPos).centerX() - mRects.get(newPos + 1).centerX();
+            } else {        // oldPos > newPos
+                shifting = mRects.get(oldPos + 1).centerX() - mRects.get(oldPos).centerX();
+            }
+
+            final RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) getLayoutParams();
+            ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
+            anim.setDuration(200);
+            final int cp = mLastPaddingLeft;
+            final int ep = cp + shifting;
+            mLastPaddingLeft = ep;
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float currentValue = (float) animation.getAnimatedValue();
+                    setPadding((int)(cp + (ep - cp) * currentValue), 0, 0, 0);
+                    setLayoutParams(lp);
+                }
+            });
+            anim.start();
+        }
+    }
+
+    private void moveFocusView(final int oldPos, final int newPos) {
+        final RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mFocusView.getLayoutParams();
+        final int startWidth = lp.width;
+        final int startHeight = lp.height;
+        final int startMarginLeft = mRects.get(oldPos).left - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP);
+        final int endWidth = getTextViewWidth(newPos) + 2 * FOCUS_DRAWABLE_MARGIN;
+        final int endHeight = mTextViews.get(newPos).getHeight() + 2 * FOCUS_DRAWABLE_MARGIN;
+        final int endMarginLeft = mRects.get(newPos).left - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP);
+
+        ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
+        anim.setDuration(300);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float currentValue = (float) animation.getAnimatedValue();
+                lp.width = (int)(startWidth + (endWidth - startWidth) * currentValue);
+                lp.height = (int)(startHeight + (endHeight - startHeight) * currentValue);
+                lp.setMargins((int)(startMarginLeft + (endMarginLeft - startMarginLeft) * currentValue) - FOCUS_DRAWABLE_MARGIN,
+                        0, 0, -FOCUS_DRAWABLE_MARGIN);
+                mFocusView.setLayoutParams(lp);
+            }
+        });
+        anim.start();
+    }
+
+    private int getTextViewWidth(int pos) {
+        if (pos < 0 || pos > mTextViews.size()) {
+            return 0;
+        }
+        String str = mTextViews.get(pos).getText().toString();
+        return (int)mTextViews.get(pos).getPaint().measureText(str);
     }
 
     public interface NavigationBarListener {

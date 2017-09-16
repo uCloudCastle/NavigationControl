@@ -18,11 +18,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String[] list = new String[]{"已安装", "推荐", "影音", "游戏", "运动竞技", "教育", "生活", "亲子", "我的消费"};
+        String[] list = new String[]{"已安装", "推荐", "影音", "游戏", "运动竞技", "教育", "公开课", "亲子栏目", "我的消费"};
         mNavigationControl = (NavigationControl) findViewById(R.id.mainactivity_navigationcontrol);
 
         NavigationControl.DataHolder ncHolder = new NavigationControl.DataHolder()
-                .navigationBarHeight(50);
+                .navigationBarHeight(80);
 
         NavigationBar.DataHolder nbHolder = new NavigationBar.DataHolder()
                 .titles(Arrays.asList(list))
