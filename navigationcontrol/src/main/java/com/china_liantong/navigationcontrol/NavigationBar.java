@@ -2,19 +2,16 @@ package com.china_liantong.navigationcontrol;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.text.BoringLayout;
-import android.text.Layout;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.utils.DensityUtils;
 import com.china_liantong.navigationcontrol.utils.LogUtils;
 
@@ -28,7 +25,6 @@ import java.util.List;
 
 public class NavigationBar extends RelativeLayout implements ViewTreeObserver.OnGlobalFocusChangeListener {
     private static final int CONTENT_SPACING_DP = 20;
-    private static final int FOCUS_DRAWABLE_MARGIN = 32;
 
     Context mContext;
     ArrayList<TextView> mTextViews = new ArrayList<>();
@@ -50,7 +46,6 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         mContext = context;
         ViewTreeObserver vto = getViewTreeObserver();
         vto.addOnGlobalFocusChangeListener(this);
-        //setBackgroundColor(Color.GREEN);
     }
 
     public void setDataHolder(DataHolder holder) {
@@ -65,6 +60,10 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
     }
 
     private void initView() {
+        if (mDataHolder.titles == null || mDataHolder.titles.size() == 0) {
+            return;
+        }
+
         mFocusView = new View(mContext);
         mFocusView.setBackground(mDataHolder.focusDrawable);
         RelativeLayout.LayoutParams focusViewParams = new RelativeLayout.LayoutParams(
@@ -79,7 +78,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             view.setLines(1);
             view.setTextColor(mDataHolder.textColor);
             view.setTextSize(mDataHolder.textSize);
-            view.setId(View.generateViewId());
+            view.setId(CommonUtils.generateViewId());
 
             if (i == 0) {
                 mFirstItemTag = mDataHolder.titles.get(0).hashCode();
@@ -90,7 +89,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             itemParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             if (i != 0) {
                 itemParams.addRule(RelativeLayout.RIGHT_OF, mTextViews.get(mTextViews.size() - 1).getId());
-                itemParams.setMargins(mDataHolder.textSpacing, 0, 0, 0);
+                itemParams.setMargins(mDataHolder.titleSpacing, 0, 0, 0);
             }
             addView(view, itemParams);
             mTextViews.add(view);
@@ -123,10 +122,10 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
                 RelativeLayout.LayoutParams focusViewParams = (RelativeLayout.LayoutParams) mFocusView.getLayoutParams();
                 focusViewParams.addRule(RelativeLayout.ALIGN_BOTTOM, mTextViews.get(0).getId());
-                focusViewParams.width = getTextViewWidth(0) + 2 * FOCUS_DRAWABLE_MARGIN;
-                focusViewParams.height = mTextViews.get(0).getHeight() + 2 * FOCUS_DRAWABLE_MARGIN;
-                focusViewParams.setMargins(DensityUtils.dp2px(mContext, CONTENT_SPACING_DP) - FOCUS_DRAWABLE_MARGIN,
-                        0, 0, -FOCUS_DRAWABLE_MARGIN);
+                focusViewParams.width = getTextViewWidth(0) + 2 * mDataHolder.drawableMargin;
+                focusViewParams.height = mTextViews.get(0).getHeight() + 2 * mDataHolder.drawableMargin;
+                focusViewParams.setMargins(DensityUtils.dp2px(mContext, CONTENT_SPACING_DP) - mDataHolder.drawableMargin,
+                        0, 0, -mDataHolder.drawableMargin);
                 mFocusView.setLayoutParams(focusViewParams);
             }
         }, 50);
@@ -134,9 +133,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
     @Override
     public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-        //LogUtils.d(LogUtils.printObject(oldFocus) + " " + LogUtils.printObject(newFocus));
-
-        if (!checkIfInnerView(oldFocus) && checkIfInnerView(newFocus)){     // outer to inner
+        if (!checkIfInnerView(oldFocus) && checkIfInnerView(newFocus)) {     // outer to inner
             if (mGetFocusView != null && mGetFocusView.getTag() != newFocus.getTag()) {
                 mGetFocusView.requestFocus();
                 return;
@@ -149,7 +146,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             mGetFocusView = newFocus;
             setNormalStyle((TextView) oldFocus);
             setFocusStyle((TextView) newFocus);
-            asyncMoveViews((int)oldFocus.getTag() - mFirstItemTag, (int)newFocus.getTag() - mFirstItemTag);
+            asyncMoveViews((int) oldFocus.getTag() - mFirstItemTag, (int) newFocus.getTag() - mFirstItemTag);
         }
     }
 
@@ -176,7 +173,6 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         v.setTextColor(mDataHolder.textFocusColor);
         v.setTextSize(mDataHolder.textFocusSize);
         mFocusView.setBackground(mDataHolder.focusDrawable);
-        //mFocusView.setBackgroundColor(Color.CYAN);
         if (mListener != null) {
             mListener.onItemGetFocus((int) v.getTag() - mFirstItemTag);
         }
@@ -202,9 +198,9 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         int shifting = 0;
         if (oldPos >= mDataHolder.fullDisplayNumber - 1 && newPos >= mDataHolder.fullDisplayNumber - 1) {
             if (newPos == mTextViews.size() - 1) {
-                shifting = mRects.get(newPos).centerX() - mRects.get(newPos).right - DensityUtils.dp2px(mContext, FOCUS_DRAWABLE_MARGIN + CONTENT_SPACING_DP);
+                shifting = mRects.get(newPos).centerX() - mRects.get(newPos).right - DensityUtils.dp2px(mContext, mDataHolder.drawableMargin + CONTENT_SPACING_DP);
             } else if (oldPos == mTextViews.size() - 1) {
-                shifting = -mRects.get(oldPos).centerX() + mRects.get(oldPos).right + DensityUtils.dp2px(mContext, FOCUS_DRAWABLE_MARGIN + CONTENT_SPACING_DP);
+                shifting = -mRects.get(oldPos).centerX() + mRects.get(oldPos).right + DensityUtils.dp2px(mContext, mDataHolder.drawableMargin + CONTENT_SPACING_DP);
             } else if (newPos > oldPos) {
                 shifting = mRects.get(newPos).centerX() - mRects.get(newPos + 1).centerX();
             } else {        // oldPos > newPos
@@ -221,7 +217,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float currentValue = (float) animation.getAnimatedValue();
-                    setPadding((int)(cp + (ep - cp) * currentValue), 0, 0, 0);
+                    setPadding((int) (cp + (ep - cp) * currentValue), 0, 0, 0);
                     setLayoutParams(lp);
                 }
             });
@@ -234,8 +230,8 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         final int startWidth = lp.width;
         final int startHeight = lp.height;
         final int startMarginLeft = mRects.get(oldPos).left - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP);
-        final int endWidth = getTextViewWidth(newPos) + 2 * FOCUS_DRAWABLE_MARGIN;
-        final int endHeight = mTextViews.get(newPos).getHeight() + 2 * FOCUS_DRAWABLE_MARGIN;
+        final int endWidth = getTextViewWidth(newPos) + 2 * mDataHolder.drawableMargin;
+        final int endHeight = mTextViews.get(newPos).getHeight() + 2 * mDataHolder.drawableMargin;
         final int endMarginLeft = mRects.get(newPos).left - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP);
 
         ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
@@ -244,10 +240,10 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float currentValue = (float) animation.getAnimatedValue();
-                lp.width = (int)(startWidth + (endWidth - startWidth) * currentValue);
-                lp.height = (int)(startHeight + (endHeight - startHeight) * currentValue);
-                lp.setMargins((int)(startMarginLeft + (endMarginLeft - startMarginLeft) * currentValue) - FOCUS_DRAWABLE_MARGIN,
-                        0, 0, -FOCUS_DRAWABLE_MARGIN);
+                lp.width = (int) (startWidth + (endWidth - startWidth) * currentValue);
+                lp.height = (int) (startHeight + (endHeight - startHeight) * currentValue);
+                lp.setMargins((int) (startMarginLeft + (endMarginLeft - startMarginLeft) * currentValue) - mDataHolder.drawableMargin,
+                        0, 0, -mDataHolder.drawableMargin);
                 mFocusView.setLayoutParams(lp);
             }
         });
@@ -259,7 +255,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             return 0;
         }
         String str = mTextViews.get(pos).getText().toString();
-        return (int)mTextViews.get(pos).getPaint().measureText(str);
+        return (int) mTextViews.get(pos).getPaint().measureText(str);
     }
 
     public interface NavigationBarListener {
@@ -268,6 +264,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
     public static class DataHolder {
         private List<String> titles;
+        private int titleSpacing;
         private int fullDisplayNumber;
         private int textColor;
         private int textFocusColor;
@@ -275,9 +272,10 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         private int textFocusSize;
         private Drawable selectDrawable;
         private Drawable focusDrawable;
-        private int textSpacing;
+        private int drawableMargin;
 
-        public DataHolder() {}
+        public DataHolder() {
+        }
 
         public DataHolder titles(List<String> s) {
             titles = s;
@@ -319,8 +317,13 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             return this;
         }
 
-        public DataHolder textSpacing(int spacing) {
-            textSpacing = spacing;
+        public DataHolder drawableMargin(int margin) {
+            drawableMargin = margin;
+            return this;
+        }
+
+        public DataHolder titleSpacing(int spacing) {
+            titleSpacing = spacing;
             return this;
         }
     }

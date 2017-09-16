@@ -1,14 +1,15 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
+
     defaultConfig {
-        applicationId "com.china_liantong.navigationcontrol.demo"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+
     }
     buildTypes {
         release {
@@ -19,6 +20,5 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':navigationcontrol')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
