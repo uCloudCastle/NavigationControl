@@ -2,11 +2,18 @@ package com.china_liantong.navigationcontrol.demo;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Pair;
 
 import com.china_liantong.navigationcontrol.NavigationBar;
 import com.china_liantong.navigationcontrol.NavigationControl;
+import com.china_liantong.navigationcontrol.NavigationFragment;
+import com.china_liantong.navigationcontrol.SubNavigationBar;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends Activity {
     NavigationControl mNavigationControl;
@@ -20,7 +27,9 @@ public class MainActivity extends Activity {
         mNavigationControl = (NavigationControl) findViewById(R.id.mainactivity_navigationcontrol);
 
         NavigationControl.DataHolder ncHolder = new NavigationControl.DataHolder()
-                .navigationBarHeight(80);
+                .activity(this)
+                .navigationBarHeight(80)
+                .fragmentMarginTop(20);
 
         NavigationBar.DataHolder nbHolder = new NavigationBar.DataHolder()
                 .titles(Arrays.asList(list))
@@ -34,7 +43,25 @@ public class MainActivity extends Activity {
                 .textFocusColor(Color.WHITE)
                 .titleSpacing(50);
 
+        String[] sutList = new String[]{"全部", "动作", "射击", "休闲", "竞技", "养成", "三维", "益智"};
+        List<Pair<String, Drawable>> pairList = new ArrayList<>();
+        for (String s : sutList) {
+            pairList.add(new Pair<String, Drawable>(s, null));
+        }
+        NavigationFragment.DataHolder temp = new NavigationFragment.DataHolder();
+        SubNavigationBar.DataHolder s = new SubNavigationBar.DataHolder()
+                .subPairs(pairList)
+                .subWidth(200)
+                .subItemHeight(80)
+                .subIconWidth(40)
+                .subIconHeight(40)
+                .subTextColor(Color.WHITE)
+                .subTextSize(25);
+        ArrayList<NavigationFragment.DataHolder> nfHolder = new ArrayList<>();
+        nfHolder.add(temp.subHolder(s));
+
         mNavigationControl.navigationBarHolder(nbHolder)
-                .navigationControlHolder(ncHolder).show();
+                .navigationControlHolder(ncHolder)
+                .navigationFragmentHolder(nfHolder).show();
     }
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <attr name="scrollOrientation">
+        <enum name="horizontal" value="0"/>
+        <enum name="vertical" value="1"/>
+    </attr>
+
+    <attr name="scrollMode">
+        <enum name="scrollPage" value="0"/>
+        <enum name="scrollCell" value="1"/>
+    </attr>
+
+    <declare-styleable name="LtGridView">
+        <attr name="scrollOrientation"/>
+        <attr name="scrollMode"/>
+        <attr name="focusDrawable" format="reference"/>
+        <attr name="shadowLeft" format="dimension"/>
+        <attr name="shadowRight" format="dimension"/>
+        <attr name="pageSpacing" format="dimension"/>
+        <attr name="isNeedLayerTypeToSoftWare" format="boolean"/>
+        <attr name="isNeedFocusScaleAnim" format="boolean"/>
+        <attr name="fadingEdgeEnable" format="boolean" />
+        <attr name="fadingEdgeDrawable" format="reference" />
+        <attr name="fadingEdgeArrowLeft" format="reference" />
+        <attr name="fadingEdgeArrowRight" format="reference" />
+    </declare-styleable>
+</resources>

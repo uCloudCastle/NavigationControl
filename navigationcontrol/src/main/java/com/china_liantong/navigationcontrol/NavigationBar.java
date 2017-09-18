@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,11 +27,11 @@ import java.util.List;
 public class NavigationBar extends RelativeLayout implements ViewTreeObserver.OnGlobalFocusChangeListener {
     private static final int CONTENT_SPACING_DP = 20;
 
-    Context mContext;
-    ArrayList<TextView> mTextViews = new ArrayList<>();
-    ArrayList<Rect> mRects = new ArrayList<>();
-    View mGetFocusView;
-    View mFocusView;
+    private Context mContext;
+    private ArrayList<TextView> mTextViews = new ArrayList<>();
+    private ArrayList<Rect> mRects = new ArrayList<>();
+    private View mGetFocusView;
+    private View mFocusView;
 
     private DataHolder mDataHolder;
     private NavigationBarListener mListener;
@@ -114,7 +115,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
                     mTextViews.get(i).setLayoutParams(itemParams);
 
                     if (i == mDataHolder.fullDisplayNumber) {
-                        RelativeLayout.LayoutParams mainParams = (RelativeLayout.LayoutParams) getLayoutParams();
+                        ViewGroup.LayoutParams mainParams = getLayoutParams();
                         mainParams.width = rect.centerX() - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP);
                         setLayoutParams(mainParams);
                     }
@@ -128,7 +129,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
                         0, 0, -mDataHolder.drawableMargin);
                 mFocusView.setLayoutParams(focusViewParams);
             }
-        }, 50);
+        }, 200);
     }
 
     @Override
@@ -207,7 +208,6 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
                 shifting = mRects.get(oldPos + 1).centerX() - mRects.get(oldPos).centerX();
             }
 
-            final RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) getLayoutParams();
             ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
             anim.setDuration(200);
             final int cp = mLastPaddingLeft;
@@ -218,7 +218,6 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float currentValue = (float) animation.getAnimatedValue();
                     setPadding((int) (cp + (ep - cp) * currentValue), 0, 0, 0);
-                    setLayoutParams(lp);
                 }
             });
             anim.start();
