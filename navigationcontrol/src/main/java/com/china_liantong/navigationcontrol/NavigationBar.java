@@ -129,7 +129,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
                         0, 0, -mDataHolder.drawableMargin);
                 mFocusView.setLayoutParams(focusViewParams);
             }
-        }, 200);
+        }, 240);
     }
 
     @Override

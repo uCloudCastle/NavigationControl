@@ -16,7 +16,6 @@ public class NavigationFragment extends Fragment {
     private Activity mActivity;
     private DataHolder mDataHolder;
 
-    //private SubNavigationBar mSubNavBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -26,14 +25,14 @@ public class NavigationFragment extends Fragment {
                 ViewGroup.LayoutParams.MATCH_PARENT);
         layout.setLayoutParams(lp);
 
-        SubNavigationBar sn = new SubNavigationBar(mActivity);
-        sn.setDataHolder(mActivity, mDataHolder.subHolder);
+        SubMenu sub = new SubMenu(mActivity);
+        sub.setDataHolder(mActivity, mDataHolder.subHolder);
         RelativeLayout.LayoutParams snlp = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                mDataHolder.subMenuWidth,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         snlp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
         snlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-        layout.addView(sn, snlp);
+        layout.addView(sub, snlp);
 
         return layout;
     }
@@ -46,13 +45,19 @@ public class NavigationFragment extends Fragment {
     }
 
     public static class DataHolder {
-        private SubNavigationBar.DataHolder subHolder;
+        private SubMenu.DataHolder subHolder;
+        private int subMenuWidth;
 
         public DataHolder() {
         }
 
-        public DataHolder subHolder(SubNavigationBar.DataHolder holder) {
+        public DataHolder subHolder(SubMenu.DataHolder holder) {
             subHolder = holder;
+            return this;
+        }
+
+        public DataHolder subMenuWidth(int width) {
+            subMenuWidth = width;
             return this;
         }
     }

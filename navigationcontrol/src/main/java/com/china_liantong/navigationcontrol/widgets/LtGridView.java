@@ -43,6 +43,7 @@ public class LtGridView extends LtAbsSpinner {
 
     private int mFadingSpaceLeft;
     private int mFadingSpaceRight;
+    private int mFadingSpaceBottom;
 
     private DrawLayout mDrawLayout;
     private Drawable mDrawableFocus;
@@ -68,6 +69,8 @@ public class LtGridView extends LtAbsSpinner {
     private int mShadowLeft;
     private int mShadowRight;
     private int mPageSpacing;
+    private int mShadowBottom;
+    private int mVerticalPageSpacing;
 
     private boolean mIsNeedLayerTypeToSoftWare;
     private boolean mIsNeedFocusScaleAnim;
@@ -150,6 +153,7 @@ public class LtGridView extends LtAbsSpinner {
 
         mFadingSpaceLeft = 0;
         mFadingSpaceRight = 0;
+        mFadingSpaceBottom = 0;
         mFadingDrawer = null;
         mFadingArrowLeft = null;
         mFadingArrowRight = null;
@@ -327,6 +331,23 @@ public class LtGridView extends LtAbsSpinner {
         }
     }
 
+    /**
+     * set the padding right of grid
+     * @param value the right padding in pixels
+     */
+    public void setShadowBottom(int value){
+        if(value >=0){
+            mShadowBottom = value;
+            mFadingSpaceBottom = value;
+        }
+    }
+
+    public void setVerticalPageSpacing(int value){
+        if(value >=0){
+            mVerticalPageSpacing = value;
+        }
+    }
+
     public void setFadingEdgeDrawable(Drawable drawable) {
         if (drawable != null) {
             mFadingDrawer = drawable;
@@ -356,6 +377,10 @@ public class LtGridView extends LtAbsSpinner {
 
     public int getCurrentPageIndex() {
         return mIndexLayoutPage;
+    }
+
+    public View getSelectedItem() {
+        return mSelectedItem;
     }
 
    private void addDrawLayout() {
@@ -448,11 +473,13 @@ public class LtGridView extends LtAbsSpinner {
                 } else {
                     if (mScrollMode == ScrollMode.SCROLL_MODE_CELL && mScrollOrientation == ScrollOrientation.SCROLL_VERTICAL) {
                         mRowHeight = (heightSize
-                                - (mAdapter.getNumRows() / mAdapter.getOriginalPageCount() - 1) * mAdapter.getRowSpacing())
+                                - (mAdapter.getNumRows() / mAdapter.getOriginalPageCount() - 1) * mAdapter.getRowSpacing()
+                                - (mShadowBottom))
                                 / (mAdapter.getNumRows() / mAdapter.getOriginalPageCount());
                     } else {
                         mRowHeight = (heightSize
-                                - (mAdapter.getNumRows() - 1) * mAdapter.getRowSpacing())
+                                - (mAdapter.getNumRows() - 1) * mAdapter.getRowSpacing()
+                                - (mShadowBottom) - (mFadingEdgeEnabled ? mVerticalPageSpacing * 2 : 0))
                                 / mAdapter.getNumRows();
                     }
                     Log.e(LOG_TAG, ">>>>>>>>>>>>>>onMeasure mRowHeight = " + mRowHeight);
@@ -562,7 +589,11 @@ public class LtGridView extends LtAbsSpinner {
                 return getPageWidth() + mVerticalSpacing;
             }
         } else {
-            return getPageHeight() + mHorizontalSpacing;
+            if (mFadingEdgeEnabled) {
+                return getPageHeight() - mFadingSpaceBottom - mVerticalPageSpacing;
+            } else {
+                return getPageHeight() + mHorizontalSpacing;
+            }
         }
     }
 
@@ -844,7 +875,8 @@ public class LtGridView extends LtAbsSpinner {
 
             int leftItem, topItem, rightItem, bottomItem;
             if (mScrollOrientation == ScrollOrientation.SCROLL_VERTICAL) {
-                topItem = startCoordinate + startRow.get() * (mRowHeight + mHorizontalSpacing);
+                topItem = startCoordinate + startRow.get() * (mRowHeight + mHorizontalSpacing)
+                        + (mFadingEdgeEnabled ? mVerticalPageSpacing : 0);
                 leftItem = startCol.get() * (mColumnWidth + mVerticalSpacing);
             } else {
                 leftItem = startCoordinate + startCol.get() * (mColumnWidth + mVerticalSpacing)
@@ -1013,31 +1045,39 @@ public class LtGridView extends LtAbsSpinner {
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (mFadingEdgeEnabled && mFadingDrawer != null) {
-            canvas.translate(getScrollX(), getScrollY());
-            float density = getContext().getResources().getDisplayMetrics().density;
-            if (mIndexNextLayoutPage > 0) {
-                mFadingDrawer.setBounds(0, 0,  mFadingSpaceLeft, getHeight());
-                mFadingDrawer.draw(canvas);
-                if (mFadingArrowLeft != null) {
-                    int width = (int) (mFadingArrowLeft.getIntrinsicWidth() / density);
-                    int height = (int) (mFadingArrowLeft.getIntrinsicHeight() / density);
-                    mFadingArrowLeft.setBounds(mFadingSpaceLeft - width,
-                            (getHeight() - height) / 2,
-                            mFadingSpaceLeft, (getHeight() + height) / 2);
-                    mFadingArrowLeft.draw(canvas);
+            if (mScrollOrientation == ScrollOrientation.SCROLL_HORIZONTAL) {
+                canvas.translate(getScrollX(), getScrollY());
+                float density = getContext().getResources().getDisplayMetrics().density;
+                if (mIndexNextLayoutPage > 0) {
+                    mFadingDrawer.setBounds(0, 0, mFadingSpaceLeft, getHeight());
+                    mFadingDrawer.draw(canvas);
+                    if (mFadingArrowLeft != null) {
+                        int width = (int) (mFadingArrowLeft.getIntrinsicWidth() / density);
+                        int height = (int) (mFadingArrowLeft.getIntrinsicHeight() / density);
+                        mFadingArrowLeft.setBounds(mFadingSpaceLeft - width,
+                                (getHeight() - height) / 2,
+                                mFadingSpaceLeft, (getHeight() + height) / 2);
+                        mFadingArrowLeft.draw(canvas);
+                    }
                 }
-            }
-            if (mAdapter != null && mIndexNextLayoutPage < mAdapter.getPageCount() - 1) {
-                mFadingDrawer.setBounds(getWidth() - mFadingSpaceRight, 0, getWidth(), getHeight());
-                mFadingDrawer.draw(canvas);
-                if (mFadingArrowRight != null) {
-                    int width = (int) (mFadingArrowRight.getIntrinsicWidth() / density);
-                    int height = (int) (mFadingArrowRight.getIntrinsicHeight() / density);
-                    mFadingArrowRight.setBounds(getWidth() - mFadingSpaceRight,
-                            (getHeight() - height) / 2,
-                            getWidth() - mFadingSpaceRight + width,
-                            (getHeight() + height) / 2);
-                    mFadingArrowRight.draw(canvas);
+                if (mAdapter != null && mIndexNextLayoutPage < mAdapter.getPageCount() - 1) {
+                    mFadingDrawer.setBounds(getWidth() - mFadingSpaceRight, 0, getWidth(), getHeight());
+                    mFadingDrawer.draw(canvas);
+                    if (mFadingArrowRight != null) {
+                        int width = (int) (mFadingArrowRight.getIntrinsicWidth() / density);
+                        int height = (int) (mFadingArrowRight.getIntrinsicHeight() / density);
+                        mFadingArrowRight.setBounds(getWidth() - mFadingSpaceRight,
+                                (getHeight() - height) / 2,
+                                getWidth() - mFadingSpaceRight + width,
+                                (getHeight() + height) / 2);
+                        mFadingArrowRight.draw(canvas);
+                    }
+                }
+            } else {
+                canvas.translate(getScrollX(), getScrollY());
+                if (mAdapter != null && mIndexNextLayoutPage < mAdapter.getPageCount() - 1) {
+                    mFadingDrawer.setBounds(0, getHeight() - mFadingSpaceBottom, getWidth(), getHeight());
+                    mFadingDrawer.draw(canvas);
                 }
             }
         }
