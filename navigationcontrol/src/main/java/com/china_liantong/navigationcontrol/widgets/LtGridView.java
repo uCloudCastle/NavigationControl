@@ -174,7 +174,7 @@ public class LtGridView extends LtAbsSpinner {
         mSelectionAnimNotifier = null;
         mIndexNextLayoutPage = 0;
         mIndexLayoutPage = 0;
-        mSelectedScaleValue = 1.04f;
+        mSelectedScaleValue = 1.08f;
         mIsNeedLayerTypeToSoftWare = true;
         mIsNeedFocusScaleAnim = true;
 

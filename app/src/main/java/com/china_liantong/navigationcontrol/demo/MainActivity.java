@@ -10,6 +10,7 @@ import com.china_liantong.navigationcontrol.NavigationBar;
 import com.china_liantong.navigationcontrol.NavigationControl;
 import com.china_liantong.navigationcontrol.NavigationFragment;
 import com.china_liantong.navigationcontrol.SubMenu;
+import com.china_liantong.navigationcontrol.utils.DensityUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +30,8 @@ public class MainActivity extends Activity {
         /* ************ 主界面 Config Data ********** */
         NavigationControl.DataHolder ncHolder = new NavigationControl.DataHolder()
                 .activity(this)
-                .navigationBarHeight(80)
-                .fragmentMarginTop(10);
+                .navigationBarHeight(DensityUtils.dp2px(this, 80))
+                .fragmentMarginTop(DensityUtils.dp2px(this, 10));
 
         /* ************ NavigationBar Config Data ********** */
         NavigationBar.DataHolder nbHolder = new NavigationBar.DataHolder()
@@ -43,7 +44,7 @@ public class MainActivity extends Activity {
                 .textFocusSize(25)
                 .textColor(Color.parseColor("#bbbbbb"))
                 .textFocusColor(Color.WHITE)
-                .titleSpacing(50);
+                .titleSpacing(DensityUtils.dp2px(this, 50));
 
         /* ************ NavigationFragment Config Data ********** */
         // 每个一级导航栏目对应一个NavigationFragment, 因此需要传入ArrayList
@@ -64,12 +65,12 @@ public class MainActivity extends Activity {
                 .fullDisplayNumber(5)
                 .textColor(Color.WHITE)
                 .textSize(22)
-                .rowSpacing(8);
+                .rowSpacing(DensityUtils.dp2px(this, 8));
 
         // 此处只添加一个 NavigationFragment.DataHolder 测试
-        NavigationFragment.DataHolder frgment1 = new NavigationFragment.DataHolder();
-        nfHolderList.add(frgment1.subHolder(subMenuHolder)
-                .subMenuWidth(175));
+        NavigationFragment.DataHolder fragment1 = new NavigationFragment.DataHolder();
+        nfHolderList.add(fragment1.subHolder(subMenuHolder)
+                .subMenuWidth(DensityUtils.dp2px(this, 175)));
 
         /* ************ Set Config and Show() ********** */
         mNavigationControl.navigationControlHolder(ncHolder)

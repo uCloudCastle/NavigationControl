@@ -51,12 +51,12 @@ public class SubMenu extends FrameLayout {
             return;
         }
 
-        final LtGridView gridView = new LtGridView(mActivity);
+        LtGridView gridView = new LtGridView(mActivity);
         gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_VERTICAL);
         gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
         gridView.setAdapter(new GridViewAdapter(mActivity));
         gridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
-        gridView.setSelectPadding(15, 15, 15, 14);
+        gridView.setSelectPadding(15, 15, 16, 13);
 
         gridView.setFadingEdgeEnabled(true);
         gridView.setVerticalPageSpacing(mDataHolder.rowSpacing);
