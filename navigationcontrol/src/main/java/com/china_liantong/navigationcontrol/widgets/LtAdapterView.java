@@ -392,6 +392,8 @@ public abstract class LtAdapterView<T extends Adapter> extends ViewGroup {
          * @param parent The LtAdapterView that now contains no selected item.
          */
         void onNothingSelected(LtAdapterView<?> parent);
+
+        void onItemGoingTo(View view, int position);
     }
 
 
@@ -1185,6 +1187,9 @@ public abstract class LtAdapterView<T extends Adapter> extends ViewGroup {
         if (mNeedSync && mSyncMode == SYNC_SELECTED_POSITION && position >= 0) {
             mSyncPosition = position;
             mSyncRowId = mNextSelectedRowId;
+        }
+        if (mOnItemSelectedListener != null) {
+            mOnItemSelectedListener.onItemGoingTo(getChildAt(position), position);
         }
     }
 

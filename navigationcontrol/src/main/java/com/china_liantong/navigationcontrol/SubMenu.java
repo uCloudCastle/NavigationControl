@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.china_liantong.navigationcontrol.utils.LogUtils;
 import com.china_liantong.navigationcontrol.widgets.LtAdapterView;
 import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
@@ -51,7 +53,7 @@ public class SubMenu extends FrameLayout {
             return;
         }
 
-        LtGridView gridView = new LtGridView(mActivity);
+        final LtGridView gridView = new LtGridView(mActivity);
         gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_VERTICAL);
         gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
         gridView.setAdapter(new GridViewAdapter(mActivity));
@@ -63,6 +65,26 @@ public class SubMenu extends FrameLayout {
         gridView.setShadowBottom(CONTENT_SHADOW_BOTTOM);
         gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
         gridView.setFocusScaleAnimEnabled(false);
+
+//        public static final int KEYCODE_DPAD_DOWN = 20;
+//        public static final int KEYCODE_DPAD_LEFT = 21;
+//        public static final int KEYCODE_DPAD_RIGHT = 22;
+//        public static final int KEYCODE_DPAD_UP = 19;
+        gridView.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                switch (keyEvent.getKeyCode()) {
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                        LogUtils.d(gridView.getSelectedItemId() + " " + gridView.getSelectedItemPosition());
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                        break;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
 
         gridView.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
@@ -79,18 +101,26 @@ public class SubMenu extends FrameLayout {
         });
         gridView.setOnItemSelectedListener(new LtAdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(LtAdapterView<?> parent, View view, int position, long id) {
+            public void onItemGoingTo(View view, int position) {
+                if (view == null) {
+                    return;
+                }
+                View bg = view.findViewById(R.id.item_submenu_iconleft_background);
+                if (lastSelectedView == bg) {
+                    return;
+                }
+
                 if (lastSelectedView != null) {
                     lastSelectedView.setBackground(getResources().getDrawable(R.drawable.app_bg_dark));
                 }
-                View bg = view.findViewById(R.id.item_submenu_iconleft_background);
-                if (bg != null) {
-                    if (hasFocus) {
-                        bg.setBackground(getResources().getDrawable(R.drawable.app_bg_blue));
-                    }
-                    lastSelectedView = bg;
+                if (hasFocus) {
+                    bg.setBackground(getResources().getDrawable(R.drawable.app_bg_blue));
                 }
+                lastSelectedView = bg;
             }
+
+            @Override
+            public void onItemSelected(LtAdapterView<?> parent, View view, int position, long id) {}
 
             @Override
             public void onNothingSelected(LtAdapterView<?> parent) {}
