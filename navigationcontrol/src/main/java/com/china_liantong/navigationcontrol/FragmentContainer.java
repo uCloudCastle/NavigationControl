@@ -58,8 +58,8 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
 
     @Override
     public void onItemGetFocus(int newPos) {
-        LogUtils.d("get focus: " + newPos);
         if (newPos >= 0 && newPos < mFragmentList.size()) {
+            LogUtils.d("replace fragment : " + newPos);
             mFgManager.beginTransaction().replace(mId, mFragmentList.get(newPos)).commit();
         }
     }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Common-->
+    <color name="common_white">#ffffff</color>
+    <color name="common_ghost_white">#f8f8ff</color>
+    <color name="common_black">#000000</color>
+    <color name="common_light_grey">#c0c0c0</color>
+    <color name="common_grey">#9ea3af</color>
+    <color name="common_dark_grey">#696969</color>
+    <color name="common_two_thirds_dark_grey">#aa696969</color>
+    <color name="common_transparency">#00ffffff</color>
+    <color name="common_ninety_percent_transparency">#1affffff</color>
+    <color name="common_eighty_percent_transparency">#33ffffff</color>
+    <color name="common_fifty_percent_transparency">#7fffffff</color>
+    <color name="common_ninety_percent_mask">#1a000000</color>
+    <color name="common_forty_percent_mask">#66000000</color>
+
+    <!--submenu-->
+    <color name="submenu_item_slanted_textview_background">#20b0f8</color>
+    <color name="submenu_item_slanted_textview_textcolor">#2f356b</color>
+</resources>

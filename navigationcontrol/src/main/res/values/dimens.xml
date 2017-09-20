@@ -1,0 +1,12 @@
+<resources>
+    <!--common-->
+
+    <!--navigation bar-->
+    <dimen name="navigation_bar_content_spacing">20dp</dimen>
+
+    <!--submenu-->
+    <dimen name="submenu_item_iconup_textview_padding_bottom">10dp</dimen>
+    <dimen name="submenu_item_slanted_textview_default_size">50dp</dimen>
+    <dimen name="submenu_item_slanted_textview_text_size">15sp</dimen>
+
+</resources>

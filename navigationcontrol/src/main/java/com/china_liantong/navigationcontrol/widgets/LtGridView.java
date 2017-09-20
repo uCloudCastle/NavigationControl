@@ -1294,7 +1294,6 @@ public class LtGridView extends LtAbsSpinner {
 
 
     private boolean moveLeft() {
-        Log.i("LtGridView", "moveLeft: ================================");
         if (mAdapter == null) {
             Log.e(LOG_TAG, "mAdapter is null in moveLeft");
             return false;
@@ -1336,7 +1335,6 @@ public class LtGridView extends LtAbsSpinner {
     }
 
     private boolean moveRight() {
-        Log.i("LtGridView", "moveRight: ================================");
         if (mAdapter == null) {
             Log.e(LOG_TAG, "mAdapter is null in moveRight");
             return false;
@@ -1378,7 +1376,6 @@ public class LtGridView extends LtAbsSpinner {
     }
 
     private boolean moveUp() {
-        Log.i("LtGridView", "moveUp: ================================");
         if (mAdapter == null) {
             Log.e(LOG_TAG, "mAdapter is null in moveUp");
             return false;
@@ -1420,7 +1417,6 @@ public class LtGridView extends LtAbsSpinner {
     }
 
     private boolean moveDown() {
-        Log.i("LtGridView", "moveDown: ================================");
         if (mAdapter == null) {
             Log.e(LOG_TAG, "mAdapter is null in moveDown");
             return false;

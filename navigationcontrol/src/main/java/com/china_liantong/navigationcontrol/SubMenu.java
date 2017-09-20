@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Pair;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,19 +12,21 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.china_liantong.navigationcontrol.utils.LogUtils;
 import com.china_liantong.navigationcontrol.widgets.LtAdapterView;
 import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
+import com.china_liantong.navigationcontrol.widgets.SlantedTextView;
 
 import java.util.List;
+
+import static com.china_liantong.navigationcontrol.SubMenu.DataHolder.SUBMENU_ICON_POSITION_LEFT;
 
 /**
  * Created by randal on 2017/9/14.
  */
 
 public class SubMenu extends FrameLayout {
-    private static final int CONTENT_SHADOW_BOTTOM = 25;
+    private static final float SQUARE_ROOT_OF_TWO = 1.41421356f;
 
     private Activity mActivity;
     private DataHolder mDataHolder;
@@ -62,29 +63,9 @@ public class SubMenu extends FrameLayout {
 
         gridView.setFadingEdgeEnabled(true);
         gridView.setVerticalPageSpacing(mDataHolder.rowSpacing);
-        gridView.setShadowBottom(CONTENT_SHADOW_BOTTOM);
+        gridView.setShadowBottom(mDataHolder.fadingWidth);
         gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
         gridView.setFocusScaleAnimEnabled(false);
-
-//        public static final int KEYCODE_DPAD_DOWN = 20;
-//        public static final int KEYCODE_DPAD_LEFT = 21;
-//        public static final int KEYCODE_DPAD_RIGHT = 22;
-//        public static final int KEYCODE_DPAD_UP = 19;
-        gridView.setOnKeyListener(new OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                switch (keyEvent.getKeyCode()) {
-                    case KeyEvent.KEYCODE_DPAD_UP:
-                        LogUtils.d(gridView.getSelectedItemId() + " " + gridView.getSelectedItemPosition());
-                        break;
-                    case KeyEvent.KEYCODE_DPAD_DOWN:
-                        break;
-                    default:
-                        break;
-                }
-                return false;
-            }
-        });
 
         gridView.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
@@ -105,7 +86,12 @@ public class SubMenu extends FrameLayout {
                 if (view == null) {
                     return;
                 }
-                View bg = view.findViewById(R.id.item_submenu_iconleft_background);
+                View bg;
+                if (mDataHolder.iconPosition == SUBMENU_ICON_POSITION_LEFT) {
+                    bg = view.findViewById(R.id.item_submenu_iconleft_background);
+                } else {
+                    bg = view.findViewById(R.id.item_submenu_iconup_background);
+                }
                 if (lastSelectedView == bg) {
                     return;
                 }
@@ -151,28 +137,66 @@ public class SubMenu extends FrameLayout {
         @Override
         protected View createItemView(int indexPage, int position,
                                       ViewGroup parent) {
-            return LayoutInflater.from(mContext).inflate(R.layout.item_submenu_iconleft, null);
+            if (mDataHolder.iconPosition == SUBMENU_ICON_POSITION_LEFT) {
+                return LayoutInflater.from(mContext).inflate(R.layout.item_submenu_iconleft, null);
+            } else {
+                return LayoutInflater.from(mContext).inflate(R.layout.item_submenu_iconup, null);
+            }
         }
 
         @Override
         protected View getItemView(int indexPage, int position,
                                    View convertView, ViewGroup parent) {
+            View icon;
+            TextView text;
+            SlantedTextView tag;
 
-            View icon = convertView.findViewById(R.id.item_submenu_iconleft_icon);
-            TextView text = (TextView) convertView.findViewById(R.id.item_submenu_iconleft_text);
+            if (mDataHolder.iconPosition == SUBMENU_ICON_POSITION_LEFT) {
+                icon = convertView.findViewById(R.id.item_submenu_iconleft_icon);
+                text = (TextView) convertView.findViewById(R.id.item_submenu_iconleft_text);
+                tag = (SlantedTextView) convertView.findViewById(R.id.item_submenu_iconleft_tag);
+            } else {
+                icon = convertView.findViewById(R.id.item_submenu_iconup_icon);
+                text = (TextView) convertView.findViewById(R.id.item_submenu_iconup_text);
+                tag = (SlantedTextView) convertView.findViewById(R.id.item_submenu_iconup_tag);
+            }
 
-            text.setText(mDataHolder.pairs.get(indexPage * mDataHolder.fullDisplayNumber + position).first);
+            int actualIndex = indexPage * mDataHolder.fullDisplayNumber + position;
+            text.setText(mDataHolder.pairs.get(actualIndex).first);
+            icon.setBackground(mDataHolder.pairs.get(actualIndex).second);
             text.setTextSize(mDataHolder.textSize);
             text.setTextColor(mDataHolder.textColor);
 
-            int itemHeight = (getHeight() - CONTENT_SHADOW_BOTTOM) / mDataHolder.fullDisplayNumber - mDataHolder.rowSpacing;
-            int unit = itemHeight / 8;
+            int itemHeight = (getHeight() - mDataHolder.fadingWidth) / mDataHolder.fullDisplayNumber - mDataHolder.rowSpacing;
+            int itemWidth = getWidth();
+            int min = itemHeight < itemWidth ? itemHeight : itemWidth;
+
+            if (mDataHolder.tagList != null
+                    && mDataHolder.tagList.size() > actualIndex
+                    && mDataHolder.tagList.get(actualIndex) != null
+                    && !mDataHolder.tagList.get(actualIndex).isEmpty()) {
+                RelativeLayout.LayoutParams taglp = (RelativeLayout.LayoutParams) tag.getLayoutParams();
+                taglp.width = min / 2;
+                taglp.height = min / 2;
+                tag.setLayoutParams(taglp);
+                tag.setSlantedLength((int)(min * SQUARE_ROOT_OF_TWO / 4));
+                tag.setSlantedBackgroundColor(getResources().getColor(R.color.submenu_item_slanted_textview_background));
+                tag.setText(mDataHolder.tagList.get(actualIndex));
+            }
+
             RelativeLayout.LayoutParams iconlp = (RelativeLayout.LayoutParams) icon.getLayoutParams();
-            iconlp.setMargins(unit * 3, unit, 0, unit);
-            iconlp.width = 6 * unit;
-            iconlp.height = 6 * unit;
+            if (mDataHolder.iconPosition == SUBMENU_ICON_POSITION_LEFT) {
+                int unit = itemHeight / 8;
+                iconlp.setMargins(unit * 3, unit, 0, 0);
+                iconlp.width = 6 * unit;
+                iconlp.height = 6 * unit;
+            } else {
+                int unit = itemWidth / 9;
+                iconlp.setMargins(unit * 3, unit, 0, 0);
+                iconlp.width = 3 * unit;
+                iconlp.height = 3 * unit;
+            }
             icon.setLayoutParams(iconlp);
-            icon.setBackground(mDataHolder.pairs.get(indexPage * mDataHolder.fullDisplayNumber + position).second);
             return convertView;
         }
 
@@ -225,11 +249,17 @@ public class SubMenu extends FrameLayout {
     }
 
     public static class DataHolder {
+        public static final int SUBMENU_ICON_POSITION_LEFT = 0;
+        public static final int SUBMENU_ICON_POSITION_UP = 1;
+
         private List<Pair<String, Drawable>> pairs;
         private int fullDisplayNumber;
         private int textSize;
         private int textColor;
         private int rowSpacing;
+        private List<String> tagList;
+        private int fadingWidth;
+        private int iconPosition;
 
         public DataHolder() {
         }
@@ -256,6 +286,21 @@ public class SubMenu extends FrameLayout {
 
         public DataHolder rowSpacing(int spacing) {
             rowSpacing = spacing;
+            return this;
+        }
+
+        public DataHolder tagList(List<String> list) {
+            tagList = list;
+            return this;
+        }
+
+        public DataHolder fadingWidth(int pixel) {
+            fadingWidth = pixel;
+            return this;
+        }
+
+        public DataHolder iconPosition(int pos) {
+            iconPosition = pos;
             return this;
         }
     }

@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
-import com.china_liantong.navigationcontrol.utils.DensityUtils;
 import com.china_liantong.navigationcontrol.utils.LogUtils;
 
 import java.util.ArrayList;
@@ -25,8 +24,6 @@ import java.util.List;
  */
 
 public class NavigationBar extends RelativeLayout implements ViewTreeObserver.OnGlobalFocusChangeListener {
-    private static final int CONTENT_SPACING_DP = 20;
-
     private Context mContext;
     private ArrayList<TextView> mTextViews = new ArrayList<>();
     private ArrayList<Rect> mRects = new ArrayList<>();
@@ -37,6 +34,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
     private NavigationBarListener mListener;
     private int mFirstItemTag;
     private int mLastPaddingLeft;
+    private boolean mAnimDisable = false;
 
     public NavigationBar(Context context) {
         this(context, null);
@@ -110,13 +108,16 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
                     RelativeLayout.LayoutParams itemParams = (RelativeLayout.LayoutParams) mTextViews.get(i).getLayoutParams();
                     itemParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-                    itemParams.setMargins(rect.left - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP),
-                            0, 0, DensityUtils.dp2px(mContext, CONTENT_SPACING_DP));
+                    itemParams.setMargins(
+                            rect.left - mRects.get(0).left + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing),
+                            0,
+                            0,
+                            (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing));
                     mTextViews.get(i).setLayoutParams(itemParams);
 
                     if (i == mDataHolder.fullDisplayNumber) {
                         ViewGroup.LayoutParams mainParams = getLayoutParams();
-                        mainParams.width = rect.centerX() - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP);
+                        mainParams.width = rect.centerX() - mRects.get(0).left + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing);
                         setLayoutParams(mainParams);
                     }
                 }
@@ -125,7 +126,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
                 focusViewParams.addRule(RelativeLayout.ALIGN_BOTTOM, mTextViews.get(0).getId());
                 focusViewParams.width = getTextViewWidth(0) + 2 * mDataHolder.drawableMargin;
                 focusViewParams.height = mTextViews.get(0).getHeight() + 2 * mDataHolder.drawableMargin;
-                focusViewParams.setMargins(DensityUtils.dp2px(mContext, CONTENT_SPACING_DP) - mDataHolder.drawableMargin,
+                focusViewParams.setMargins((int)getResources().getDimension(R.dimen.navigation_bar_content_spacing) - mDataHolder.drawableMargin,
                         0, 0, -mDataHolder.drawableMargin);
                 mFocusView.setLayoutParams(focusViewParams);
             }
@@ -136,6 +137,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
     public void onGlobalFocusChanged(View oldFocus, View newFocus) {
         if (!checkIfInnerView(oldFocus) && checkIfInnerView(newFocus)) {     // outer to inner
             if (mGetFocusView != null && mGetFocusView.getTag() != newFocus.getTag()) {
+                mAnimDisable = true;
                 mGetFocusView.requestFocus();
                 return;
             }
@@ -147,6 +149,10 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             mGetFocusView = newFocus;
             setNormalStyle((TextView) oldFocus);
             setFocusStyle((TextView) newFocus);
+            if (mAnimDisable) {
+                mAnimDisable = false;
+                return;
+            }
             asyncMoveViews((int) oldFocus.getTag() - mFirstItemTag, (int) newFocus.getTag() - mFirstItemTag);
         }
     }
@@ -199,9 +205,11 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         int shifting = 0;
         if (oldPos >= mDataHolder.fullDisplayNumber - 1 && newPos >= mDataHolder.fullDisplayNumber - 1) {
             if (newPos == mTextViews.size() - 1) {
-                shifting = mRects.get(newPos).centerX() - mRects.get(newPos).right - DensityUtils.dp2px(mContext, mDataHolder.drawableMargin + CONTENT_SPACING_DP);
+                shifting = mRects.get(newPos).centerX() - mRects.get(newPos).right
+                        - mDataHolder.drawableMargin + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing);
             } else if (oldPos == mTextViews.size() - 1) {
-                shifting = -mRects.get(oldPos).centerX() + mRects.get(oldPos).right + DensityUtils.dp2px(mContext, mDataHolder.drawableMargin + CONTENT_SPACING_DP);
+                shifting = -mRects.get(oldPos).centerX() + mRects.get(oldPos).right
+                        + mDataHolder.drawableMargin + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing);
             } else if (newPos > oldPos) {
                 shifting = mRects.get(newPos).centerX() - mRects.get(newPos + 1).centerX();
             } else {        // oldPos > newPos
@@ -228,10 +236,12 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         final RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mFocusView.getLayoutParams();
         final int startWidth = lp.width;
         final int startHeight = lp.height;
-        final int startMarginLeft = mRects.get(oldPos).left - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP);
+        final int startMarginLeft = mRects.get(oldPos).left - mRects.get(0).left
+                + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing);
         final int endWidth = getTextViewWidth(newPos) + 2 * mDataHolder.drawableMargin;
         final int endHeight = mTextViews.get(newPos).getHeight() + 2 * mDataHolder.drawableMargin;
-        final int endMarginLeft = mRects.get(newPos).left - mRects.get(0).left + DensityUtils.dp2px(mContext, CONTENT_SPACING_DP);
+        final int endMarginLeft = mRects.get(newPos).left - mRects.get(0).left
+                + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing);
 
         ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
         anim.setDuration(300);
