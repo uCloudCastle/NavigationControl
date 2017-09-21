@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.china_liantong.navigationcontrol.adapt.BackgroundCoveredAdapt;
+import com.china_liantong.navigationcontrol.adapt.ContentAdapt;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
 import com.china_liantong.navigationcontrol.widgets.PageView;
@@ -66,7 +66,7 @@ public class NavigationFragment extends Fragment {
 
             gridView.setFocusScaleAnimEnabled(false);
             gridView.setFadingEdgeEnabled(true);
-            gridView.setAdapter(new BackgroundCoveredAdapt(mActivity, mDataHolder.infoList.get(0)));
+            gridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(0)));
 //        gridView.setVerticalPageSpacing(mDataHolder.rowSpacing);
 //        gridView.setShadowBottom(mDataHolder.fadingWidth);
 //        gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
@@ -90,8 +90,15 @@ public class NavigationFragment extends Fragment {
     }
 
     public static class GridViewInfo {
+        public static final int CONTENT_ITEM_STYLE_BACKGROUND_COVERED = 0;
+        public static final int CONTENT_ITEM_STYLE_ICON_TOP = 1;
+        public static final int CONTENT_ITEM_STYLE_ICON_LEFT = 2;
+        public static final int CONTENT_ITEM_STYLE_PICTURE_NONE = 3;
+        public static final int CONTENT_ITEM_STYLE_CUSTOM = -1;
+
         public GridViewInfo(){}
 
+        public int[] perPageStyle;
         public Drawable[][] pictures;
         public String[][] titles;
         public String[][] subtitles;

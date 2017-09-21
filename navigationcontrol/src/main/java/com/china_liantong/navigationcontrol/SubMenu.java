@@ -133,9 +133,9 @@ public class SubMenu extends FrameLayout {
         protected View createItemView(int indexPage, int position,
                                       ViewGroup parent) {
             if (mDataHolder.itemStyle == SUBMENU_ITEM_STYLE_ICON_LEFT) {
-                return LayoutInflater.from(mContext).inflate(R.layout.item_submenu_iconleft, null);
+                return LayoutInflater.from(mContext).inflate(R.layout.item_submenu_icon_left, null);
             } else {
-                return LayoutInflater.from(mContext).inflate(R.layout.item_submenu_iconup, null);
+                return LayoutInflater.from(mContext).inflate(R.layout.item_submenu_icon_top, null);
             }
         }
 
@@ -235,7 +235,7 @@ public class SubMenu extends FrameLayout {
 
     public static class DataHolder {
         public static final int SUBMENU_ITEM_STYLE_ICON_LEFT = 0;
-        public static final int SUBMENU_ITEM_STYLE_ICON_UP = 1;
+        public static final int SUBMENU_ITEM_STYLE_ICON_TOP = 1;
 
         private List<Pair<String, Drawable>> pairs;
         private int fullDisplayNumber;
