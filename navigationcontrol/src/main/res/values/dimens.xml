@@ -9,4 +9,8 @@
     <dimen name="submenu_item_slanted_textview_default_size">50dp</dimen>
     <dimen name="submenu_item_slanted_textview_text_size">15sp</dimen>
 
+    <!--fragment-->
+    <dimen name="fragment_pageview_textsize">18sp</dimen>
+    <dimen name="fragment_pageview_margin_right">80dp</dimen>
+
 </resources>

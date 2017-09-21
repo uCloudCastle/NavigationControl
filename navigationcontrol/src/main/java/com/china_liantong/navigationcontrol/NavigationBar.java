@@ -206,10 +206,10 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         if (oldPos >= mDataHolder.fullDisplayNumber - 1 && newPos >= mDataHolder.fullDisplayNumber - 1) {
             if (newPos == mTextViews.size() - 1) {
                 shifting = mRects.get(newPos).centerX() - mRects.get(newPos).right
-                        - mDataHolder.drawableMargin + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing);
+                        - (mDataHolder.drawableMargin + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing));
             } else if (oldPos == mTextViews.size() - 1) {
                 shifting = -mRects.get(oldPos).centerX() + mRects.get(oldPos).right
-                        + mDataHolder.drawableMargin + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing);
+                        + (mDataHolder.drawableMargin + (int)getResources().getDimension(R.dimen.navigation_bar_content_spacing));
             } else if (newPos > oldPos) {
                 shifting = mRects.get(newPos).centerX() - mRects.get(newPos + 1).centerX();
             } else {        // oldPos > newPos

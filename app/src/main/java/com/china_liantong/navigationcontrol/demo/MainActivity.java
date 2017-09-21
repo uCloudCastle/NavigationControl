@@ -71,7 +71,8 @@ public class MainActivity extends Activity {
                 .rowSpacing(DensityUtils.dp2px(this, 8));
         NavigationFragment.DataHolder fragment1 = new NavigationFragment.DataHolder()
                 .subHolder(subMenuHolder1)
-                .subMenuWidth(DensityUtils.dp2px(this, 175));
+                .subMenuWidth(DensityUtils.dp2px(this, 175))
+                .subMenuMarginRight(10);
 
         // ****** 第二个Fragment
         String[] subList2 = new String[]{"消费记录", "已购买", "已订阅"};
@@ -90,7 +91,8 @@ public class MainActivity extends Activity {
                 .rowSpacing(DensityUtils.dp2px(this, 8));
         NavigationFragment.DataHolder fragment2 = new NavigationFragment.DataHolder()
                 .subHolder(subMenuHolder2)
-                .subMenuWidth(DensityUtils.dp2px(this, 175));
+                .subMenuWidth(DensityUtils.dp2px(this, 175))
+                .subMenuMarginRight(20);
 
         // 添加 NavigationFragment.DataHolder 到 List
         nfHolderList.add(fragment1);
