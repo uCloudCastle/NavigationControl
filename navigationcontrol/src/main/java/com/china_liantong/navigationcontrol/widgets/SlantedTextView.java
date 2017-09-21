@@ -89,7 +89,6 @@ public class SlantedTextView extends View {
         mTextPaint.setColor(mTextColor);
     }
 
-
     @Override
     protected void onDraw(Canvas canvas) {
         drawBackground(canvas);

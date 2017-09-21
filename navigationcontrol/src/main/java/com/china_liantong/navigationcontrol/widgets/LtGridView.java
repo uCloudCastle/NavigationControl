@@ -174,7 +174,7 @@ public class LtGridView extends LtAbsSpinner {
         mSelectionAnimNotifier = null;
         mIndexNextLayoutPage = 0;
         mIndexLayoutPage = 0;
-        mSelectedScaleValue = 1.08f;
+        mSelectedScaleValue = 1.06f;
         mIsNeedLayerTypeToSoftWare = true;
         mIsNeedFocusScaleAnim = true;
 
@@ -479,7 +479,7 @@ public class LtGridView extends LtAbsSpinner {
                     } else {
                         mRowHeight = (heightSize
                                 - (mAdapter.getNumRows() - 1) * mAdapter.getRowSpacing()
-                                - (mShadowBottom) - (mFadingEdgeEnabled ? mVerticalPageSpacing * 2 : 0))
+                                - (mShadowBottom) - (mFadingEdgeEnabled ? mVerticalPageSpacing : 0))
                                 / mAdapter.getNumRows();
                     }
                     Log.e(LOG_TAG, ">>>>>>>>>>>>>>onMeasure mRowHeight = " + mRowHeight);
@@ -590,7 +590,7 @@ public class LtGridView extends LtAbsSpinner {
             }
         } else {
             if (mFadingEdgeEnabled) {
-                return getPageHeight() - mFadingSpaceBottom - mVerticalPageSpacing;
+                return getPageHeight() - mFadingSpaceBottom;
             } else {
                 return getPageHeight() + mHorizontalSpacing;
             }
@@ -876,7 +876,7 @@ public class LtGridView extends LtAbsSpinner {
             int leftItem, topItem, rightItem, bottomItem;
             if (mScrollOrientation == ScrollOrientation.SCROLL_VERTICAL) {
                 topItem = startCoordinate + startRow.get() * (mRowHeight + mHorizontalSpacing)
-                        + (mFadingEdgeEnabled ? mVerticalPageSpacing : 0);
+                        + (mFadingEdgeEnabled ? 0 : 0);
                 leftItem = startCol.get() * (mColumnWidth + mVerticalSpacing);
             } else {
                 leftItem = startCoordinate + startCol.get() * (mColumnWidth + mVerticalSpacing)

@@ -2,16 +2,19 @@ package com.china_liantong.navigationcontrol;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.china_liantong.navigationcontrol.adapt.BackgroundCoveredAdapt;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
 import com.china_liantong.navigationcontrol.widgets.PageView;
+
+import java.util.List;
 
 /**
  * Created by randal on 2017/9/18.
@@ -20,7 +23,6 @@ import com.china_liantong.navigationcontrol.widgets.PageView;
 public class NavigationFragment extends Fragment {
     private Activity mActivity;
     private DataHolder mDataHolder;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,18 +57,28 @@ public class NavigationFragment extends Fragment {
         snlp.setMargins(0, 0, mDataHolder.subMenuMarginRight, 0);
         mainLayout.addView(sub, snlp);
 
-        LtGridView gridView = new LtGridView(getActivity());
-        gridView.setSelectPadding(15, 15, 16, 13);
-        RelativeLayout.LayoutParams gvlp = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.MATCH_PARENT);
-        gvlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-        gvlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-        gvlp.addRule(RelativeLayout.ABOVE, pageViewId);
-        gvlp.addRule(RelativeLayout.RIGHT_OF, subMenuId);
-        mainLayout.addView(gridView, gvlp);
-        gridView.setBackgroundColor(Color.CYAN);
+        if (mDataHolder.infoList != null && mDataHolder.infoList.size() > 0) {
+            LtGridView gridView = new LtGridView(getActivity());
+            gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
+            gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
+            gridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
+            gridView.setSelectPadding(18, 17, 19, 16);
 
+            gridView.setFocusScaleAnimEnabled(false);
+            gridView.setFadingEdgeEnabled(true);
+            gridView.setAdapter(new BackgroundCoveredAdapt(mActivity, mDataHolder.infoList.get(0)));
+//        gridView.setVerticalPageSpacing(mDataHolder.rowSpacing);
+//        gridView.setShadowBottom(mDataHolder.fadingWidth);
+//        gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
+            RelativeLayout.LayoutParams gvlp = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT);
+            gvlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+            gvlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+            gvlp.addRule(RelativeLayout.ABOVE, pageViewId);
+            gvlp.addRule(RelativeLayout.RIGHT_OF, subMenuId);
+            mainLayout.addView(gridView, gvlp);
+        }
         return mainLayout;
     }
 
@@ -77,12 +89,39 @@ public class NavigationFragment extends Fragment {
         }
     }
 
+    public static class GridViewInfo {
+        public GridViewInfo(){}
+
+        public Drawable[][] pictures;
+        public String[][] titles;
+        public String[][] subtitles;
+        public int titleSize;
+        public int titleColor;
+        public int subtitleSize;
+        public int subtitleColor;
+        public int pageCount;
+        public int[] perPageItemCount;
+        public int rows;
+        public int columns;
+        public int rowSpacing;
+        public int columnSpacing;
+        public int itemStartIndex[][];
+        public int itemRowSize[][];
+        public int itemColumnSize[][];
+    }
+
     public static class DataHolder {
+        private List<GridViewInfo> infoList;
         private SubMenu.DataHolder subHolder;
         private int subMenuWidth;
         private int subMenuMarginRight;
 
         public DataHolder() {
+        }
+
+        public DataHolder infoList(List<GridViewInfo> list) {
+            infoList = list;
+            return this;
         }
 
         public DataHolder subHolder(SubMenu.DataHolder holder) {

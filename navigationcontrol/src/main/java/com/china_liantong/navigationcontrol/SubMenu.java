@@ -19,7 +19,7 @@ import com.china_liantong.navigationcontrol.widgets.SlantedTextView;
 
 import java.util.List;
 
-import static com.china_liantong.navigationcontrol.SubMenu.DataHolder.SUBMENU_ICON_POSITION_LEFT;
+import static com.china_liantong.navigationcontrol.SubMenu.DataHolder.SUBMENU_ITEM_STYLE_ICON_LEFT;
 
 /**
  * Created by randal on 2017/9/14.
@@ -57,7 +57,7 @@ public class SubMenu extends FrameLayout {
         final LtGridView gridView = new LtGridView(mActivity);
         gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_VERTICAL);
         gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
-        gridView.setAdapter(new GridViewAdapter(mActivity));
+        gridView.setAdapter(new SubMenuAdapter(mActivity));
         gridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
         gridView.setSelectPadding(15, 15, 16, 13);
 
@@ -86,12 +86,7 @@ public class SubMenu extends FrameLayout {
                 if (view == null) {
                     return;
                 }
-                View bg;
-                if (mDataHolder.iconPosition == SUBMENU_ICON_POSITION_LEFT) {
-                    bg = view.findViewById(R.id.item_submenu_iconleft_background);
-                } else {
-                    bg = view.findViewById(R.id.item_submenu_iconup_background);
-                }
+                View bg = view.findViewById(R.id.item_submenu_background);
                 if (lastSelectedView == bg) {
                     return;
                 }
@@ -117,10 +112,10 @@ public class SubMenu extends FrameLayout {
         addView(gridView, params);
     }
 
-    private class GridViewAdapter extends LtGridAdapter {
+    private class SubMenuAdapter extends LtGridAdapter {
         private Context mContext;
 
-        GridViewAdapter(Context context) {
+        SubMenuAdapter(Context context) {
             mContext = context;
         }
 
@@ -137,7 +132,7 @@ public class SubMenu extends FrameLayout {
         @Override
         protected View createItemView(int indexPage, int position,
                                       ViewGroup parent) {
-            if (mDataHolder.iconPosition == SUBMENU_ICON_POSITION_LEFT) {
+            if (mDataHolder.itemStyle == SUBMENU_ITEM_STYLE_ICON_LEFT) {
                 return LayoutInflater.from(mContext).inflate(R.layout.item_submenu_iconleft, null);
             } else {
                 return LayoutInflater.from(mContext).inflate(R.layout.item_submenu_iconup, null);
@@ -147,19 +142,9 @@ public class SubMenu extends FrameLayout {
         @Override
         protected View getItemView(int indexPage, int position,
                                    View convertView, ViewGroup parent) {
-            View icon;
-            TextView text;
-            SlantedTextView tag;
-
-            if (mDataHolder.iconPosition == SUBMENU_ICON_POSITION_LEFT) {
-                icon = convertView.findViewById(R.id.item_submenu_iconleft_icon);
-                text = (TextView) convertView.findViewById(R.id.item_submenu_iconleft_text);
-                tag = (SlantedTextView) convertView.findViewById(R.id.item_submenu_iconleft_tag);
-            } else {
-                icon = convertView.findViewById(R.id.item_submenu_iconup_icon);
-                text = (TextView) convertView.findViewById(R.id.item_submenu_iconup_text);
-                tag = (SlantedTextView) convertView.findViewById(R.id.item_submenu_iconup_tag);
-            }
+            View icon = convertView.findViewById(R.id.item_submenu_icon);
+            TextView text = (TextView) convertView.findViewById(R.id.item_submenu_text);
+            SlantedTextView tag= (SlantedTextView) convertView.findViewById(R.id.item_submenu_tag);
 
             int actualIndex = indexPage * mDataHolder.fullDisplayNumber + position;
             text.setText(mDataHolder.pairs.get(actualIndex).first);
@@ -185,7 +170,7 @@ public class SubMenu extends FrameLayout {
             }
 
             RelativeLayout.LayoutParams iconlp = (RelativeLayout.LayoutParams) icon.getLayoutParams();
-            if (mDataHolder.iconPosition == SUBMENU_ICON_POSITION_LEFT) {
+            if (mDataHolder.itemStyle == SUBMENU_ITEM_STYLE_ICON_LEFT) {
                 int unit = itemHeight / 8;
                 iconlp.setMargins(unit * 3, unit, 0, 0);
                 iconlp.width = 6 * unit;
@@ -249,8 +234,8 @@ public class SubMenu extends FrameLayout {
     }
 
     public static class DataHolder {
-        public static final int SUBMENU_ICON_POSITION_LEFT = 0;
-        public static final int SUBMENU_ICON_POSITION_UP = 1;
+        public static final int SUBMENU_ITEM_STYLE_ICON_LEFT = 0;
+        public static final int SUBMENU_ITEM_STYLE_ICON_UP = 1;
 
         private List<Pair<String, Drawable>> pairs;
         private int fullDisplayNumber;
@@ -259,7 +244,7 @@ public class SubMenu extends FrameLayout {
         private int rowSpacing;
         private List<String> tagList;
         private int fadingWidth;
-        private int iconPosition;
+        private int itemStyle;
 
         public DataHolder() {
         }
@@ -299,8 +284,8 @@ public class SubMenu extends FrameLayout {
             return this;
         }
 
-        public DataHolder iconPosition(int pos) {
-            iconPosition = pos;
+        public DataHolder itemStyle(int style) {
+            itemStyle = style;
             return this;
         }
     }

@@ -47,61 +47,94 @@ public class MainActivity extends Activity {
                 .titleSpacing(DensityUtils.dp2px(this, 50));
 
         /* ************ NavigationFragment Config Data ********** */
-        // 每个一级导航栏目对应一个NavigationFragment, 因此需要传入ArrayList
-        ArrayList<NavigationFragment.DataHolder> nfHolderList = new ArrayList<>();
-
-        // ****** 第一个Fragment
-        String[] subList1 = new String[]{"全部", "动作", "射击", "休闲", "竞技", "养成", "三维", "益智"};
-        List<Pair<String, Drawable>> pairList1 = new ArrayList<>();
-        pairList1.add(new Pair<>(subList1[0], getResources().getDrawable(R.drawable.sub_1)));
-        pairList1.add(new Pair<>(subList1[1], getResources().getDrawable(R.drawable.sub_2)));
-        pairList1.add(new Pair<>(subList1[2], getResources().getDrawable(R.drawable.sub_3)));
-        pairList1.add(new Pair<>(subList1[3], getResources().getDrawable(R.drawable.sub_4)));
-        pairList1.add(new Pair<>(subList1[4], getResources().getDrawable(R.drawable.sub_5)));
-        pairList1.add(new Pair<>(subList1[5], getResources().getDrawable(R.drawable.sub_6)));
-        pairList1.add(new Pair<>(subList1[6], getResources().getDrawable(R.drawable.sub_7)));
-        pairList1.add(new Pair<>(subList1[7], getResources().getDrawable(R.drawable.sub_8)));
-        SubMenu.DataHolder subMenuHolder1 = new SubMenu.DataHolder()
-                .subPairs(pairList1)
-                .iconPosition(SubMenu.DataHolder.SUBMENU_ICON_POSITION_LEFT)
-                .fullDisplayNumber(5)
-                .fadingWidth(DensityUtils.dp2px(this, 25))
-                .textColor(Color.WHITE)
-                .textSize(20)
-                .rowSpacing(DensityUtils.dp2px(this, 8));
-        NavigationFragment.DataHolder fragment1 = new NavigationFragment.DataHolder()
-                .subHolder(subMenuHolder1)
-                .subMenuWidth(DensityUtils.dp2px(this, 175))
-                .subMenuMarginRight(10);
-
-        // ****** 第二个Fragment
-        String[] subList2 = new String[]{"消费记录", "已购买", "已订阅"};
-        String[] tagList2 = new String[]{"", "12", "967"};
-        List<Pair<String, Drawable>> pairList2 = new ArrayList<>();
-        pairList2.add(new Pair<>(subList2[0], getResources().getDrawable(R.drawable.sub_9)));
-        pairList2.add(new Pair<>(subList2[1], getResources().getDrawable(R.drawable.sub_10)));
-        pairList2.add(new Pair<>(subList2[2], getResources().getDrawable(R.drawable.sub_11)));
-        SubMenu.DataHolder subMenuHolder2 = new SubMenu.DataHolder()
-                .subPairs(pairList2)
-                .iconPosition(SubMenu.DataHolder.SUBMENU_ICON_POSITION_UP)
-                .fullDisplayNumber(3)
-                .textColor(Color.WHITE)
-                .textSize(20)
-                .tagList(Arrays.asList(tagList2))
-                .rowSpacing(DensityUtils.dp2px(this, 8));
-        NavigationFragment.DataHolder fragment2 = new NavigationFragment.DataHolder()
-                .subHolder(subMenuHolder2)
-                .subMenuWidth(DensityUtils.dp2px(this, 175))
-                .subMenuMarginRight(20);
+        // ****** 构造 Fragment 数据
+        NavigationFragment.DataHolder fragment1 = getFragmentDemo1();
+        NavigationFragment.DataHolder fragment2 = getFragmentDemo2();
 
         // 添加 NavigationFragment.DataHolder 到 List
+        ArrayList<NavigationFragment.DataHolder> nfHolderList = new ArrayList<>();
         nfHolderList.add(fragment1);
         nfHolderList.add(fragment2);
-        nfHolderList.add(fragment1);
 
         /* ************ Set Config and Show() ********** */
         mNavigationControl.navigationControlHolder(ncHolder)
                 .navigationBarHolder(nbHolder)
                 .navigationFragmentHolder(nfHolderList).show();
+    }
+
+    private NavigationFragment.DataHolder getFragmentDemo1() {
+        // submenu
+        String[] subList = new String[]{"全部", "动作", "射击", "休闲", "竞技", "养成", "三维", "益智"};
+        List<Pair<String, Drawable>> pairList = new ArrayList<>();
+        pairList.add(new Pair<>(subList[0], getResources().getDrawable(R.drawable.sub_1)));
+        pairList.add(new Pair<>(subList[1], getResources().getDrawable(R.drawable.sub_2)));
+        pairList.add(new Pair<>(subList[2], getResources().getDrawable(R.drawable.sub_3)));
+        pairList.add(new Pair<>(subList[3], getResources().getDrawable(R.drawable.sub_4)));
+        pairList.add(new Pair<>(subList[4], getResources().getDrawable(R.drawable.sub_5)));
+        pairList.add(new Pair<>(subList[5], getResources().getDrawable(R.drawable.sub_6)));
+        pairList.add(new Pair<>(subList[6], getResources().getDrawable(R.drawable.sub_7)));
+        pairList.add(new Pair<>(subList[7], getResources().getDrawable(R.drawable.sub_8)));
+        SubMenu.DataHolder subMenuHolder = new SubMenu.DataHolder()
+                .subPairs(pairList)
+                .itemStyle(SubMenu.DataHolder.SUBMENU_ITEM_STYLE_ICON_LEFT)
+                .fullDisplayNumber(5)
+                .fadingWidth(DensityUtils.dp2px(this, 25))
+                .textColor(Color.WHITE)
+                .textSize(20)
+                .rowSpacing(DensityUtils.dp2px(this, 8));
+
+        // grid view
+        Drawable[][] picList = new Drawable[][]{
+                {getResources().getDrawable(R.drawable.content_1),
+                getResources().getDrawable(R.drawable.content_2),
+                getResources().getDrawable(R.drawable.content_3),
+                getResources().getDrawable(R.drawable.content_4),
+                getResources().getDrawable(R.drawable.content_5)}};
+        String[][] titleList = new String[][]{ {"愤怒的小鸟", "漫威精选", "坦克大战进化", "", "超级飞机侠"} };
+        NavigationFragment.GridViewInfo info = new NavigationFragment.GridViewInfo();
+        info.pictures = picList;
+        info.titles = titleList;
+        info.titleSize = 20;
+        info.titleColor = Color.WHITE;
+        info.pageCount = 1;
+        info.perPageItemCount = new int[]{5};
+        info.rows = 2;
+        info.columns = 3;
+        info.rowSpacing = 10;
+        info.columnSpacing = 10;
+        info.itemStartIndex = new int[][]{ {0, 1, 2, 3, 4} };
+        info.itemRowSize = new int[][]{ {1, 1, 1, 1, 2} };
+        info.itemColumnSize = new int[][]{ {1, 1, 1, 1, 1} };
+        List<NavigationFragment.GridViewInfo> gridViewInfos = new ArrayList<>();
+        gridViewInfos.add(info);
+        gridViewInfos.add(info);
+
+        return new NavigationFragment.DataHolder()
+                .infoList(gridViewInfos)
+                .subHolder(subMenuHolder)
+                .subMenuWidth(DensityUtils.dp2px(this, 175))
+                .subMenuMarginRight(10);
+    }
+
+    private NavigationFragment.DataHolder getFragmentDemo2() {
+        String[] subList = new String[]{"消费记录", "已购买", "已订阅"};
+        String[] tagList = new String[]{"", "12", "967"};
+        List<Pair<String, Drawable>> pairList = new ArrayList<>();
+        pairList.add(new Pair<>(subList[0], getResources().getDrawable(R.drawable.sub_9)));
+        pairList.add(new Pair<>(subList[1], getResources().getDrawable(R.drawable.sub_10)));
+        pairList.add(new Pair<>(subList[2], getResources().getDrawable(R.drawable.sub_11)));
+        SubMenu.DataHolder subMenuHolder2 = new SubMenu.DataHolder()
+                .subPairs(pairList)
+                .itemStyle(SubMenu.DataHolder.SUBMENU_ITEM_STYLE_ICON_UP)
+                .fullDisplayNumber(3)
+                .textColor(Color.WHITE)
+                .textSize(20)
+                .tagList(Arrays.asList(tagList))
+                .rowSpacing(DensityUtils.dp2px(this, 8));
+
+        return new NavigationFragment.DataHolder()
+                .subHolder(subMenuHolder2)
+                .subMenuWidth(DensityUtils.dp2px(this, 175))
+                .subMenuMarginRight(20);
     }
 }
