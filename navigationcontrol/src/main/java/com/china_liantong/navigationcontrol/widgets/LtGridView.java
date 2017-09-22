@@ -342,6 +342,12 @@ public class LtGridView extends LtAbsSpinner {
         }
     }
 
+    public void setPageSpacing(int value){
+        if(value >=0){
+            mPageSpacing = value;
+        }
+    }
+
     public void setVerticalPageSpacing(int value){
         if(value >=0){
             mVerticalPageSpacing = value;

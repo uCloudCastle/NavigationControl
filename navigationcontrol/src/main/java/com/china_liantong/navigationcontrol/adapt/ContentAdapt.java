@@ -8,7 +8,9 @@ import android.widget.TextView;
 
 import com.china_liantong.navigationcontrol.NavigationFragment;
 import com.china_liantong.navigationcontrol.R;
+import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
+import com.china_liantong.navigationcontrol.widgets.SquareMaskView;
 
 import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_BACKGROUND_COVERED;
 import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_CUSTOM;
@@ -64,14 +66,27 @@ public class ContentAdapt extends LtGridAdapter {
         View picture = convertView.findViewById(R.id.item_content_picture);
         TextView title = (TextView) convertView.findViewById(R.id.item_content_title);
         TextView subtitle = (TextView) convertView.findViewById(R.id.item_content_subtitle);
+        View icon = convertView.findViewById(R.id.item_content_icon);
 
-        picture.setBackground(mInfo.pictures[indexPage][position]);
-        title.setText(mInfo.titles[indexPage][position]);
-        title.setTextColor(mInfo.titleColor);
-        title.setTextSize(mInfo.titleSize);
-        subtitle.setText(mInfo.subtitles[indexPage][position]);
-        subtitle.setTextColor(mInfo.subtitleColor);
-        subtitle.setTextSize(mInfo.subtitleSize);
+        if (mInfo.pictures != null) {
+            SquareMaskView view = CommonUtils.safeTypeConvert(picture, SquareMaskView.class);
+            if (view != null) {
+                view.setForegroundImage(mInfo.pictures[indexPage][position]);
+            } else {
+                picture.setBackground(mInfo.pictures[indexPage][position]);
+            }
+        }
+        if (mInfo.titles != null) {
+            title.setText(mInfo.titles[indexPage][position]);
+            title.setTextColor(mInfo.titleColor);
+            title.setTextSize(mInfo.titleSize);
+        }
+        if (mInfo.subtitles != null) {
+            subtitle.setText(mInfo.subtitles[indexPage][position]);
+            subtitle.setTextColor(mInfo.subtitleColor);
+            subtitle.setTextSize(mInfo.subtitleSize);
+        }
+
         return convertView;
     }
 

@@ -4,13 +4,22 @@
     <!--navigation bar-->
     <dimen name="navigation_bar_content_spacing">20dp</dimen>
 
+    <!--fragment-->
+    <dimen name="fragment_pageview_textsize">18sp</dimen>
+    <dimen name="fragment_pageview_margin_top">8dp</dimen>
+    <dimen name="fragment_pageview_margin_right">120dp</dimen>
+
     <!--submenu-->
     <dimen name="submenu_item_iconup_textview_padding_bottom">10dp</dimen>
     <dimen name="submenu_item_slanted_textview_default_size">50dp</dimen>
     <dimen name="submenu_item_slanted_textview_text_size">15sp</dimen>
 
-    <!--fragment-->
-    <dimen name="fragment_pageview_textsize">18sp</dimen>
-    <dimen name="fragment_pageview_margin_right">80dp</dimen>
+    <!--content item-->
+    <dimen name="content_item_icon_top_squareview_margin_left">10dp</dimen>
+    <dimen name="content_item_icon_top_squareview_margin_right">10dp</dimen>
+    <dimen name="content_item_icon_top_title_padding_top">10dp</dimen>
+    <dimen name="content_item_icon_top_title_padding_bottom">10dp</dimen>
+    <dimen name="content_item_icon_top_icon_width">20dp</dimen>
+    <dimen name="content_item_icon_top_icon_height">20dp</dimen>
 
 </resources>

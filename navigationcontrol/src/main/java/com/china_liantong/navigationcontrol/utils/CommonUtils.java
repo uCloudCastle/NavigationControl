@@ -18,4 +18,18 @@ public class CommonUtils {
             }
         }
     }
+
+    public static <T> T safeTypeConvert(Object obj, Class<T> clazz) {
+        if (obj == null) {
+            return null;
+        }
+
+        T retObject = null;
+        try {
+            retObject = clazz.cast(obj);
+        } catch (ClassCastException e) {
+            // silent
+        }
+        return retObject;
+    }
 }

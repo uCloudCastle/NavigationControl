@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_BACKGROUND_COVERED;
 import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_ICON_TOP;
 
 public class MainActivity extends Activity {
@@ -56,7 +57,7 @@ public class MainActivity extends Activity {
         // 添加 NavigationFragment.DataHolder 到 List
         ArrayList<NavigationFragment.DataHolder> nfHolderList = new ArrayList<>();
         nfHolderList.add(fragment1);
-        //nfHolderList.add(fragment2);
+        nfHolderList.add(fragment2);
 
         /* ************ Set Config and Show() ********** */
         mNavigationControl.navigationControlHolder(ncHolder)
@@ -80,8 +81,8 @@ public class MainActivity extends Activity {
                         getResources().getDrawable(R.drawable.content_1_10)},
                 {getResources().getDrawable(R.drawable.content_1_11),
                         getResources().getDrawable(R.drawable.content_1_12)}};
-        String[][] titleList = new String[][]{ {"欢乐斗地主", "部落冲突", "炉石传说", "城市猎人", "纪念碑",
-                "走出迷宫-2", "勇士的天宫_Online", "刀塔传奇", "豆豆", "海贼王 - 大航海家"},
+        String[][] titleList = new String[][]{{"欢乐斗地主", "部落冲突", "炉石传说", "城市猎人", "纪念碑",
+                "走出迷宫-2", "飞行游戏-勇士的天宫_Online", "刀塔传奇", "豆豆", "海贼王 - 大航海家"},
                 {"扑克游戏", "火柴人"}
         };
         NavigationFragment.GridViewInfo info = new NavigationFragment.GridViewInfo();
@@ -89,19 +90,19 @@ public class MainActivity extends Activity {
         info.perPageStyle = new int[]{CONTENT_ITEM_STYLE_ICON_TOP, CONTENT_ITEM_STYLE_ICON_TOP};
         info.pictures = picList;
         info.titles = titleList;
-        info.titleSize = 16;
+        info.titleSize = 20;
         info.titleColor = Color.WHITE;
-        info.pageCount = 1;
-        info.perPageItemCount = new int[]{10};
+        info.pageCount = 2;
+        info.perPageItemCount = new int[]{10, 2};
         info.rows = 2;
         info.columns = 5;
         info.rowSpacing = 10;
         info.columnSpacing = 10;
-        info.itemStartIndex = new int[][]{ {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, {0, 1} };
-        info.itemRowSize = new int[][]{ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
-        info.itemColumnSize = new int[][]{ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
+        info.itemStartIndex = new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, {0, 1}};
+        info.itemRowSize = new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1}};
+        info.itemColumnSize = new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1}};
+        info.fadingWidth = DensityUtils.dp2px(this, 80);
         List<NavigationFragment.GridViewInfo> gridViewInfos = new ArrayList<>();
-        gridViewInfos.add(info);
         gridViewInfos.add(info);
 
         return new NavigationFragment.DataHolder()
@@ -109,9 +110,40 @@ public class MainActivity extends Activity {
     }
 
     private NavigationFragment.DataHolder getFragmentDemo2() {
-        // no submen
+        // no submenu
+        // grid view
+        Drawable[][] picList = new Drawable[][]{
+                {getResources().getDrawable(R.drawable.content_2_1),
+                        getResources().getDrawable(R.drawable.content_2_2),
+                        getResources().getDrawable(R.drawable.content_2_3),
+                        getResources().getDrawable(R.drawable.content_2_4),
+                        getResources().getDrawable(R.drawable.content_2_5),
+                        getResources().getDrawable(R.drawable.content_2_6),
+                        getResources().getDrawable(R.drawable.content_2_7)}};
+        String[][] titleList = new String[][]{
+                {"", "", "", "", "", "愤怒的小鸟", "猪猪特工队"}
+        };
+        NavigationFragment.GridViewInfo info = new NavigationFragment.GridViewInfo();
 
-        return null;
+        info.perPageStyle = new int[]{CONTENT_ITEM_STYLE_BACKGROUND_COVERED, CONTENT_ITEM_STYLE_BACKGROUND_COVERED};
+        info.pictures = picList;
+        info.titles = titleList;
+        info.titleSize = 20;
+        info.titleColor = Color.WHITE;
+        info.pageCount = 1;
+        info.perPageItemCount = new int[]{7};
+        info.rows = 20;
+        info.columns = 4;
+        info.rowSpacing = 15;
+        info.columnSpacing = 15;
+        info.itemStartIndex = new int[][]{{0, 11, 20, 29, 40, 60, 71}};
+        info.itemRowSize = new int[][]{{11, 9, 9, 11, 20, 11, 9}};
+        info.itemColumnSize = new int[][]{{1, 1, 1, 1, 1, 1, 1}};
+        List<NavigationFragment.GridViewInfo> gridViewInfos = new ArrayList<>();
+        gridViewInfos.add(info);
+
+        return new NavigationFragment.DataHolder()
+                .infoList(gridViewInfos);
     }
 
     private NavigationFragment.DataHolder getFragmentDemo3() {
@@ -138,11 +170,11 @@ public class MainActivity extends Activity {
         // grid view
         Drawable[][] picList = new Drawable[][]{
                 {getResources().getDrawable(R.drawable.content_3_1),
-                getResources().getDrawable(R.drawable.content_3_2),
-                getResources().getDrawable(R.drawable.content_3_3),
-                getResources().getDrawable(R.drawable.content_3_4),
-                getResources().getDrawable(R.drawable.content_3_5)}};
-        String[][] titleList = new String[][]{ {"愤怒的小鸟", "漫威精选", "坦克大战进化", "", "超级飞机侠"} };
+                        getResources().getDrawable(R.drawable.content_3_2),
+                        getResources().getDrawable(R.drawable.content_3_3),
+                        getResources().getDrawable(R.drawable.content_3_4),
+                        getResources().getDrawable(R.drawable.content_3_5)}};
+        String[][] titleList = new String[][]{{"愤怒的小鸟", "漫威精选", "坦克大战进化", "", "超级飞机侠"}};
         NavigationFragment.GridViewInfo info = new NavigationFragment.GridViewInfo();
 
         info.pictures = picList;
@@ -155,9 +187,9 @@ public class MainActivity extends Activity {
         info.columns = 3;
         info.rowSpacing = 10;
         info.columnSpacing = 10;
-        info.itemStartIndex = new int[][]{ {0, 1, 2, 3, 4} };
-        info.itemRowSize = new int[][]{ {1, 1, 1, 1, 2} };
-        info.itemColumnSize = new int[][]{ {1, 1, 1, 1, 1} };
+        info.itemStartIndex = new int[][]{{0, 1, 2, 3, 4}};
+        info.itemRowSize = new int[][]{{1, 1, 1, 1, 2}};
+        info.itemColumnSize = new int[][]{{1, 1, 1, 1, 1}};
         List<NavigationFragment.GridViewInfo> gridViewInfos = new ArrayList<>();
         gridViewInfos.add(info);
         gridViewInfos.add(info);

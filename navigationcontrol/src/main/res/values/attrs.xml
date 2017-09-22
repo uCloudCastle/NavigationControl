@@ -42,4 +42,9 @@
             <enum name="right_bottom_triangle" value="7"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="SquareMaskView">
+        <attr name="image" format="reference" />
+        <attr name="mask" format="reference" />
+    </declare-styleable>
 </resources>

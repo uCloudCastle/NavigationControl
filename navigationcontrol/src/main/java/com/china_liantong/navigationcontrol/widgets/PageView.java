@@ -8,7 +8,7 @@ import android.widget.TextView;
  * Created by randal on 2017/9/21.
  */
 
-public class PageView extends TextView {
+public class PageView extends TextView implements LtAdapterView.OnPageChangeListener{
     private static final String SLASH = " / ";
     private String mCurrentPage = "1";
     private String mTotalPage = "1";
@@ -31,5 +31,10 @@ public class PageView extends TextView {
     public void setCurrentPage(int page) {
         mCurrentPage = String.valueOf(page);
         setText(mCurrentPage + SLASH + mTotalPage);
+    }
+
+    @Override
+    public void onPageChanged(int curPage) {
+        setCurrentPage(curPage + 1);
     }
 }
