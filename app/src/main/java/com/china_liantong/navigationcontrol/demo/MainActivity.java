@@ -53,11 +53,13 @@ public class MainActivity extends Activity {
         // ****** 构造 Fragment 数据
         NavigationFragment.DataHolder fragment1 = getFragmentDemo1();
         NavigationFragment.DataHolder fragment2 = getFragmentDemo2();
+        NavigationFragment.DataHolder fragment3 = getFragmentDemo3();
 
         // 添加 NavigationFragment.DataHolder 到 List
         ArrayList<NavigationFragment.DataHolder> nfHolderList = new ArrayList<>();
         nfHolderList.add(fragment1);
         nfHolderList.add(fragment2);
+        nfHolderList.add(fragment3);
 
         /* ************ Set Config and Show() ********** */
         mNavigationControl.navigationControlHolder(ncHolder)
@@ -168,31 +170,77 @@ public class MainActivity extends Activity {
                 .rowSpacing(DensityUtils.dp2px(this, 8));
 
         // grid view
-        Drawable[][] picList = new Drawable[][]{
+        // info1
+        Drawable[][] picList1 = new Drawable[][]{
                 {getResources().getDrawable(R.drawable.content_3_1),
                         getResources().getDrawable(R.drawable.content_3_2),
                         getResources().getDrawable(R.drawable.content_3_3),
                         getResources().getDrawable(R.drawable.content_3_4),
-                        getResources().getDrawable(R.drawable.content_3_5)}};
-        String[][] titleList = new String[][]{{"愤怒的小鸟", "漫威精选", "坦克大战进化", "", "超级飞机侠"}};
-        NavigationFragment.GridViewInfo info = new NavigationFragment.GridViewInfo();
+                        getResources().getDrawable(R.drawable.content_3_5)},
+                {getResources().getDrawable(R.drawable.content_1_11),
+                        getResources().getDrawable(R.drawable.content_1_12)}};
+        String[][] titleList1 = new String[][]{{"愤怒的小鸟", "漫威精选", "坦克大战进化", "", "超级飞机侠"},
+                {"扑克游戏", "火柴人"}};
+        String[][] subtitleList1 = new String[][]{{"", "", "", "", ""},
+                {"621565+", "621565+"}};
+        NavigationFragment.GridViewInfo info1 = new NavigationFragment.GridViewInfo();
+        info1.perPageStyle = new int[]{CONTENT_ITEM_STYLE_BACKGROUND_COVERED, CONTENT_ITEM_STYLE_ICON_TOP};
+        info1.pictures = picList1;
+        info1.titles = titleList1;
+        info1.titleSize = 20;
+        info1.titleColor = Color.WHITE;
+        info1.subtitles = subtitleList1;
+        info1.subtitleSize = 15;
+        info1.subtitleColor = Color.LTGRAY;
+        info1.pageCount = 2;
+        info1.perPageItemCount = new int[]{5, 2};
+        info1.rows = 2;
+        info1.columns = 10;
+        info1.rowSpacing = 10;
+        info1.columnSpacing = 10;
+        info1.itemStartIndex = new int[][]{{0, 1, 6, 7, 14}, {0, 1}};
+        info1.itemRowSize = new int[][]{{1, 1, 1, 1, 2}, {1, 1}};
+        info1.itemColumnSize = new int[][]{{3, 3, 4, 4, 3}, {2, 2}};
+        info1.fadingWidth = DensityUtils.dp2px(this, 80);
 
-        info.pictures = picList;
-        info.titles = titleList;
-        info.titleSize = 20;
-        info.titleColor = Color.WHITE;
-        info.pageCount = 1;
-        info.perPageItemCount = new int[]{5};
-        info.rows = 2;
-        info.columns = 3;
-        info.rowSpacing = 10;
-        info.columnSpacing = 10;
-        info.itemStartIndex = new int[][]{{0, 1, 2, 3, 4}};
-        info.itemRowSize = new int[][]{{1, 1, 1, 1, 2}};
-        info.itemColumnSize = new int[][]{{1, 1, 1, 1, 1}};
+        // info2
+        Drawable[][] picList2 = new Drawable[][]{
+                {getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_2),
+                        getResources().getDrawable(R.drawable.content_1_3),
+                        getResources().getDrawable(R.drawable.content_1_4),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_6),
+                        getResources().getDrawable(R.drawable.content_1_7),
+                        getResources().getDrawable(R.drawable.content_1_8),
+                        getResources().getDrawable(R.drawable.content_1_9),
+                        getResources().getDrawable(R.drawable.content_1_10)},
+                {getResources().getDrawable(R.drawable.content_1_11),
+                        getResources().getDrawable(R.drawable.content_1_12)}};
+        String[][] titleList2 = new String[][]{{"欢乐斗地主", "部落冲突", "炉石传说", "城市猎人", "纪念碑",
+                "走出迷宫-2", "飞行游戏-勇士的天宫_Online", "刀塔传奇", "豆豆", "海贼王 - 大航海家"},
+                {"扑克游戏", "火柴人"}
+        };
+        NavigationFragment.GridViewInfo info2 = new NavigationFragment.GridViewInfo();
+        info2.perPageStyle = new int[]{CONTENT_ITEM_STYLE_ICON_TOP, CONTENT_ITEM_STYLE_ICON_TOP};
+        info2.pictures = picList2;
+        info2.titles = titleList2;
+        info2.titleSize = 20;
+        info2.titleColor = Color.WHITE;
+        info2.pageCount = 2;
+        info2.perPageItemCount = new int[]{10, 2};
+        info2.rows = 2;
+        info2.columns = 5;
+        info2.rowSpacing = 10;
+        info2.columnSpacing = 10;
+        info2.itemStartIndex = new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, {0, 1}};
+        info2.itemRowSize = new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1}};
+        info2.itemColumnSize = new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1}};
+        info2.fadingWidth = DensityUtils.dp2px(this, 80);
+
         List<NavigationFragment.GridViewInfo> gridViewInfos = new ArrayList<>();
-        gridViewInfos.add(info);
-        gridViewInfos.add(info);
+        gridViewInfos.add(info1);
+        gridViewInfos.add(info2);
 
         return new NavigationFragment.DataHolder()
                 .infoList(gridViewInfos)

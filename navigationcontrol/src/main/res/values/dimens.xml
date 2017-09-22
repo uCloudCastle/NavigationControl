@@ -21,5 +21,7 @@
     <dimen name="content_item_icon_top_title_padding_bottom">10dp</dimen>
     <dimen name="content_item_icon_top_icon_width">20dp</dimen>
     <dimen name="content_item_icon_top_icon_height">20dp</dimen>
+    <dimen name="content_item_icon_top_sutitle_layout_margin_left">5dp</dimen>
+    <dimen name="content_item_icon_top_sutitle_layout_margin_right">5dp</dimen>
 
 </resources>

@@ -68,7 +68,7 @@ public class ContentAdapt extends LtGridAdapter {
         TextView subtitle = (TextView) convertView.findViewById(R.id.item_content_subtitle);
         View icon = convertView.findViewById(R.id.item_content_icon);
 
-        if (mInfo.pictures != null) {
+        if (picture != null && mInfo.pictures != null) {
             SquareMaskView view = CommonUtils.safeTypeConvert(picture, SquareMaskView.class);
             if (view != null) {
                 view.setForegroundImage(mInfo.pictures[indexPage][position]);
@@ -76,12 +76,21 @@ public class ContentAdapt extends LtGridAdapter {
                 picture.setBackground(mInfo.pictures[indexPage][position]);
             }
         }
-        if (mInfo.titles != null) {
+        if (title != null && mInfo.titles != null
+                && mInfo.titles[indexPage][position] != null
+                && !mInfo.titles[indexPage][position].isEmpty()) {
+            title.setVisibility(View.VISIBLE);
             title.setText(mInfo.titles[indexPage][position]);
             title.setTextColor(mInfo.titleColor);
             title.setTextSize(mInfo.titleSize);
         }
-        if (mInfo.subtitles != null) {
+        if (subtitle != null && mInfo.subtitles != null
+                && mInfo.subtitles[indexPage][position] != null
+                && !mInfo.subtitles[indexPage][position].isEmpty()) {
+            if (icon != null) {
+                icon.setVisibility(View.VISIBLE);
+            }
+            subtitle.setVisibility(View.VISIBLE);
             subtitle.setText(mInfo.subtitles[indexPage][position]);
             subtitle.setTextColor(mInfo.subtitleColor);
             subtitle.setTextSize(mInfo.subtitleSize);

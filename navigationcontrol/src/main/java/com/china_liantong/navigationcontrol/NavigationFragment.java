@@ -48,6 +48,7 @@ public class NavigationFragment extends Fragment {
 
         // **** subMenu
         SubMenu sub = new SubMenu(mActivity);
+        sub.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         int subMenuId = CommonUtils.generateViewId();
         sub.setId(subMenuId);
         sub.setDataHolder(mActivity, mDataHolder.subHolder);
@@ -104,9 +105,7 @@ public class NavigationFragment extends Fragment {
         public static final int CONTENT_ITEM_STYLE_ICON_LEFT = 2;
         public static final int CONTENT_ITEM_STYLE_PICTURE_NONE = 3;
         public static final int CONTENT_ITEM_STYLE_CUSTOM = -1;
-
-        public GridViewInfo() {
-        }
+        public GridViewInfo() {}
 
         public int[] perPageStyle;
         public Drawable[][] pictures;
