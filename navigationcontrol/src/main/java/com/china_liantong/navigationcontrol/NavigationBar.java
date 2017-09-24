@@ -137,6 +137,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
     @Override
     public void onGlobalFocusChanged(View oldFocus, View newFocus) {
+        //LogUtils.d(LogUtils.printObject(oldFocus) + " " + LogUtils.printObject(newFocus));
         if (!checkIfInnerView(oldFocus) && checkIfInnerView(newFocus)) {     // outer to inner
             if (mGetFocusView != null && mGetFocusView.getTag() != newFocus.getTag()) {
                 mAnimDisable = true;

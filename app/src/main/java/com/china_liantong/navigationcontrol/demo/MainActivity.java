@@ -54,12 +54,14 @@ public class MainActivity extends Activity {
         NavigationFragment.DataHolder fragment1 = getFragmentDemo1();
         NavigationFragment.DataHolder fragment2 = getFragmentDemo2();
         NavigationFragment.DataHolder fragment3 = getFragmentDemo3();
+        NavigationFragment.DataHolder fragment4 = getFragmentDemo4();
 
         // 添加 NavigationFragment.DataHolder 到 List
         ArrayList<NavigationFragment.DataHolder> nfHolderList = new ArrayList<>();
         nfHolderList.add(fragment1);
         nfHolderList.add(fragment2);
         nfHolderList.add(fragment3);
+        nfHolderList.add(fragment4);
 
         /* ************ Set Config and Show() ********** */
         mNavigationControl.navigationControlHolder(ncHolder)
@@ -205,30 +207,27 @@ public class MainActivity extends Activity {
 
         // info2
         Drawable[][] picList2 = new Drawable[][]{
-                {getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_2),
-                        getResources().getDrawable(R.drawable.content_1_3),
+                {getResources().getDrawable(R.drawable.content_1_2),
                         getResources().getDrawable(R.drawable.content_1_4),
                         getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_6),
                         getResources().getDrawable(R.drawable.content_1_7),
                         getResources().getDrawable(R.drawable.content_1_8),
-                        getResources().getDrawable(R.drawable.content_1_9),
-                        getResources().getDrawable(R.drawable.content_1_10)},
-                {getResources().getDrawable(R.drawable.content_1_11),
-                        getResources().getDrawable(R.drawable.content_1_12)}};
-        String[][] titleList2 = new String[][]{{"欢乐斗地主", "部落冲突", "炉石传说", "城市猎人", "纪念碑",
-                "走出迷宫-2", "飞行游戏-勇士的天宫_Online", "刀塔传奇", "豆豆", "海贼王 - 大航海家"},
-                {"扑克游戏", "火柴人"}
+                        getResources().getDrawable(R.drawable.content_1_10)}};
+        String[][] titleList2 = new String[][]{{"部落冲突", "城市猎人", "纪念碑",
+                "飞行游戏-勇士的天宫_Online", "刀塔传奇", "海贼王 - 大航海家"}
         };
+        String[][] subtitleList2 = new String[][]{{"621565+", "621565+", "621565+", "621565+", "621565+", "621565+"}};
         NavigationFragment.GridViewInfo info2 = new NavigationFragment.GridViewInfo();
-        info2.perPageStyle = new int[]{CONTENT_ITEM_STYLE_ICON_TOP, CONTENT_ITEM_STYLE_ICON_TOP};
+        info2.perPageStyle = new int[]{CONTENT_ITEM_STYLE_ICON_TOP};
         info2.pictures = picList2;
         info2.titles = titleList2;
         info2.titleSize = 20;
         info2.titleColor = Color.WHITE;
-        info2.pageCount = 2;
-        info2.perPageItemCount = new int[]{10, 2};
+        info2.pageCount = 1;
+        info2.subtitles = subtitleList2;
+        info2.subtitleSize = 15;
+        info2.subtitleColor = Color.LTGRAY;
+        info2.perPageItemCount = new int[]{6};  // don't exceed total item number
         info2.rows = 2;
         info2.columns = 5;
         info2.rowSpacing = 10;

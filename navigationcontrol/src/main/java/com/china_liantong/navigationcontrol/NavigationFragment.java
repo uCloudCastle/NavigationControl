@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 
 import com.china_liantong.navigationcontrol.adapt.ContentAdapt;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
+import com.china_liantong.navigationcontrol.utils.LogUtils;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
 import com.china_liantong.navigationcontrol.widgets.PageView;
 
@@ -33,7 +34,7 @@ public class NavigationFragment extends Fragment {
         mainLayout.setLayoutParams(lp);
 
         // **** pageView
-        PageView pageView = new PageView(mActivity);
+        final PageView pageView = new PageView(mActivity);
         int pageViewId = CommonUtils.generateViewId();
         pageView.setId(pageViewId);
         RelativeLayout.LayoutParams pvlp = new RelativeLayout.LayoutParams(
@@ -47,11 +48,10 @@ public class NavigationFragment extends Fragment {
         mainLayout.addView(pageView, pvlp);
 
         // **** subMenu
-        SubMenu sub = new SubMenu(mActivity);
-        sub.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        SubMenu subMenu = new SubMenu(mActivity);
         int subMenuId = CommonUtils.generateViewId();
-        sub.setId(subMenuId);
-        sub.setDataHolder(mActivity, mDataHolder.subHolder);
+        subMenu.setId(subMenuId);
+        subMenu.setDataHolder(mActivity, mDataHolder.subHolder);
         RelativeLayout.LayoutParams snlp = new RelativeLayout.LayoutParams(
                 mDataHolder.subMenuWidth,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -59,10 +59,10 @@ public class NavigationFragment extends Fragment {
         snlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         snlp.addRule(RelativeLayout.ABOVE, pageViewId);
         snlp.setMargins(0, 0, mDataHolder.subMenuMarginRight, 0);
-        mainLayout.addView(sub, snlp);
+        mainLayout.addView(subMenu, snlp);
 
         // **** gridView
-        LtGridView gridView = new LtGridView(getActivity());
+        final LtGridView gridView = new LtGridView(getActivity());
         gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
         gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
         gridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
@@ -89,6 +89,22 @@ public class NavigationFragment extends Fragment {
             }
         }
 
+        subMenu.setSubMenuListener(new SubMenu.SubMenuListener() {
+            @Override
+            public void onItemGetFocus(int newPos) {
+                LogUtils.d("submenu get Focus : " + newPos);
+                if (mDataHolder.infoList != null && mDataHolder.infoList.size() > newPos
+                        && mDataHolder.infoList.get(newPos) != null) {
+                    gridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(newPos)));
+                    if (mDataHolder.infoList.get(newPos).pageCount > 1) {
+                        gridView.setPageSpacing(mDataHolder.infoList.get(newPos).columnSpacing);
+                        gridView.setShadowRight(mDataHolder.infoList.get(newPos).fadingWidth);
+                        gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
+                        pageView.setTotalPage(mDataHolder.infoList.get(newPos).pageCount);
+                    }
+                }
+            }
+        });
         return mainLayout;
     }
 

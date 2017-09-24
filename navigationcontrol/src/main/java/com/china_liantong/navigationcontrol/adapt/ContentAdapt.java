@@ -77,6 +77,8 @@ public class ContentAdapt extends LtGridAdapter {
             }
         }
         if (title != null && mInfo.titles != null
+                && mInfo.titles.length > indexPage
+                && mInfo.titles[indexPage].length > position
                 && mInfo.titles[indexPage][position] != null
                 && !mInfo.titles[indexPage][position].isEmpty()) {
             title.setVisibility(View.VISIBLE);
@@ -85,6 +87,8 @@ public class ContentAdapt extends LtGridAdapter {
             title.setTextSize(mInfo.titleSize);
         }
         if (subtitle != null && mInfo.subtitles != null
+                && mInfo.subtitles.length > indexPage
+                && mInfo.subtitles[indexPage].length > position
                 && mInfo.subtitles[indexPage][position] != null
                 && !mInfo.subtitles[indexPage][position].isEmpty()) {
             if (icon != null) {

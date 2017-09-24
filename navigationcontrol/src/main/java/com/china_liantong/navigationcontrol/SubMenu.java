@@ -30,6 +30,8 @@ public class SubMenu extends FrameLayout {
 
     private Activity mActivity;
     private DataHolder mDataHolder;
+    private SubMenuListener mListener;
+
     private View lastSelectedView;
     private boolean hasFocus;
 
@@ -47,6 +49,10 @@ public class SubMenu extends FrameLayout {
             mDataHolder = holder;
             initView();
         }
+    }
+
+    public void setSubMenuListener(SubMenuListener l) {
+        if (l != null) mListener = l;
     }
 
     private void initView() {
@@ -72,11 +78,11 @@ public class SubMenu extends FrameLayout {
             public void onFocusChange(View v, boolean b) {
                 hasFocus = b;
                 if (lastSelectedView != null) {
-                    if (hasFocus) {
-                        lastSelectedView.setBackground(getResources().getDrawable(R.drawable.app_bg_blue));
-                    } else {
-                        lastSelectedView.setBackground(getResources().getDrawable(R.drawable.app_bg_dark));
-                    }
+                    //if (hasFocus) {
+                    //    lastSelectedView.setBackground(getResources().getDrawable(R.drawable.app_bg_blue));
+                    //} else {
+                    //    lastSelectedView.setBackground(getResources().getDrawable(R.drawable.app_bg_dark));
+                    //}
                 }
             }
         });
@@ -94,14 +100,16 @@ public class SubMenu extends FrameLayout {
                 if (lastSelectedView != null) {
                     lastSelectedView.setBackground(getResources().getDrawable(R.drawable.app_bg_dark));
                 }
-                if (hasFocus) {
+                //if (hasFocus) {
                     bg.setBackground(getResources().getDrawable(R.drawable.app_bg_blue));
-                }
+                //}
                 lastSelectedView = bg;
             }
 
             @Override
-            public void onItemSelected(LtAdapterView<?> parent, View view, int position, long id) {}
+            public void onItemSelected(LtAdapterView<?> parent, View view, int position, long id) {
+                mListener.onItemGetFocus(position);
+            }
 
             @Override
             public void onNothingSelected(LtAdapterView<?> parent) {}
@@ -231,6 +239,10 @@ public class SubMenu extends FrameLayout {
         protected int getItemColumnSize(int pageIndex, int position) {
             return 1;
         }
+    }
+
+    public interface SubMenuListener {
+        void onItemGetFocus(int newPos);
     }
 
     public static class DataHolder {
