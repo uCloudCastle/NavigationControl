@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/app_bg_gray"
+              android:orientation="vertical"
+              android:gravity="center_horizontal"
+              android:weightSum="2">
 
+    <TextView
+        android:id="@+id/item_content_title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="@dimen/content_item_only_text_title_margin_top"
+        android:gravity="center"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/item_content_subtitle"
+            android:layout_alignBaseline="@id/item_content_subtitle"
+            android:textColor="@color/common_light_grey"
+            android:textSize="@dimen/content_item_only_text_price_symbol_text_size"
+            android:text="@string/content_item_only_text_price_symbol"/>
+
+        <TextView
+            android:id="@+id/item_content_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
 </LinearLayout>

@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/item_background_gray"
+              android:gravity="center_vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="4">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <com.china_liantong.navigationcontrol.widgets.SquareMaskView
+            android:id="@+id/item_content_picture"
+            app:mask="@drawable/icn_app_detail_bg"
+            android:layout_width="@dimen/content_item_icon_left_squareview_default_width"
+            android:layout_height="0dp"
+            android:layout_marginLeft="@dimen/content_item_icon_left_squareview_margin_left"
+            android:layout_marginRight="@dimen/content_item_icon_left_squareview_margin_right"
+            android:layout_weight="2"
+            android:background="@drawable/app_bg_more"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_content_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/item_content_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/content_item_icon_left_subtitle_margin_top"
+            android:lineSpacingExtra="@dimen/content_item_icon_left_subtitle_line_spacing_extra"/>
+    </LinearLayout>
 
 </LinearLayout>

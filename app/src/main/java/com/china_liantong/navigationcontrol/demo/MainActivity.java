@@ -17,7 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_BACKGROUND_COVERED;
+import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_ICON_LEFT;
 import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_ICON_TOP;
+import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_ONLY_TEXT;
 
 public class MainActivity extends Activity {
     NavigationControl mNavigationControl;
@@ -27,7 +29,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String[] list = new String[]{"已安装", "推荐", "游戏", "我的消费", "影音", "运动竞技", "教育", "公开课", "亲子栏目"};
+        String[] list = new String[]{"已安装", "推荐", "游戏", "我的消费", "自定义Item", "运动竞技", "教育", "公开课", "亲子栏目"};
         mNavigationControl = (NavigationControl) findViewById(R.id.mainactivity_navigationcontrol);
 
         /* ************ 主界面 Config Data ********** */
@@ -262,9 +264,152 @@ public class MainActivity extends Activity {
                 .textColor(Color.WHITE)
                 .textSize(20)
                 .tagList(Arrays.asList(tagList))
-                .rowSpacing(DensityUtils.dp2px(this, 8));
+                .rowSpacing(DensityUtils.dp2px(this, 10));
+
+        // grid view
+        // info1
+        String[][] titleList1 = new String[][]{{"2014年 本月", "2014年 07月", "2014年 06月", "2014年 05月", "2014年 04月", "2014年 03月",
+                "2014年 02月", "2014年 01月", "2013年 12月", "2013年 11月", "2013年 10月", "2013年 09月"}};
+        String[][] subtitleList1 = new String[][]{{"12.00", "43.00", "7.00", "1125.00", "586.00", "63.00",
+                "367.00", "12.00", "71.00", "422.00", "9.00", "68.00"}};
+        NavigationFragment.GridViewInfo info1 = new NavigationFragment.GridViewInfo();
+        info1.perPageStyle = new int[]{CONTENT_ITEM_STYLE_ONLY_TEXT};
+        info1.titles = titleList1;
+        info1.titleSize = 20;
+        info1.titleColor = Color.LTGRAY;
+        info1.subtitles = subtitleList1;
+        info1.subtitleSize = 36;
+        info1.subtitleColor = Color.LTGRAY;
+        info1.pageCount = 1;
+        info1.perPageItemCount = new int[]{12};
+        info1.rows = 3;
+        info1.columns = 4;
+        info1.rowSpacing = DensityUtils.dp2px(this, 10);
+        info1.columnSpacing = DensityUtils.dp2px(this, 10);
+        info1.itemStartIndex = new int[][]{ {0, 3, 6, 9, 1, 4, 7, 10, 2, 5, 8, 11} };
+        info1.itemRowSize = new int[][]{ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
+        info1.itemColumnSize = new int[][]{ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
+        info1.marginRight = DensityUtils.dp2px(this, 50);
+
+        // info2
+        Drawable[][] picList2 = new Drawable[][]{
+                {getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5)},
+                {getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5),
+                        getResources().getDrawable(R.drawable.content_1_5)}};
+        String[][] titleList2 = new String[][]{{"宠物斗地主", "宠物斗地主", "宠物斗地主",
+                "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主"},
+                {"宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主"}
+        };
+        String[][] subtitleList2 = new String[][]{{"购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"},
+                {"购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"}};
+        NavigationFragment.GridViewInfo info2 = new NavigationFragment.GridViewInfo();
+        info2.perPageStyle = new int[]{CONTENT_ITEM_STYLE_ICON_LEFT, CONTENT_ITEM_STYLE_ICON_LEFT};
+        info2.pictures = picList2;
+        info2.titles = titleList2;
+        info2.titleSize = 18;
+        info2.titleColor = Color.WHITE;
+        info2.pageCount = 2;
+        info2.subtitles = subtitleList2;
+        info2.subtitleSize = 15;
+        info2.subtitleColor = Color.LTGRAY;
+        info2.perPageItemCount = new int[]{9, 6};  // don't exceed total item number
+        info2.rows = 3;
+        info2.columns = 3;
+        info2.rowSpacing = 10;
+        info2.columnSpacing = 10;
+        info2.itemStartIndex = new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8}, {0, 1, 2, 3, 4, 5}};
+        info2.itemRowSize = new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}};
+        info2.itemColumnSize = new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}};
+        info2.fadingWidth = DensityUtils.dp2px(this, 80);
+
+        // info2
+        Drawable[][] picList3 = new Drawable[][]{
+                {getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1)},
+                {getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1),
+                        getResources().getDrawable(R.drawable.content_1_1)}};
+        String[][] titleList3 = new String[][]{{"宠物斗地主", "宠物斗地主", "宠物斗地主",
+                "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主"},
+                {"宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主"}
+        };
+        String[][] subtitleList3 = new String[][]{{"购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"},
+                {"购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
+                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"}};
+        NavigationFragment.GridViewInfo info3 = new NavigationFragment.GridViewInfo();
+        info3.perPageStyle = new int[]{CONTENT_ITEM_STYLE_ICON_LEFT, CONTENT_ITEM_STYLE_ICON_LEFT};
+        info3.pictures = picList3;
+        info3.titles = titleList3;
+        info3.titleSize = 18;
+        info3.titleColor = Color.WHITE;
+        info3.pageCount = 2;
+        info3.subtitles = subtitleList3;
+        info3.subtitleSize = 15;
+        info3.subtitleColor = Color.LTGRAY;
+        info3.perPageItemCount = new int[]{9, 6};  // don't exceed total item number
+        info3.rows = 3;
+        info3.columns = 3;
+        info3.rowSpacing = 10;
+        info3.columnSpacing = 10;
+        info3.itemStartIndex = new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8}, {0, 1, 2, 3, 4, 5}};
+        info3.itemRowSize = new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}};
+        info3.itemColumnSize = new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}};
+        info3.fadingWidth = DensityUtils.dp2px(this, 80);
+
+        List<NavigationFragment.GridViewInfo> gridViewInfos = new ArrayList<>();
+        gridViewInfos.add(info1);
+        gridViewInfos.add(info2);
+        gridViewInfos.add(info3);
 
         return new NavigationFragment.DataHolder()
+                .infoList(gridViewInfos)
                 .subHolder(subMenuHolder2)
                 .subMenuWidth(DensityUtils.dp2px(this, 175))
                 .subMenuMarginRight(20);

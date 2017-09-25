@@ -10,9 +10,12 @@
     <dimen name="fragment_pageview_margin_right">120dp</dimen>
 
     <!--submenu-->
-    <dimen name="submenu_item_iconup_textview_padding_bottom">10dp</dimen>
-    <dimen name="submenu_item_slanted_textview_default_size">50dp</dimen>
-    <dimen name="submenu_item_slanted_textview_text_size">15sp</dimen>
+    <dimen name="submenu_item_icon_width">64dp</dimen>
+    <dimen name="submenu_item_icon_height">64dp</dimen>
+    <dimen name="submenu_item_icon_top_textview_magrin_top">10dp</dimen>
+    <dimen name="submenu_item_icon_left_textview_magrin_left">25dp</dimen>
+    <dimen name="submenu_item_slanted_textview_size">72dp</dimen>
+    <dimen name="submenu_item_slanted_textview_text_size">18sp</dimen>
 
     <!--content item-->
     <dimen name="content_item_icon_top_squareview_margin_left">10dp</dimen>
@@ -21,7 +24,16 @@
     <dimen name="content_item_icon_top_title_padding_bottom">10dp</dimen>
     <dimen name="content_item_icon_top_icon_width">20dp</dimen>
     <dimen name="content_item_icon_top_icon_height">20dp</dimen>
-    <dimen name="content_item_icon_top_sutitle_layout_margin_left">5dp</dimen>
-    <dimen name="content_item_icon_top_sutitle_layout_margin_right">5dp</dimen>
+    <dimen name="content_item_icon_top_subtitle_layout_margin_left">5dp</dimen>
+    <dimen name="content_item_icon_top_subtitle_layout_margin_right">5dp</dimen>
+
+    <dimen name="content_item_icon_left_squareview_default_width">100dp</dimen>
+    <dimen name="content_item_icon_left_squareview_margin_left">10dp</dimen>
+    <dimen name="content_item_icon_left_squareview_margin_right">10dp</dimen>
+    <dimen name="content_item_icon_left_subtitle_line_spacing_extra">4dp</dimen>
+    <dimen name="content_item_icon_left_subtitle_margin_top">20dp</dimen>
+
+    <dimen name="content_item_only_text_price_symbol_text_size">18sp</dimen>
+    <dimen name="content_item_only_text_title_margin_top">15dp</dimen>
 
 </resources>

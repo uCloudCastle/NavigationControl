@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import com.china_liantong.navigationcontrol.adapt.ContentAdapt;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.utils.LogUtils;
+import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
 import com.china_liantong.navigationcontrol.widgets.PageView;
 
@@ -67,6 +68,7 @@ public class NavigationFragment extends Fragment {
         gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
         gridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
         gridView.setFadingEdgeEnabled(true);
+        gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
         gridView.setFocusScaleAnimEnabled(false);
         gridView.setSelectPadding(18, 17, 19, 16);
         gridView.setOnPageChangeListener(pageView);
@@ -77,17 +79,17 @@ public class NavigationFragment extends Fragment {
         gvlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         gvlp.addRule(RelativeLayout.ABOVE, pageViewId);
         gvlp.addRule(RelativeLayout.RIGHT_OF, subMenuId);
-        mainLayout.addView(gridView, gvlp);
 
         if (mDataHolder.infoList != null && mDataHolder.infoList.size() > 0) {
-            gridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(0)));
             if (mDataHolder.infoList.get(0).pageCount > 1) {
                 gridView.setPageSpacing(mDataHolder.infoList.get(0).columnSpacing);
                 gridView.setShadowRight(mDataHolder.infoList.get(0).fadingWidth);
-                gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
                 pageView.setTotalPage(mDataHolder.infoList.get(0).pageCount);
             }
+            gridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(0)));
+            gvlp.setMargins(0, 0, mDataHolder.infoList.get(0).marginRight, 0);
         }
+        mainLayout.addView(gridView, gvlp);
 
         subMenu.setSubMenuListener(new SubMenu.SubMenuListener() {
             @Override
@@ -95,13 +97,16 @@ public class NavigationFragment extends Fragment {
                 LogUtils.d("submenu get Focus : " + newPos);
                 if (mDataHolder.infoList != null && mDataHolder.infoList.size() > newPos
                         && mDataHolder.infoList.get(newPos) != null) {
-                    gridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(newPos)));
+
+                    pageView.setTotalPage(mDataHolder.infoList.get(newPos).pageCount);
+                    gridView.setShadowRight(mDataHolder.infoList.get(newPos).fadingWidth);
                     if (mDataHolder.infoList.get(newPos).pageCount > 1) {
                         gridView.setPageSpacing(mDataHolder.infoList.get(newPos).columnSpacing);
-                        gridView.setShadowRight(mDataHolder.infoList.get(newPos).fadingWidth);
-                        gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
-                        pageView.setTotalPage(mDataHolder.infoList.get(newPos).pageCount);
                     }
+                    RelativeLayout.LayoutParams gvlp = (RelativeLayout.LayoutParams)gridView.getLayoutParams();
+                    gvlp.setMargins(0, 0, mDataHolder.infoList.get(newPos).marginRight, 0);
+                    gridView.setLayoutParams(gvlp);
+                    gridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(newPos)));
                 }
             }
         });
@@ -119,10 +124,11 @@ public class NavigationFragment extends Fragment {
         public static final int CONTENT_ITEM_STYLE_BACKGROUND_COVERED = 0;
         public static final int CONTENT_ITEM_STYLE_ICON_TOP = 1;
         public static final int CONTENT_ITEM_STYLE_ICON_LEFT = 2;
-        public static final int CONTENT_ITEM_STYLE_PICTURE_NONE = 3;
-        public static final int CONTENT_ITEM_STYLE_CUSTOM = -1;
+        public static final int CONTENT_ITEM_STYLE_ONLY_TEXT = 3;
+
         public GridViewInfo() {}
 
+        public LtGridAdapter customAdapter;
         public int[] perPageStyle;
         public Drawable[][] pictures;
         public String[][] titles;
@@ -141,6 +147,7 @@ public class NavigationFragment extends Fragment {
         public int itemRowSize[][];
         public int itemColumnSize[][];
         public int fadingWidth;
+        public int marginRight;
     }
 
     public static class DataHolder {

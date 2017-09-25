@@ -13,10 +13,9 @@ import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
 import com.china_liantong.navigationcontrol.widgets.SquareMaskView;
 
 import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_BACKGROUND_COVERED;
-import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_CUSTOM;
 import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_ICON_LEFT;
 import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_ICON_TOP;
-import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_PICTURE_NONE;
+import static com.china_liantong.navigationcontrol.NavigationFragment.GridViewInfo.CONTENT_ITEM_STYLE_ONLY_TEXT;
 
 /**
  * Created by Randal on 2017-09-21.
@@ -44,17 +43,19 @@ public class ContentAdapt extends LtGridAdapter {
     @Override
     protected View createItemView(int indexPage, int position,
                                   ViewGroup parent) {
+        if (mInfo.perPageStyle == null || mInfo.perPageStyle.length <= indexPage) {
+            return null;
+        }
+
         switch (mInfo.perPageStyle[indexPage]) {
             case CONTENT_ITEM_STYLE_BACKGROUND_COVERED:
                 return LayoutInflater.from(mContext).inflate(R.layout.item_content_background_covered, null);
             case CONTENT_ITEM_STYLE_ICON_TOP:
                 return LayoutInflater.from(mContext).inflate(R.layout.item_content_icon_top, null);
             case CONTENT_ITEM_STYLE_ICON_LEFT:
-                //return LayoutInflater.from(mContext).inflate(R.layout.item_content_icon_top, null);
-            case CONTENT_ITEM_STYLE_PICTURE_NONE:
-                //return LayoutInflater.from(mContext).inflate(R.layout.item_content_icon_top, null);
-            case CONTENT_ITEM_STYLE_CUSTOM:
-                //return LayoutInflater.from(mContext).inflate(R.layout.item_content_icon_top, null);
+                return LayoutInflater.from(mContext).inflate(R.layout.item_content_icon_left, null);
+            case CONTENT_ITEM_STYLE_ONLY_TEXT:
+                return LayoutInflater.from(mContext).inflate(R.layout.item_content_only_text, null);
             default:
                 return null;
         }
@@ -68,7 +69,10 @@ public class ContentAdapt extends LtGridAdapter {
         TextView subtitle = (TextView) convertView.findViewById(R.id.item_content_subtitle);
         View icon = convertView.findViewById(R.id.item_content_icon);
 
-        if (picture != null && mInfo.pictures != null) {
+        if (picture != null && mInfo.pictures != null
+                && mInfo.pictures.length > indexPage
+                && mInfo.pictures[indexPage].length > position
+                && mInfo.pictures[indexPage][position] != null) {
             SquareMaskView view = CommonUtils.safeTypeConvert(picture, SquareMaskView.class);
             if (view != null) {
                 view.setForegroundImage(mInfo.pictures[indexPage][position]);

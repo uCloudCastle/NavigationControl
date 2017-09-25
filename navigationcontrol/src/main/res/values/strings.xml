@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NavigationControl</string>
+    <string name="content_item_only_text_price_symbol">￥</string>
 </resources>

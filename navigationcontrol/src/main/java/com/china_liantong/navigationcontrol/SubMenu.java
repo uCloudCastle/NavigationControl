@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.china_liantong.navigationcontrol.widgets.LtAdapterView;
@@ -64,25 +63,27 @@ public class SubMenu extends FrameLayout {
         gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_VERTICAL);
         gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
         gridView.setAdapter(new SubMenuAdapter(mActivity));
-        gridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
-        gridView.setSelectPadding(15, 15, 16, 13);
-
-        gridView.setFadingEdgeEnabled(true);
-        gridView.setVerticalPageSpacing(mDataHolder.rowSpacing);
-        gridView.setShadowBottom(mDataHolder.fadingWidth);
-        gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
         gridView.setFocusScaleAnimEnabled(false);
+        gridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
+        gridView.setSelectPadding(18, 17, 19, 16);
+
+        if (mDataHolder.pairs.size() > mDataHolder.fullDisplayNumber) {
+            gridView.setVerticalPageSpacing(mDataHolder.rowSpacing);
+            gridView.setFadingEdgeEnabled(true);
+            gridView.setShadowBottom(mDataHolder.fadingWidth);
+            gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
+        }
 
         gridView.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean b) {
                 hasFocus = b;
                 if (lastSelectedView != null) {
-                    //if (hasFocus) {
-                    //    lastSelectedView.setBackground(getResources().getDrawable(R.drawable.app_bg_blue));
-                    //} else {
-                    //    lastSelectedView.setBackground(getResources().getDrawable(R.drawable.app_bg_dark));
-                    //}
+                    if (hasFocus) {
+                        lastSelectedView.setBackground(getResources().getDrawable(R.drawable.item_background_blue));
+                    } else {
+                        lastSelectedView.setBackground(getResources().getDrawable(R.drawable.item_background_darkblue));
+                    }
                 }
             }
         });
@@ -98,11 +99,11 @@ public class SubMenu extends FrameLayout {
                 }
 
                 if (lastSelectedView != null) {
-                    lastSelectedView.setBackground(getResources().getDrawable(R.drawable.app_bg_dark));
+                    lastSelectedView.setBackground(getResources().getDrawable(R.drawable.item_background_darkblue));
                 }
-                //if (hasFocus) {
-                    bg.setBackground(getResources().getDrawable(R.drawable.app_bg_blue));
-                //}
+                if (hasFocus) {
+                    bg.setBackground(getResources().getDrawable(R.drawable.item_background_blue));
+                }
                 lastSelectedView = bg;
             }
 
@@ -168,28 +169,10 @@ public class SubMenu extends FrameLayout {
                     && mDataHolder.tagList.size() > actualIndex
                     && mDataHolder.tagList.get(actualIndex) != null
                     && !mDataHolder.tagList.get(actualIndex).isEmpty()) {
-                RelativeLayout.LayoutParams taglp = (RelativeLayout.LayoutParams) tag.getLayoutParams();
-                taglp.width = min / 2;
-                taglp.height = min / 2;
-                tag.setLayoutParams(taglp);
                 tag.setSlantedLength((int)(min * SQUARE_ROOT_OF_TWO / 4));
                 tag.setSlantedBackgroundColor(getResources().getColor(R.color.submenu_item_slanted_textview_background));
                 tag.setText(mDataHolder.tagList.get(actualIndex));
             }
-
-            RelativeLayout.LayoutParams iconlp = (RelativeLayout.LayoutParams) icon.getLayoutParams();
-            if (mDataHolder.itemStyle == SUBMENU_ITEM_STYLE_ICON_LEFT) {
-                int unit = itemHeight / 8;
-                iconlp.setMargins(unit * 3, unit, 0, 0);
-                iconlp.width = 6 * unit;
-                iconlp.height = 6 * unit;
-            } else {
-                int unit = itemWidth / 9;
-                iconlp.setMargins(unit * 3, unit, 0, 0);
-                iconlp.width = 3 * unit;
-                iconlp.height = 3 * unit;
-            }
-            icon.setLayoutParams(iconlp);
             return convertView;
         }
 

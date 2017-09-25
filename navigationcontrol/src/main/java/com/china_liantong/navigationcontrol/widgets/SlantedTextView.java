@@ -199,7 +199,7 @@ public class SlantedTextView extends View {
         float angle = xy[4];
 
         canvas.rotate(angle, centerX , centerY);
-        canvas.drawText(mSlantedText, toX, toY, mTextPaint);
+        canvas.drawText(mSlantedText, toX, toY + 5, mTextPaint);
     }
 
     private float[] calculateXY(int w, int h) {

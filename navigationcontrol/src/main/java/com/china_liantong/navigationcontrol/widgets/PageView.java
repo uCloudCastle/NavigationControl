@@ -25,7 +25,11 @@ public class PageView extends TextView implements LtAdapterView.OnPageChangeList
     public void setTotalPage(int page) {
         mTotalPage = String.valueOf(page);
         setText(mCurrentPage + SLASH + mTotalPage);
-        setVisibility(VISIBLE);
+        if (page > 1) {
+            setVisibility(VISIBLE);
+        } else {
+            setVisibility(INVISIBLE);
+        }
     }
 
     public void setCurrentPage(int page) {
