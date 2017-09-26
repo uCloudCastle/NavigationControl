@@ -3,6 +3,7 @@ package com.china_liantong.navigationcontrol;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
@@ -49,18 +50,34 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
         }
 
         mFgManager = mActivity.getFragmentManager();
+        FragmentTransaction fragTransaction = mFgManager.beginTransaction();
         for (int i = 0; i < mDataHolders.size(); ++i) {
             NavigationFragment fragment = new NavigationFragment();
             fragment.setDataHolder(mActivity, mDataHolders.get(i));
             mFragmentList.add(fragment);
+            fragTransaction.add(mId, fragment);
         }
+        fragTransaction.commit();
     }
 
     @Override
     public void onItemGetFocus(int newPos) {
         if (newPos >= 0 && newPos < mFragmentList.size()) {
             LogUtils.d("replace fragment : " + newPos);
-            mFgManager.beginTransaction().replace(mId, mFragmentList.get(newPos)).commit();
+            showFragmentInPos(newPos);
         }
+    }
+
+    private void showFragmentInPos(int pos) {
+        if (pos >= mFragmentList.size()) {
+            return;
+        }
+        FragmentTransaction fragTransaction = mFgManager.beginTransaction();
+        for (int i = 0; i < mFragmentList.size(); ++i) {
+            if (i != pos) {
+                fragTransaction.hide(mFragmentList.get(i));
+            }
+        }
+        fragTransaction.show(mFragmentList.get(pos)).commitAllowingStateLoss();
     }
 }

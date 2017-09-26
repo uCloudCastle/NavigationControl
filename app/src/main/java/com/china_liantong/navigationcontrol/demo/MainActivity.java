@@ -52,18 +52,13 @@ public class MainActivity extends Activity {
                 .titleSpacing(DensityUtils.dp2px(this, 50));
 
         /* ************ NavigationFragment Config Data ********** */
-        // ****** 构造 Fragment 数据
-        NavigationFragment.DataHolder fragment1 = getFragmentDemo1();
-        NavigationFragment.DataHolder fragment2 = getFragmentDemo2();
-        NavigationFragment.DataHolder fragment3 = getFragmentDemo3();
-        NavigationFragment.DataHolder fragment4 = getFragmentDemo4();
-
         // 添加 NavigationFragment.DataHolder 到 List
         ArrayList<NavigationFragment.DataHolder> nfHolderList = new ArrayList<>();
-        nfHolderList.add(fragment1);
-        nfHolderList.add(fragment2);
-        nfHolderList.add(fragment3);
-        nfHolderList.add(fragment4);
+        nfHolderList.add(getFragmentDemo1());
+        nfHolderList.add(getFragmentDemo2());
+        nfHolderList.add(getFragmentDemo3());
+        nfHolderList.add(getFragmentDemo4());
+        nfHolderList.add(getFragmentDemo5());
 
         /* ************ Set Config and Show() ********** */
         mNavigationControl.navigationControlHolder(ncHolder)
@@ -413,5 +408,18 @@ public class MainActivity extends Activity {
                 .subHolder(subMenuHolder2)
                 .subMenuWidth(DensityUtils.dp2px(this, 175))
                 .subMenuMarginRight(20);
+    }
+
+    private NavigationFragment.DataHolder getFragmentDemo5() {
+        // no submenu
+        // grid view
+        NavigationFragment.GridViewInfo info = new NavigationFragment.GridViewInfo();
+        info.customAdapter = new DemoAdapt(MainActivity.this);
+
+        List<NavigationFragment.GridViewInfo> gridViewInfos = new ArrayList<>();
+        gridViewInfos.add(info);
+
+        return new NavigationFragment.DataHolder()
+                .infoList(gridViewInfos);
     }
 }

@@ -26,6 +26,9 @@ public class NavigationFragment extends Fragment {
     private Activity mActivity;
     private DataHolder mDataHolder;
 
+    private SubMenu mSubMenu;
+    private LtGridView mGridView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         RelativeLayout mainLayout = new RelativeLayout(mActivity);
@@ -49,10 +52,10 @@ public class NavigationFragment extends Fragment {
         mainLayout.addView(pageView, pvlp);
 
         // **** subMenu
-        SubMenu subMenu = new SubMenu(mActivity);
+        mSubMenu = new SubMenu(mActivity);
         int subMenuId = CommonUtils.generateViewId();
-        subMenu.setId(subMenuId);
-        subMenu.setDataHolder(mActivity, mDataHolder.subHolder);
+        mSubMenu.setId(subMenuId);
+        mSubMenu.setDataHolder(mActivity, mDataHolder.subHolder);
         RelativeLayout.LayoutParams snlp = new RelativeLayout.LayoutParams(
                 mDataHolder.subMenuWidth,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -60,18 +63,18 @@ public class NavigationFragment extends Fragment {
         snlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         snlp.addRule(RelativeLayout.ABOVE, pageViewId);
         snlp.setMargins(0, 0, mDataHolder.subMenuMarginRight, 0);
-        mainLayout.addView(subMenu, snlp);
+        mainLayout.addView(mSubMenu, snlp);
 
         // **** gridView
-        final LtGridView gridView = new LtGridView(getActivity());
-        gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
-        gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
-        gridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
-        gridView.setFadingEdgeEnabled(true);
-        gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
-        gridView.setFocusScaleAnimEnabled(false);
-        gridView.setSelectPadding(18, 17, 19, 16);
-        gridView.setOnPageChangeListener(pageView);
+        mGridView = new LtGridView(getActivity());
+        mGridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
+        mGridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
+        mGridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
+        mGridView.setFadingEdgeEnabled(true);
+        mGridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
+        mGridView.setFocusScaleAnimEnabled(false);
+        mGridView.setSelectPadding(18, 17, 19, 16);
+        mGridView.setOnPageChangeListener(pageView);
         RelativeLayout.LayoutParams gvlp = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -82,16 +85,16 @@ public class NavigationFragment extends Fragment {
 
         if (mDataHolder.infoList != null && mDataHolder.infoList.size() > 0) {
             if (mDataHolder.infoList.get(0).pageCount > 1) {
-                gridView.setPageSpacing(mDataHolder.infoList.get(0).columnSpacing);
-                gridView.setShadowRight(mDataHolder.infoList.get(0).fadingWidth);
+                mGridView.setPageSpacing(mDataHolder.infoList.get(0).columnSpacing);
+                mGridView.setShadowRight(mDataHolder.infoList.get(0).fadingWidth);
                 pageView.setTotalPage(mDataHolder.infoList.get(0).pageCount);
             }
-            gridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(0)));
+            mGridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(0)));
             gvlp.setMargins(0, 0, mDataHolder.infoList.get(0).marginRight, 0);
         }
-        mainLayout.addView(gridView, gvlp);
+        mainLayout.addView(mGridView, gvlp);
 
-        subMenu.setSubMenuListener(new SubMenu.SubMenuListener() {
+        mSubMenu.setSubMenuListener(new SubMenu.SubMenuListener() {
             @Override
             public void onItemGetFocus(int newPos) {
                 LogUtils.d("submenu get Focus : " + newPos);
@@ -99,14 +102,14 @@ public class NavigationFragment extends Fragment {
                         && mDataHolder.infoList.get(newPos) != null) {
 
                     pageView.setTotalPage(mDataHolder.infoList.get(newPos).pageCount);
-                    gridView.setShadowRight(mDataHolder.infoList.get(newPos).fadingWidth);
+                    mGridView.setShadowRight(mDataHolder.infoList.get(newPos).fadingWidth);
                     if (mDataHolder.infoList.get(newPos).pageCount > 1) {
-                        gridView.setPageSpacing(mDataHolder.infoList.get(newPos).columnSpacing);
+                        mGridView.setPageSpacing(mDataHolder.infoList.get(newPos).columnSpacing);
                     }
-                    RelativeLayout.LayoutParams gvlp = (RelativeLayout.LayoutParams)gridView.getLayoutParams();
+                    RelativeLayout.LayoutParams gvlp = (RelativeLayout.LayoutParams)mGridView.getLayoutParams();
                     gvlp.setMargins(0, 0, mDataHolder.infoList.get(newPos).marginRight, 0);
-                    gridView.setLayoutParams(gvlp);
-                    gridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(newPos)));
+                    mGridView.setLayoutParams(gvlp);
+                    mGridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(newPos)));
                 }
             }
         });

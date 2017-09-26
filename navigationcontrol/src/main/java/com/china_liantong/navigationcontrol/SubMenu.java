@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.china_liantong.navigationcontrol.utils.LogUtils;
 import com.china_liantong.navigationcontrol.widgets.LtAdapterView;
 import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
@@ -31,6 +32,7 @@ public class SubMenu extends FrameLayout {
     private DataHolder mDataHolder;
     private SubMenuListener mListener;
 
+    private LtGridView mGridView;
     private View lastSelectedView;
     private boolean hasFocus;
 
@@ -59,22 +61,22 @@ public class SubMenu extends FrameLayout {
             return;
         }
 
-        final LtGridView gridView = new LtGridView(mActivity);
-        gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_VERTICAL);
-        gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
-        gridView.setAdapter(new SubMenuAdapter(mActivity));
-        gridView.setFocusScaleAnimEnabled(false);
-        gridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
-        gridView.setSelectPadding(18, 17, 19, 16);
+        mGridView = new LtGridView(mActivity);
+        mGridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_VERTICAL);
+        mGridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
+        mGridView.setAdapter(new SubMenuAdapter(mActivity));
+        mGridView.setFocusScaleAnimEnabled(false);
+        mGridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
+        mGridView.setSelectPadding(18, 17, 19, 16);
 
         if (mDataHolder.pairs.size() > mDataHolder.fullDisplayNumber) {
-            gridView.setVerticalPageSpacing(mDataHolder.rowSpacing);
-            gridView.setFadingEdgeEnabled(true);
-            gridView.setShadowBottom(mDataHolder.fadingWidth);
-            gridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
+            mGridView.setVerticalPageSpacing(mDataHolder.rowSpacing);
+            mGridView.setFadingEdgeEnabled(true);
+            mGridView.setShadowBottom(mDataHolder.fadingWidth);
+            mGridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
         }
 
-        gridView.setOnFocusChangeListener(new OnFocusChangeListener() {
+        mGridView.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean b) {
                 hasFocus = b;
@@ -82,12 +84,12 @@ public class SubMenu extends FrameLayout {
                     if (hasFocus) {
                         lastSelectedView.setBackground(getResources().getDrawable(R.drawable.item_background_blue));
                     } else {
-                        lastSelectedView.setBackground(getResources().getDrawable(R.drawable.item_background_darkblue));
+                        //lastSelectedView.setBackground(getResources().getDrawable(R.drawable.item_background_darkblue));
                     }
                 }
             }
         });
-        gridView.setOnItemSelectedListener(new LtAdapterView.OnItemSelectedListener() {
+        mGridView.setOnItemSelectedListener(new LtAdapterView.OnItemSelectedListener() {
             @Override
             public void onItemGoingTo(View view, int position) {
                 if (view == null) {
@@ -103,14 +105,13 @@ public class SubMenu extends FrameLayout {
                 }
                 if (hasFocus) {
                     bg.setBackground(getResources().getDrawable(R.drawable.item_background_blue));
+                    mListener.onItemGetFocus(position);
                 }
                 lastSelectedView = bg;
             }
 
             @Override
-            public void onItemSelected(LtAdapterView<?> parent, View view, int position, long id) {
-                mListener.onItemGetFocus(position);
-            }
+            public void onItemSelected(LtAdapterView<?> parent, View view, int position, long id) {}
 
             @Override
             public void onNothingSelected(LtAdapterView<?> parent) {}
@@ -118,7 +119,17 @@ public class SubMenu extends FrameLayout {
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        addView(gridView, params);
+        addView(mGridView, params);
+        LogUtils.d(LogUtils.printObject(mGridView) + " 000");
+    }
+
+    public void setCurrent(int position) {
+        LogUtils.d(LogUtils.printObject(mGridView) + " 000000");
+        if (mGridView != null) {
+            //lastSelectedView.requestFocus();
+            //LogUtils.d(LogUtils.printObject(mGridView) + " 000");
+            mGridView.setFocusToPosition(position);
+        }
     }
 
     private class SubMenuAdapter extends LtGridAdapter {

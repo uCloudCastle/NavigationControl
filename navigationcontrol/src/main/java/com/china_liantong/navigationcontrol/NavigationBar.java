@@ -43,7 +43,6 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
     public NavigationBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        //setBackgroundColor(Color.CYAN);
         getViewTreeObserver().addOnGlobalFocusChangeListener(this);
     }
 
