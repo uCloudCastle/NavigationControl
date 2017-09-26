@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
 
 /**
@@ -41,14 +42,15 @@ public class DemoAdapt extends LtGridAdapter {
                                View convertView, ViewGroup parent) {
         TextView textView = (TextView) convertView.findViewById(R.id.item_demo_textview);
         String str = textView.getText().toString() + " " + String.valueOf(position);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
         textView.setText(str);
+        textView.setBackgroundColor(mContext.getResources().getColor(R.color.common_light_grey));
 
         return convertView;
     }
 
     @Override
-    protected int getPageCount() {
+    public int getPageCount() {
         return 1;
     }
 
@@ -73,7 +75,7 @@ public class DemoAdapt extends LtGridAdapter {
     }
 
     @Override
-    protected int getColumnSpacing() {
+    public int getColumnSpacing() {
         return 10;
     }
 

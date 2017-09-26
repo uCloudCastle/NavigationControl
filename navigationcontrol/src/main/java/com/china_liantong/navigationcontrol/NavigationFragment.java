@@ -2,7 +2,6 @@ package com.china_liantong.navigationcontrol;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,7 @@ import android.widget.RelativeLayout;
 import com.china_liantong.navigationcontrol.adapt.ContentAdapt;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.utils.LogUtils;
-import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
+import com.china_liantong.navigationcontrol.widgets.LtAdapterView;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
 import com.china_liantong.navigationcontrol.widgets.PageView;
 
@@ -25,7 +24,11 @@ import java.util.List;
 public class NavigationFragment extends Fragment {
     private Activity mActivity;
     private DataHolder mDataHolder;
+    private NavigationControl.OnItemClickListener mItemClickListener;
+    private int mPagePos;
+    private int mSubPagePos;
 
+    private PageView mPageView;
     private SubMenu mSubMenu;
     private LtGridView mGridView;
 
@@ -38,9 +41,9 @@ public class NavigationFragment extends Fragment {
         mainLayout.setLayoutParams(lp);
 
         // **** pageView
-        final PageView pageView = new PageView(mActivity);
+        mPageView = new PageView(mActivity);
         int pageViewId = CommonUtils.generateViewId();
-        pageView.setId(pageViewId);
+        mPageView.setId(pageViewId);
         RelativeLayout.LayoutParams pvlp = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -48,8 +51,8 @@ public class NavigationFragment extends Fragment {
         pvlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
         pvlp.setMargins(0, (int) getResources().getDimension(R.dimen.fragment_pageview_margin_top),
                 (int) getResources().getDimension(R.dimen.fragment_pageview_margin_right), 0);
-        pageView.setTextSize(getResources().getDimension(R.dimen.fragment_pageview_textsize));
-        mainLayout.addView(pageView, pvlp);
+        mPageView.setTextSize(getResources().getDimension(R.dimen.fragment_pageview_textsize));
+        mainLayout.addView(mPageView, pvlp);
 
         // **** subMenu
         mSubMenu = new SubMenu(mActivity);
@@ -74,7 +77,7 @@ public class NavigationFragment extends Fragment {
         mGridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
         mGridView.setFocusScaleAnimEnabled(false);
         mGridView.setSelectPadding(18, 17, 19, 16);
-        mGridView.setOnPageChangeListener(pageView);
+        mGridView.setOnPageChangeListener(mPageView);
         RelativeLayout.LayoutParams gvlp = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -82,38 +85,63 @@ public class NavigationFragment extends Fragment {
         gvlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         gvlp.addRule(RelativeLayout.ABOVE, pageViewId);
         gvlp.addRule(RelativeLayout.RIGHT_OF, subMenuId);
-
-        if (mDataHolder.infoList != null && mDataHolder.infoList.size() > 0) {
-            if (mDataHolder.infoList.get(0).pageCount > 1) {
-                mGridView.setPageSpacing(mDataHolder.infoList.get(0).columnSpacing);
-                mGridView.setShadowRight(mDataHolder.infoList.get(0).fadingWidth);
-                pageView.setTotalPage(mDataHolder.infoList.get(0).pageCount);
-            }
-            mGridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(0)));
-            gvlp.setMargins(0, 0, mDataHolder.infoList.get(0).marginRight, 0);
-        }
         mainLayout.addView(mGridView, gvlp);
+        showGridViewByPos(0);
 
         mSubMenu.setSubMenuListener(new SubMenu.SubMenuListener() {
             @Override
             public void onItemGetFocus(int newPos) {
                 LogUtils.d("submenu get Focus : " + newPos);
-                if (mDataHolder.infoList != null && mDataHolder.infoList.size() > newPos
-                        && mDataHolder.infoList.get(newPos) != null) {
+                mSubPagePos = newPos;
+                showGridViewByPos(newPos);
+            }
+        });
 
-                    pageView.setTotalPage(mDataHolder.infoList.get(newPos).pageCount);
-                    mGridView.setShadowRight(mDataHolder.infoList.get(newPos).fadingWidth);
-                    if (mDataHolder.infoList.get(newPos).pageCount > 1) {
-                        mGridView.setPageSpacing(mDataHolder.infoList.get(newPos).columnSpacing);
-                    }
-                    RelativeLayout.LayoutParams gvlp = (RelativeLayout.LayoutParams)mGridView.getLayoutParams();
-                    gvlp.setMargins(0, 0, mDataHolder.infoList.get(newPos).marginRight, 0);
-                    mGridView.setLayoutParams(gvlp);
-                    mGridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(newPos)));
-                }
+        mGridView.setOnItemClickListener(new LtAdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(LtAdapterView<?> parent, View view, int position, long id) {
+                LogUtils.d(view.toString() + " " + position + " " + id);
+                mItemClickListener.onItemClick(view, mPagePos, mSubPagePos, position);
             }
         });
         return mainLayout;
+    }
+
+    public void setPagePos(int pos) {
+        if (pos >= 0) {
+            mPagePos = pos;
+        }
+    }
+
+    public void setOnItemClickListener(NavigationControl.OnItemClickListener l) {
+        if (l != null) {
+            mItemClickListener = l;
+        }
+    }
+
+    private void showGridViewByPos(int pos) {
+        if (mDataHolder.infoList != null && mDataHolder.infoList.size() > pos
+                && mDataHolder.infoList.get(pos) != null) {
+
+            mGridView.setShadowRight(mDataHolder.infoList.get(pos).fadingWidth);
+            RelativeLayout.LayoutParams gvlp = (RelativeLayout.LayoutParams) mGridView.getLayoutParams();
+            gvlp.setMargins(0, 0, mDataHolder.infoList.get(pos).marginRight, 0);
+            mGridView.setLayoutParams(gvlp);
+
+            if (mDataHolder.infoList.get(pos).builtInAdapter != null) {
+                LogUtils.d("builtInAdapter");
+                mPageView.setTotalPage(mDataHolder.infoList.get(pos).builtInAdapter.pageCount);
+                mGridView.setPageSpacing(mDataHolder.infoList.get(pos).builtInAdapter.columnSpacing);
+                mGridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(pos).builtInAdapter));
+            } else {
+                LogUtils.d("customAdapter");
+                if (mDataHolder.infoList.get(pos).customAdapter != null) {
+                    mPageView.setTotalPage(mDataHolder.infoList.get(pos).customAdapter.getPageCount());
+                    mGridView.setPageSpacing(mDataHolder.infoList.get(pos).customAdapter.getColumnSpacing());
+                    mGridView.setAdapter(mDataHolder.infoList.get(pos).customAdapter);
+                }
+            }
+        }
     }
 
     public void setDataHolder(Activity activity, NavigationFragment.DataHolder holder) {
@@ -121,36 +149,6 @@ public class NavigationFragment extends Fragment {
             mActivity = activity;
             mDataHolder = holder;
         }
-    }
-
-    public static class GridViewInfo {
-        public static final int CONTENT_ITEM_STYLE_BACKGROUND_COVERED = 0;
-        public static final int CONTENT_ITEM_STYLE_ICON_TOP = 1;
-        public static final int CONTENT_ITEM_STYLE_ICON_LEFT = 2;
-        public static final int CONTENT_ITEM_STYLE_ONLY_TEXT = 3;
-
-        public GridViewInfo() {}
-
-        public LtGridAdapter customAdapter;
-        public int[] perPageStyle;
-        public Drawable[][] pictures;
-        public String[][] titles;
-        public String[][] subtitles;
-        public int titleSize;
-        public int titleColor;
-        public int subtitleSize;
-        public int subtitleColor;
-        public int pageCount;
-        public int[] perPageItemCount;
-        public int rows;
-        public int columns;
-        public int rowSpacing;
-        public int columnSpacing;
-        public int itemStartIndex[][];
-        public int itemRowSize[][];
-        public int itemColumnSize[][];
-        public int fadingWidth;
-        public int marginRight;
     }
 
     public static class DataHolder {

@@ -8,61 +8,36 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class LtGridAdapter extends BaseAdapter {
     protected abstract View createItemView(int indexPage,
-                int position, ViewGroup  parent);
-//
+                                           int position, ViewGroup parent);
+
+    //
 //        /
 //           @brief
 //           Get the View associated with the specified position in the data set.
 //          /
-    protected abstract View  getItemView(int indexPage,
-                int position, View  convertView,
-                ViewGroup  parent);
+    protected abstract View getItemView(int indexPage,
+                                        int position, View convertView,
+                                        ViewGroup parent);
 
-//        /
+    //        /
 //            If your provider's data is invalid, you should update your item in this method
 //            There has two method to trigger this method called:
 //               1. You call LtGridView.refreshData
 //               2. When page changed
 //           /
-       void updateItemViewForInvalid(int indexPage, int position, View  pItemView) {
+    void updateItemViewForInvalid(int indexPage, int position, View pItemView) {}
 
-       }
-//
-//        /  
-//           @brief
-//           How many pages are in the data set represented by this LtGridAdapter.
-//          /
-    protected abstract int getPageCount();
+    public abstract int getPageCount();
 
-//        /
-//           @brief
-//           How many items are in the specified page in the data set.
-//          /
     protected abstract int getItemCount(int indexPage);
 
-//        /
-//           @brief
-//           How many rows are in the specified page in the data set.
-//          /
     protected abstract int getNumRows();
 
-//        /
-//           @brief
-//           How many columns are in the specified page in the data set.
-//          /
     protected abstract int getNumColumns();
 
-//        /
-//           @brief
-//           Line spacing.
-//          /
     protected abstract int getRowSpacing();
 
-//        /
-//           @brief
-//           Column spacing.
-//          /
-    protected abstract int getColumnSpacing();
+    public abstract int getColumnSpacing();
 
     protected abstract int getItemStartIndex(int pageIndex, int position);
 
@@ -86,7 +61,7 @@ public abstract class LtGridAdapter extends BaseAdapter {
     void updateItemWidgetForInvalid(int indexPage, int position, View convertView) {
     }
 
-    boolean getPageIndexAndPosInPage(int position, AtomicInteger  pageIndex, AtomicInteger  posInPage) {
+    boolean getPageIndexAndPosInPage(int position, AtomicInteger pageIndex, AtomicInteger posInPage) {
         boolean bFound = false;
         int calcPos = 0;
         for (int i = 0; !bFound && i < getPageCount(); i++) {
@@ -109,15 +84,15 @@ public abstract class LtGridAdapter extends BaseAdapter {
      * {@link android.view.LayoutInflater#inflate(int, ViewGroup, boolean)}
      * to specify a root view and to prevent attachment to the root.
      *
-     * @param position The position of the item within the adapter's data set of the item whose view
-     *        we want.
+     * @param position    The position of the item within the adapter's data set of the item whose view
+     *                    we want.
      * @param convertView The old view to reuse, if possible. Note: You should check that this view
-     *        is non-null and of an appropriate type before using. If it is not possible to convert
-     *        this view to display the correct data, this method can create a new view.
-     *        Heterogeneous lists can specify their number of view types, so that this View is
-     *        always of the right type (see {@link #getViewTypeCount()} and
-     *        {@link #getItemViewType(int)}).
-     * @param parent The parent that this view will eventually be attached to
+     *                    is non-null and of an appropriate type before using. If it is not possible to convert
+     *                    this view to display the correct data, this method can create a new view.
+     *                    Heterogeneous lists can specify their number of view types, so that this View is
+     *                    always of the right type (see {@link #getViewTypeCount()} and
+     *                    {@link #getItemViewType(int)}).
+     * @param parent      The parent that this view will eventually be attached to
      * @return A View corresponding to the data at the specified position.
      */
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -141,6 +116,7 @@ public abstract class LtGridAdapter extends BaseAdapter {
 
     /**
      * only for cell_mode,return page count in service
+     *
      * @return page count
      */
     public int getOriginalPageCount() {
@@ -149,17 +125,22 @@ public abstract class LtGridAdapter extends BaseAdapter {
 
     /**
      * notify the current positon of adapter when move item
+     *
      * @param position current position of move action
      */
-    public void updateCurrentPosition(int position) {}
+    public void updateCurrentPosition(int position) {
+    }
 
     /**
      * for decide whether or not to calculate columnWidth and rowHeight in LtGridView onMeasure method.
+     *
      * @return true when need to calculate
-     *         false when no need to calculate
-     *         when return false, need to call setColumnWidth and setRowHeight method in LtGridView.
+     * false when no need to calculate
+     * when return false, need to call setColumnWidth and setRowHeight method in LtGridView.
      */
-    public boolean isNeedToCalculateWH() {return true;}
+    public boolean isNeedToCalculateWH() {
+        return true;
+    }
 
     class ItemCells {
         int mStartRow;

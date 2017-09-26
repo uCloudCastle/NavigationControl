@@ -188,7 +188,7 @@ public class SubMenu extends FrameLayout {
         }
 
         @Override
-        protected int getPageCount() {
+        public int getPageCount() {
             return (mDataHolder.pairs.size() / mDataHolder.fullDisplayNumber) + 1;
         }
 
@@ -215,7 +215,7 @@ public class SubMenu extends FrameLayout {
         }
 
         @Override
-        protected int getColumnSpacing() {
+        public int getColumnSpacing() {
             return 0;
         }
 

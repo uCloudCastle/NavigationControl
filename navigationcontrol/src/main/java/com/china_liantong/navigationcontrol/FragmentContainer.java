@@ -1,7 +1,6 @@
 package com.china_liantong.navigationcontrol;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -21,7 +20,7 @@ import java.util.List;
 public class FragmentContainer extends FrameLayout implements NavigationBar.NavigationBarListener {
     private Activity mActivity;
     private FragmentManager mFgManager;
-    private List<Fragment> mFragmentList = new ArrayList<>();
+    private List<NavigationFragment> mFragmentList = new ArrayList<>();
 
     private List<NavigationFragment.DataHolder> mDataHolders;
     private int mId;
@@ -44,6 +43,12 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
         }
     }
 
+    public void setOnItemClickListener(NavigationControl.OnItemClickListener l) {
+        for (NavigationFragment fragment : mFragmentList) {
+            fragment.setOnItemClickListener(l);
+        }
+    }
+
     private void initView() {
         if (mDataHolders.size() == 0) {
             return;
@@ -54,6 +59,7 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
         for (int i = 0; i < mDataHolders.size(); ++i) {
             NavigationFragment fragment = new NavigationFragment();
             fragment.setDataHolder(mActivity, mDataHolders.get(i));
+            fragment.setPagePos(i);
             mFragmentList.add(fragment);
             fragTransaction.add(mId, fragment);
         }

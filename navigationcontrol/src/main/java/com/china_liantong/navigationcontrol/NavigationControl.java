@@ -3,6 +3,7 @@ package com.china_liantong.navigationcontrol;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -13,7 +14,10 @@ import java.util.List;
  */
 
 public class NavigationControl extends LinearLayout {
-    Context mContext;
+    private Context mContext;
+    private OnItemClickListener mItemClickListener;
+    private FragmentContainer mFragmentContainer;
+
     private NavigationControl.DataHolder mControlHolder;
     private NavigationBar.DataHolder mBarHolder;
     private List<NavigationFragment.DataHolder> mFragmentHolders;
@@ -28,7 +32,7 @@ public class NavigationControl extends LinearLayout {
         setOrientation(VERTICAL);
     }
 
-    public void show() {
+    public void init() {
         NavigationBar navBar = new NavigationBar(mContext);
         navBar.setDataHolder(mBarHolder);
         LinearLayout.LayoutParams nblp = new LinearLayout.LayoutParams(
@@ -36,15 +40,26 @@ public class NavigationControl extends LinearLayout {
                 mControlHolder.navigationBarHeight);
         addView(navBar, nblp);
 
-        FragmentContainer container = new FragmentContainer(mContext);
-        container.setDataHolder(mControlHolder.activity, mFragmentHolders);
+        mFragmentContainer = new FragmentContainer(mContext);
+        mFragmentContainer.setDataHolder(mControlHolder.activity, mFragmentHolders);
         LinearLayout.LayoutParams fclp = new LinearLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
         fclp.setMargins(0, mControlHolder.fragmentMarginTop, 0, 0);
-        addView(container, fclp);
+        addView(mFragmentContainer, fclp);
+        navBar.setNavigationBarListener(mFragmentContainer);
+    }
 
-        navBar.setNavigationBarListener(container);
+    public boolean setOnItemClickListener(OnItemClickListener l) {
+        if (mFragmentContainer != null && l != null) {
+            mFragmentContainer.setOnItemClickListener(l);
+            return true;
+        }
+        return false;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View focusView, int page, int subpage, int position);
     }
 
     public NavigationControl navigationControlHolder(NavigationControl.DataHolder holder) {
