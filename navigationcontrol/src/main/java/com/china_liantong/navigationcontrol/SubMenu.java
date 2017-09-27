@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.china_liantong.navigationcontrol.utils.LogUtils;
 import com.china_liantong.navigationcontrol.widgets.LtAdapterView;
 import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
@@ -120,16 +119,6 @@ public class SubMenu extends FrameLayout {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         addView(mGridView, params);
-        LogUtils.d(LogUtils.printObject(mGridView) + " 000");
-    }
-
-    public void setCurrent(int position) {
-        LogUtils.d(LogUtils.printObject(mGridView) + " 000000");
-        if (mGridView != null) {
-            //lastSelectedView.requestFocus();
-            //LogUtils.d(LogUtils.printObject(mGridView) + " 000");
-            mGridView.setFocusToPosition(position);
-        }
     }
 
     private class SubMenuAdapter extends LtGridAdapter {

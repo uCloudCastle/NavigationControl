@@ -74,6 +74,12 @@ public class MainActivity extends Activity {
                 Toast.makeText(MainActivity.this, "OnItemClick : " + page
                         + " " + subpage + " " + position, Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onPageChanged(int newPage) {
+                Toast.makeText(MainActivity.this, "onPageChanged : "
+                        + newPage, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -181,7 +187,7 @@ public class MainActivity extends Activity {
                 .fadingWidth(DensityUtils.dp2px(this, 25))
                 .textColor(Color.WHITE)
                 .textSize(20)
-                .rowSpacing(DensityUtils.dp2px(this, 8));
+                .rowSpacing(8);
 
         // grid view
         // info1

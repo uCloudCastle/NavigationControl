@@ -20,10 +20,12 @@ import java.util.List;
 public class FragmentContainer extends FrameLayout implements NavigationBar.NavigationBarListener {
     private Activity mActivity;
     private FragmentManager mFgManager;
+    private NavigationControl.OnItemClickListener mItemClickListener;
     private List<NavigationFragment> mFragmentList = new ArrayList<>();
 
     private List<NavigationFragment.DataHolder> mDataHolders;
     private int mId;
+    private int mCurPos;
 
     public FragmentContainer(Context context) {
         this(context, null);
@@ -44,6 +46,7 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
     }
 
     public void setOnItemClickListener(NavigationControl.OnItemClickListener l) {
+        mItemClickListener = l;
         for (NavigationFragment fragment : mFragmentList) {
             fragment.setOnItemClickListener(l);
         }
@@ -68,9 +71,14 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
 
     @Override
     public void onItemGetFocus(int newPos) {
+        if (mCurPos == newPos) {
+            return;
+        }
+
         if (newPos >= 0 && newPos < mFragmentList.size()) {
             LogUtils.d("replace fragment : " + newPos);
             showFragmentInPos(newPos);
+            mCurPos = newPos;
         }
     }
 
@@ -85,5 +93,6 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
             }
         }
         fragTransaction.show(mFragmentList.get(pos)).commitAllowingStateLoss();
+        mItemClickListener.onPageChanged(pos);
     }
 }

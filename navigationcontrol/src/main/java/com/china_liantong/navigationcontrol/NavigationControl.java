@@ -60,6 +60,7 @@ public class NavigationControl extends LinearLayout {
 
     public interface OnItemClickListener {
         void onItemClick(View focusView, int page, int subpage, int position);
+        void onPageChanged(int newPage);
     }
 
     public NavigationControl navigationControlHolder(NavigationControl.DataHolder holder) {
