@@ -51,7 +51,6 @@ public class NavigationFragment extends Fragment {
         pvlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
         pvlp.setMargins(0, (int) getResources().getDimension(R.dimen.fragment_pageview_margin_top),
                 (int) getResources().getDimension(R.dimen.fragment_pageview_margin_right), 0);
-        mPageView.setTextSize(getResources().getDimension(R.dimen.fragment_pageview_textsize));
         mainLayout.addView(mPageView, pvlp);
 
         // **** subMenu
@@ -76,7 +75,10 @@ public class NavigationFragment extends Fragment {
         mGridView.setFadingEdgeEnabled(true);
         mGridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
         mGridView.setFocusScaleAnimEnabled(false);
-        mGridView.setSelectPadding(18, 17, 19, 16);
+        mGridView.setSelectPadding((int)getResources().getDimension(R.dimen.gridview_select_padding_left),
+                (int)getResources().getDimension(R.dimen.gridview_select_padding_top),
+                (int)getResources().getDimension(R.dimen.gridview_select_padding_right),
+                (int)getResources().getDimension(R.dimen.gridview_select_padding_bottom));
         mGridView.setOnPageChangeListener(mPageView);
         RelativeLayout.LayoutParams gvlp = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
@@ -129,12 +131,10 @@ public class NavigationFragment extends Fragment {
             mGridView.setLayoutParams(gvlp);
 
             if (mDataHolder.infoList.get(pos).builtInAdapter != null) {
-                LogUtils.d("builtInAdapter");
                 mPageView.setTotalPage(mDataHolder.infoList.get(pos).builtInAdapter.pageCount);
                 mGridView.setPageSpacing(mDataHolder.infoList.get(pos).builtInAdapter.columnSpacing);
                 mGridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(pos).builtInAdapter));
             } else {
-                LogUtils.d("customAdapter");
                 if (mDataHolder.infoList.get(pos).customAdapter != null) {
                     mPageView.setTotalPage(mDataHolder.infoList.get(pos).customAdapter.getPageCount());
                     mGridView.setPageSpacing(mDataHolder.infoList.get(pos).customAdapter.getColumnSpacing());

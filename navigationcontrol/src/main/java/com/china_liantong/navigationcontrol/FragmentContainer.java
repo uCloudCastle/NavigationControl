@@ -67,6 +67,7 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
             fragTransaction.add(mId, fragment);
         }
         fragTransaction.commit();
+        showFragmentInPos(0);
     }
 
     @Override
@@ -93,6 +94,9 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
             }
         }
         fragTransaction.show(mFragmentList.get(pos)).commitAllowingStateLoss();
-        mItemClickListener.onPageChanged(pos);
+
+        if (mItemClickListener != null) {
+            mItemClickListener.onPageChanged(pos);
+        }
     }
 }

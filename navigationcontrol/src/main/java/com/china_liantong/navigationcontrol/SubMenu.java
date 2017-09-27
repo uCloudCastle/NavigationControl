@@ -66,7 +66,10 @@ public class SubMenu extends FrameLayout {
         mGridView.setAdapter(new SubMenuAdapter(mActivity));
         mGridView.setFocusScaleAnimEnabled(false);
         mGridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
-        mGridView.setSelectPadding(18, 17, 19, 16);
+        mGridView.setSelectPadding((int)getResources().getDimension(R.dimen.gridview_select_padding_left),
+                (int)getResources().getDimension(R.dimen.gridview_select_padding_top),
+                (int)getResources().getDimension(R.dimen.gridview_select_padding_right),
+                (int)getResources().getDimension(R.dimen.gridview_select_padding_bottom));
 
         if (mDataHolder.pairs.size() > mDataHolder.fullDisplayNumber) {
             mGridView.setVerticalPageSpacing(mDataHolder.rowSpacing);

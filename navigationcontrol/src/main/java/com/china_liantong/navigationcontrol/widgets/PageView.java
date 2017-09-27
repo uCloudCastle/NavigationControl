@@ -2,6 +2,7 @@ package com.china_liantong.navigationcontrol.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.widget.TextView;
 
 /**
@@ -9,6 +10,7 @@ import android.widget.TextView;
  */
 
 public class PageView extends TextView implements LtAdapterView.OnPageChangeListener{
+    private static final int DEFAULT_TEXTSIZE_SP = 18;
     private static final String SLASH = " / ";
     private String mCurrentPage = "1";
     private String mTotalPage = "1";
@@ -19,6 +21,7 @@ public class PageView extends TextView implements LtAdapterView.OnPageChangeList
 
     public PageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, DEFAULT_TEXTSIZE_SP);
         setVisibility(INVISIBLE);
     }
 
