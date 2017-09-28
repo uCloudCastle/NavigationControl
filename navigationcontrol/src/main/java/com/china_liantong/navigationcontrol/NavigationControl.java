@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.china_liantong.navigationcontrol.fragment.NavigationFragment;
+
 import java.util.List;
 
 /**
@@ -15,7 +17,6 @@ import java.util.List;
 
 public class NavigationControl extends LinearLayout {
     private Context mContext;
-    private OnItemClickListener mItemClickListener;
     private FragmentContainer mFragmentContainer;
 
     private NavigationControl.DataHolder mControlHolder;

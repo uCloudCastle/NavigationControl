@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -27,14 +28,15 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
     private Context mContext;
     private ArrayList<TextView> mTextViews = new ArrayList<>();
     private ArrayList<Rect> mRects = new ArrayList<>();
-    private View mGetFocusView;
     private View mFocusView;
 
+    private View mGetFocusView;
     private DataHolder mDataHolder;
     private NavigationBarListener mListener;
     private int mFirstItemTag;
     private int mLastPaddingLeft;
-    private boolean mAnimDisable = false;
+    private boolean animDisable = false;
+    private boolean needCircle = false;
 
     public NavigationBar(Context context) {
         this(context, null);
@@ -92,7 +94,10 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             addView(view, itemParams);
             mTextViews.add(view);
         }
+        initListener();
+    }
 
+    private void initListener() {
         getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
@@ -101,6 +106,42 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
                 return true;
             }
         });
+
+        final int size = mTextViews.size();
+        if (size >= 2) {
+            mTextViews.get(0).setOnKeyListener(new OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                        if (needCircle) {
+                            mTextViews.get(size - 1).requestFocus();
+                            needCircle = false;
+                            return true;
+                        }
+                        needCircle = true;
+                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                        needCircle = false;
+                    }
+                    return false;
+                }
+            });
+            mTextViews.get(size - 1).setOnKeyListener(new OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                        if (needCircle) {
+                            mTextViews.get(0).requestFocus();
+                            needCircle = false;
+                            return true;
+                        }
+                        needCircle = true;
+                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                        needCircle = false;
+                    }
+                    return false;
+                }
+            });
+        }
     }
 
     private void asyncRelayout() {
@@ -108,7 +149,6 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             Rect rect = new Rect();
             mTextViews.get(i).getGlobalVisibleRect(rect);
             mRects.add(rect);
-            LogUtils.d(i + rect.toString() + " " + rect.centerX());
 
             RelativeLayout.LayoutParams itemParams = (RelativeLayout.LayoutParams) mTextViews.get(i).getLayoutParams();
             itemParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
@@ -139,7 +179,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         LogUtils.d(LogUtils.printObject(oldFocus) + " " + LogUtils.printObject(newFocus));
         if (!checkIfInnerView(oldFocus) && checkIfInnerView(newFocus)) {     // outer to inner
             if (mGetFocusView != null && mGetFocusView.getTag() != newFocus.getTag()) {
-                mAnimDisable = true;
+                animDisable = true;
                 mGetFocusView.requestFocus();
                 return;
             }
@@ -151,8 +191,8 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             mGetFocusView = newFocus;
             setNormalStyle((TextView) oldFocus);
             setFocusStyle((TextView) newFocus);
-            if (mAnimDisable) {
-                mAnimDisable = false;
+            if (animDisable) {
+                animDisable = false;
                 return;
             }
             asyncMoveViews((int) oldFocus.getTag() - mFirstItemTag, (int) newFocus.getTag() - mFirstItemTag);
@@ -189,7 +229,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
     private void asyncMoveViews(final int oldPos, final int newPos) {
         if (oldPos < 0 || newPos < 0 || oldPos >= mRects.size()
-                || newPos >= mRects.size() || Math.abs(oldPos - newPos) != 1) {
+                || newPos >= mRects.size()) {
             return;
         }
 
@@ -205,6 +245,18 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
     private void moveMainLayout(final int oldPos, final int newPos) {
         int shifting = 0;
+        // circle move
+        if (Math.abs(oldPos - newPos) == mTextViews.size() - 1) {
+            if (oldPos == 0) {
+                shifting = mRects.get(mDataHolder.fullDisplayNumber).centerX()
+                        - mRects.get(newPos).right
+                        - (mDataHolder.drawableMargin + (int) getResources().getDimension(R.dimen.navigation_bar_content_spacing));
+            } else if (newPos == 0) {
+                shifting = -mLastPaddingLeft;
+            }
+        }
+
+        // cell move
         if (oldPos >= mDataHolder.fullDisplayNumber - 1 && newPos >= mDataHolder.fullDisplayNumber - 1) {
             if (newPos == mTextViews.size() - 1) {
                 shifting = mRects.get(newPos).centerX() - mRects.get(newPos).right
@@ -217,7 +269,9 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             } else {        // oldPos > newPos
                 shifting = mRects.get(oldPos + 1).centerX() - mRects.get(oldPos).centerX();
             }
+        }
 
+        if (shifting != 0) {
             ValueAnimator anim = ValueAnimator.ofFloat(0f, 1f);
             anim.setDuration(200);
             final int cp = mLastPaddingLeft;

@@ -881,8 +881,7 @@ public class LtGridView extends LtAbsSpinner {
 
             int leftItem, topItem, rightItem, bottomItem;
             if (mScrollOrientation == ScrollOrientation.SCROLL_VERTICAL) {
-                topItem = startCoordinate + startRow.get() * (mRowHeight + mHorizontalSpacing)
-                        + (mFadingEdgeEnabled ? 0 : 0);
+                topItem = startCoordinate + startRow.get() * (mRowHeight + mHorizontalSpacing);
                 leftItem = startCol.get() * (mColumnWidth + mVerticalSpacing);
             } else {
                 leftItem = startCoordinate + startCol.get() * (mColumnWidth + mVerticalSpacing)

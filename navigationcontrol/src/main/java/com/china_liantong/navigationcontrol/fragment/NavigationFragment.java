@@ -1,4 +1,4 @@
-package com.china_liantong.navigationcontrol;
+package com.china_liantong.navigationcontrol.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -8,6 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.china_liantong.navigationcontrol.GridViewInfo;
+import com.china_liantong.navigationcontrol.NavigationControl;
+import com.china_liantong.navigationcontrol.R;
+import com.china_liantong.navigationcontrol.SubMenu;
 import com.china_liantong.navigationcontrol.adapt.ContentAdapt;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.utils.LogUtils;

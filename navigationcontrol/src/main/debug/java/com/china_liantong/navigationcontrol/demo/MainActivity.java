@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.china_liantong.navigationcontrol.GridViewInfo;
 import com.china_liantong.navigationcontrol.NavigationBar;
 import com.china_liantong.navigationcontrol.NavigationControl;
-import com.china_liantong.navigationcontrol.NavigationFragment;
+import com.china_liantong.navigationcontrol.fragment.NavigationFragment;
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.SubMenu;
 import com.china_liantong.navigationcontrol.utils.DensityUtils;
