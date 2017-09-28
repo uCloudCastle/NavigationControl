@@ -1,6 +1,7 @@
-package com.china_liantong.navigationcontrol;
+package com.china_liantong.navigationcontrol.fragment;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
 
@@ -8,12 +9,13 @@ import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
  * Created by Randal on 2017-09-26.
  */
 
-public class GridViewInfo {
-    public GridViewInfo() {}
+public class ContentViewInfo {
+    public ContentViewInfo() {}
     public int marginRight;
     public int fadingWidth;
     public BuiltInAdapter builtInAdapter;
     public LtGridAdapter customAdapter;
+    public View customView;
 
     public static class BuiltInAdapter {
         public static final int CONTENT_ITEM_STYLE_BACKGROUND_COVERED = 0;

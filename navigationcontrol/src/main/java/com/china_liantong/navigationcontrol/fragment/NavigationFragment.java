@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.china_liantong.navigationcontrol.GridViewInfo;
 import com.china_liantong.navigationcontrol.NavigationControl;
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.SubMenu;
@@ -156,7 +155,7 @@ public class NavigationFragment extends Fragment {
     }
 
     public static class DataHolder {
-        private List<GridViewInfo> infoList;
+        private List<ContentViewInfo> infoList;
         private SubMenu.DataHolder subHolder;
         private int subMenuWidth;
         private int subMenuMarginRight;
@@ -164,7 +163,7 @@ public class NavigationFragment extends Fragment {
         public DataHolder() {
         }
 
-        public DataHolder infoList(List<GridViewInfo> list) {
+        public DataHolder infoList(List<ContentViewInfo> list) {
             infoList = list;
             return this;
         }

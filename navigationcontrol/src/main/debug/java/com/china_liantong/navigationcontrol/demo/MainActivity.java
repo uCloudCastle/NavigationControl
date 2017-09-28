@@ -8,7 +8,7 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
-import com.china_liantong.navigationcontrol.GridViewInfo;
+import com.china_liantong.navigationcontrol.fragment.ContentViewInfo;
 import com.china_liantong.navigationcontrol.NavigationBar;
 import com.china_liantong.navigationcontrol.NavigationControl;
 import com.china_liantong.navigationcontrol.fragment.NavigationFragment;
@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.china_liantong.navigationcontrol.GridViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_BACKGROUND_COVERED;
-import static com.china_liantong.navigationcontrol.GridViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_LEFT;
-import static com.china_liantong.navigationcontrol.GridViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_TOP;
-import static com.china_liantong.navigationcontrol.GridViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_ONLY_TEXT;
+import static com.china_liantong.navigationcontrol.fragment.ContentViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_BACKGROUND_COVERED;
+import static com.china_liantong.navigationcontrol.fragment.ContentViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_LEFT;
+import static com.china_liantong.navigationcontrol.fragment.ContentViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_TOP;
+import static com.china_liantong.navigationcontrol.fragment.ContentViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_ONLY_TEXT;
 
 public class MainActivity extends Activity {
     NavigationControl mNavigationControl;
@@ -103,7 +103,7 @@ public class MainActivity extends Activity {
                 "走出迷宫-2", "飞行游戏-勇士的天宫_Online", "刀塔传奇", "豆豆", "海贼王 - 大航海家"},
                 {"扑克游戏", "火柴人"}
         };
-        GridViewInfo.BuiltInAdapter adapter = new GridViewInfo.BuiltInAdapter()
+        ContentViewInfo.BuiltInAdapter adapter = new ContentViewInfo.BuiltInAdapter()
                 .pageCount(2)
                 .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ICON_TOP, CONTENT_ITEM_STYLE_ICON_TOP})
                 .perPageItemCount(new int[]{10, 2})
@@ -118,15 +118,15 @@ public class MainActivity extends Activity {
                 .itemStartIndex(new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, {0, 1}})
                 .itemRowSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1}})
                 .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1}});
-        GridViewInfo info = new GridViewInfo();
+        ContentViewInfo info = new ContentViewInfo();
         info.fadingWidth = DensityUtils.dp2px(this, 80);
         info.builtInAdapter = adapter;
 
-        List<GridViewInfo> gridViewInfos = new ArrayList<>();
-        gridViewInfos.add(info);
+        List<ContentViewInfo> contentViewInfos = new ArrayList<>();
+        contentViewInfos.add(info);
 
         return new NavigationFragment.DataHolder()
-                .infoList(gridViewInfos);
+                .infoList(contentViewInfos);
     }
 
     private NavigationFragment.DataHolder getFragmentDemo2() {
@@ -143,7 +143,7 @@ public class MainActivity extends Activity {
         String[][] titleList = new String[][]{
                 {"", "", "", "", "", "愤怒的小鸟", "猪猪特工队"}
         };
-        GridViewInfo.BuiltInAdapter adapter = new GridViewInfo.BuiltInAdapter()
+        ContentViewInfo.BuiltInAdapter adapter = new ContentViewInfo.BuiltInAdapter()
                 .pageCount(1)
                 .perPageStyle(new int[]{CONTENT_ITEM_STYLE_BACKGROUND_COVERED})
                 .perPageItemCount(new int[]{7})
@@ -158,14 +158,14 @@ public class MainActivity extends Activity {
                 .itemStartIndex(new int[][]{{0, 11, 20, 29, 40, 60, 71}})
                 .itemRowSize(new int[][]{{11, 9, 9, 11, 20, 11, 9}})
                 .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1}});
-        GridViewInfo info = new GridViewInfo();
+        ContentViewInfo info = new ContentViewInfo();
         info.builtInAdapter = adapter;
 
-        List<GridViewInfo> gridViewInfos = new ArrayList<>();
-        gridViewInfos.add(info);
+        List<ContentViewInfo> contentViewInfos = new ArrayList<>();
+        contentViewInfos.add(info);
 
         return new NavigationFragment.DataHolder()
-                .infoList(gridViewInfos);
+                .infoList(contentViewInfos);
     }
 
     private NavigationFragment.DataHolder getFragmentDemo3() {
@@ -203,7 +203,7 @@ public class MainActivity extends Activity {
                 {"扑克游戏", "火柴人"}};
         String[][] subtitleList1 = new String[][]{{"", "", "", "", ""},
                 {"621565+", "621565+"}};
-        GridViewInfo.BuiltInAdapter adapter1 = new GridViewInfo.BuiltInAdapter()
+        ContentViewInfo.BuiltInAdapter adapter1 = new ContentViewInfo.BuiltInAdapter()
                 .pageCount(2)
                 .perPageStyle(new int[]{CONTENT_ITEM_STYLE_BACKGROUND_COVERED, CONTENT_ITEM_STYLE_ICON_TOP})
                 .perPageItemCount(new int[]{5, 2})
@@ -221,7 +221,7 @@ public class MainActivity extends Activity {
                 .itemStartIndex(new int[][]{{0, 1, 6, 7, 14}, {0, 1}})
                 .itemRowSize(new int[][]{{1, 1, 1, 1, 2}, {1, 1}})
                 .itemColumnSize(new int[][]{{3, 3, 4, 4, 3}, {2, 2}});
-        GridViewInfo info1 = new GridViewInfo();
+        ContentViewInfo info1 = new ContentViewInfo();
         info1.fadingWidth = DensityUtils.dp2px(this, 80);
         info1.builtInAdapter = adapter1;
 
@@ -237,7 +237,7 @@ public class MainActivity extends Activity {
                 "飞行游戏-勇士的天宫_Online", "刀塔传奇", "海贼王 - 大航海家"}
         };
         String[][] subtitleList2 = new String[][]{{"621565+", "621565+", "621565+", "621565+", "621565+", "621565+"}};
-        GridViewInfo.BuiltInAdapter adapter2 = new GridViewInfo.BuiltInAdapter()
+        ContentViewInfo.BuiltInAdapter adapter2 = new ContentViewInfo.BuiltInAdapter()
                 .pageCount(1)
                 .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ICON_TOP})
                 .perPageItemCount(new int[]{6})
@@ -255,16 +255,16 @@ public class MainActivity extends Activity {
                 .itemStartIndex(new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, {0, 1}})
                 .itemRowSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1}})
                 .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1}});
-        GridViewInfo info2 = new GridViewInfo();
+        ContentViewInfo info2 = new ContentViewInfo();
         info2.fadingWidth = DensityUtils.dp2px(this, 80);
         info2.builtInAdapter = adapter2;
 
-        List<GridViewInfo> gridViewInfos = new ArrayList<>();
-        gridViewInfos.add(info1);
-        gridViewInfos.add(info2);
+        List<ContentViewInfo> contentViewInfos = new ArrayList<>();
+        contentViewInfos.add(info1);
+        contentViewInfos.add(info2);
 
         return new NavigationFragment.DataHolder()
-                .infoList(gridViewInfos)
+                .infoList(contentViewInfos)
                 .subHolder(subMenuHolder)
                 .subMenuWidth(DensityUtils.dp2px(this, 175))
                 .subMenuMarginRight(10);
@@ -292,7 +292,7 @@ public class MainActivity extends Activity {
                 "2014年 02月", "2014年 01月", "2013年 12月", "2013年 11月", "2013年 10月", "2013年 09月"}};
         String[][] subtitleList1 = new String[][]{{"12.00", "43.00", "7.00", "1125.00", "586.00", "63.00",
                 "367.00", "12.00", "71.00", "422.00", "9.00", "68.00"}};
-        GridViewInfo.BuiltInAdapter adapter1 = new GridViewInfo.BuiltInAdapter()
+        ContentViewInfo.BuiltInAdapter adapter1 = new ContentViewInfo.BuiltInAdapter()
                 .pageCount(1)
                 .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ONLY_TEXT})
                 .perPageItemCount(new int[]{12})
@@ -309,7 +309,7 @@ public class MainActivity extends Activity {
                 .itemStartIndex(new int[][]{ {0, 3, 6, 9, 1, 4, 7, 10, 2, 5, 8, 11} })
                 .itemRowSize(new int[][]{ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} })
                 .itemColumnSize(new int[][]{ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} });
-        GridViewInfo info1 = new GridViewInfo();
+        ContentViewInfo info1 = new ContentViewInfo();
         info1.marginRight = DensityUtils.dp2px(this, 50);
         info1.builtInAdapter = adapter1;
 
@@ -349,7 +349,7 @@ public class MainActivity extends Activity {
                         "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
                         "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
                         "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"}};
-        GridViewInfo.BuiltInAdapter adapter2 = new GridViewInfo.BuiltInAdapter()
+        ContentViewInfo.BuiltInAdapter adapter2 = new ContentViewInfo.BuiltInAdapter()
                 .pageCount(2)
                 .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ICON_LEFT, CONTENT_ITEM_STYLE_ICON_LEFT})
                 .perPageItemCount(new int[]{9, 6})
@@ -367,7 +367,7 @@ public class MainActivity extends Activity {
                 .itemStartIndex(new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8}, {0, 1, 2, 3, 4, 5}})
                 .itemRowSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}})
                 .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}});
-        GridViewInfo info2 = new GridViewInfo();
+        ContentViewInfo info2 = new ContentViewInfo();
         info2.fadingWidth = DensityUtils.dp2px(this, 80);
         info2.builtInAdapter = adapter2;
 
@@ -407,7 +407,7 @@ public class MainActivity extends Activity {
                         "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
                         "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
                         "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"}};
-        GridViewInfo.BuiltInAdapter adapter3 = new GridViewInfo.BuiltInAdapter()
+        ContentViewInfo.BuiltInAdapter adapter3 = new ContentViewInfo.BuiltInAdapter()
                 .pageCount(2)
                 .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ICON_LEFT, CONTENT_ITEM_STYLE_ICON_LEFT})
                 .perPageItemCount(new int[]{9, 6})
@@ -425,17 +425,17 @@ public class MainActivity extends Activity {
                 .itemStartIndex(new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8}, {0, 1, 2, 3, 4, 5}})
                 .itemRowSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}})
                 .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}});
-        GridViewInfo info3 = new GridViewInfo();
+        ContentViewInfo info3 = new ContentViewInfo();
         info3.fadingWidth = DensityUtils.dp2px(this, 80);
         info3.builtInAdapter = adapter3;
 
-        List<GridViewInfo> gridViewInfos = new ArrayList<>();
-        gridViewInfos.add(info1);
-        gridViewInfos.add(info2);
-        gridViewInfos.add(info3);
+        List<ContentViewInfo> contentViewInfos = new ArrayList<>();
+        contentViewInfos.add(info1);
+        contentViewInfos.add(info2);
+        contentViewInfos.add(info3);
 
         return new NavigationFragment.DataHolder()
-                .infoList(gridViewInfos)
+                .infoList(contentViewInfos)
                 .subHolder(subMenuHolder)
                 .subMenuWidth(DensityUtils.dp2px(this, 175))
                 .subMenuMarginRight(10);
@@ -444,13 +444,13 @@ public class MainActivity extends Activity {
     private NavigationFragment.DataHolder getFragmentDemo5() {
         // no submenu
         // grid view
-        GridViewInfo info = new GridViewInfo();
+        ContentViewInfo info = new ContentViewInfo();
         info.customAdapter = new DemoAdapt(MainActivity.this);
 
-        List<GridViewInfo> gridViewInfos = new ArrayList<>();
-        gridViewInfos.add(info);
+        List<ContentViewInfo> contentViewInfos = new ArrayList<>();
+        contentViewInfos.add(info);
 
         return new NavigationFragment.DataHolder()
-                .infoList(gridViewInfos);
+                .infoList(contentViewInfos);
     }
 }
