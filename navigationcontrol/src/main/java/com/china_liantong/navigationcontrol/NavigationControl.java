@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.china_liantong.navigationcontrol.fragment.FragmentContainer;
 import com.china_liantong.navigationcontrol.fragment.NavigationFragment;
 
 import java.util.List;
@@ -60,8 +61,8 @@ public class NavigationControl extends LinearLayout {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View focusView, int page, int subpage, int position);
-        void onPageChanged(int newPage);
+        void onBuiltInItemClick(View focusView, int page, int subpage, int position);
+        void onPageChanged(int page, int subpage);
     }
 
     public NavigationControl navigationControlHolder(NavigationControl.DataHolder holder) {

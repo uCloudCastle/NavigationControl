@@ -6,16 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.china_liantong.navigationcontrol.fragment.ContentViewInfo;
+import com.china_liantong.navigationcontrol.fragment.ContentViewProxy;
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.widgets.LtGridAdapter;
 import com.china_liantong.navigationcontrol.widgets.SquareMaskView;
 
-import static com.china_liantong.navigationcontrol.fragment.ContentViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_BACKGROUND_COVERED;
-import static com.china_liantong.navigationcontrol.fragment.ContentViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_LEFT;
-import static com.china_liantong.navigationcontrol.fragment.ContentViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_TOP;
-import static com.china_liantong.navigationcontrol.fragment.ContentViewInfo.BuiltInAdapter.CONTENT_ITEM_STYLE_ONLY_TEXT;
+import static com.china_liantong.navigationcontrol.fragment.ContentViewProxy.BuiltInAdapter.CONTENT_ITEM_STYLE_BACKGROUND_COVERED;
+import static com.china_liantong.navigationcontrol.fragment.ContentViewProxy.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_LEFT;
+import static com.china_liantong.navigationcontrol.fragment.ContentViewProxy.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_TOP;
+import static com.china_liantong.navigationcontrol.fragment.ContentViewProxy.BuiltInAdapter.CONTENT_ITEM_STYLE_ONLY_TEXT;
 
 
 /**
@@ -24,9 +24,9 @@ import static com.china_liantong.navigationcontrol.fragment.ContentViewInfo.Buil
 
 public class ContentAdapt extends LtGridAdapter {
     private Context mContext;
-    private ContentViewInfo.BuiltInAdapter mInfo;
+    private ContentViewProxy.BuiltInAdapter mInfo;
 
-    public ContentAdapt(Context context, ContentViewInfo.BuiltInAdapter info) {
+    public ContentAdapt(Context context, ContentViewProxy.BuiltInAdapter info) {
         mContext = context;
         mInfo = info;
     }

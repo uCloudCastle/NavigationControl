@@ -2,22 +2,22 @@ package com.china_liantong.navigationcontrol.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.china_liantong.navigationcontrol.NavigationControl;
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.SubMenu;
-import com.china_liantong.navigationcontrol.adapt.ContentAdapt;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.utils.LogUtils;
-import com.china_liantong.navigationcontrol.widgets.LtAdapterView;
-import com.china_liantong.navigationcontrol.widgets.LtGridView;
 import com.china_liantong.navigationcontrol.widgets.PageView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,13 +27,14 @@ import java.util.List;
 public class NavigationFragment extends Fragment {
     private Activity mActivity;
     private DataHolder mDataHolder;
+    private List<ContentFragment> mFragmentList = new ArrayList<>();
     private NavigationControl.OnItemClickListener mItemClickListener;
+
     private int mPagePos;
     private int mSubPagePos;
-
     private PageView mPageView;
     private SubMenu mSubMenu;
-    private LtGridView mGridView;
+    private FrameLayout mContentLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,45 +71,49 @@ public class NavigationFragment extends Fragment {
         snlp.setMargins(0, 0, mDataHolder.subMenuMarginRight, 0);
         mainLayout.addView(mSubMenu, snlp);
 
-        // **** gridView
-        mGridView = new LtGridView(getActivity());
-        mGridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
-        mGridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
-        mGridView.setFocusDrawable(getResources().getDrawable(R.drawable.app_selected));
-        mGridView.setFadingEdgeEnabled(true);
-        mGridView.setFadingEdgeDrawable(getResources().getDrawable(R.drawable.gridview_shading));
-        mGridView.setFocusScaleAnimEnabled(false);
-        mGridView.setSelectPadding((int)getResources().getDimension(R.dimen.gridview_select_padding_left),
-                (int)getResources().getDimension(R.dimen.gridview_select_padding_top),
-                (int)getResources().getDimension(R.dimen.gridview_select_padding_right),
-                (int)getResources().getDimension(R.dimen.gridview_select_padding_bottom));
-        mGridView.setOnPageChangeListener(mPageView);
-        RelativeLayout.LayoutParams gvlp = new RelativeLayout.LayoutParams(
+        // content fragment
+        mContentLayout = new FrameLayout(mActivity);
+        int frameId = CommonUtils.generateViewId();
+        mContentLayout.setId(frameId);
+        RelativeLayout.LayoutParams framelp = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
-        gvlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-        gvlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-        gvlp.addRule(RelativeLayout.ABOVE, pageViewId);
-        gvlp.addRule(RelativeLayout.RIGHT_OF, subMenuId);
-        mainLayout.addView(mGridView, gvlp);
-        showGridViewByPos(0);
+        framelp.addRule(RelativeLayout.ABOVE, pageViewId);
+        framelp.addRule(RelativeLayout.RIGHT_OF, subMenuId);
+        mainLayout.addView(mContentLayout, framelp);
+
+        if (mDataHolder.infoList != null && mDataHolder.infoList.size() > 0) {
+            FragmentTransaction fragTransaction = mActivity.getFragmentManager().beginTransaction();
+            for (int i = 0; i < mDataHolder.infoList.size(); ++i) {
+                ContentFragment fragment = new ContentFragment();
+                fragment.init(mActivity, mPageView, mDataHolder.infoList.get(i));
+                mFragmentList.add(fragment);
+                fragTransaction.add(frameId, fragment);
+            }
+            fragTransaction.commit();
+        }
+        showContentByPos(0);
 
         mSubMenu.setSubMenuListener(new SubMenu.SubMenuListener() {
             @Override
             public void onItemGetFocus(int newPos) {
                 LogUtils.d("submenu get Focus : " + newPos);
                 mSubPagePos = newPos;
-                showGridViewByPos(newPos);
+                showContentByPos(newPos);
+
+                if (mItemClickListener != null) {
+                    mItemClickListener.onPageChanged(mPagePos, mSubPagePos);
+                }
             }
         });
 
-        mGridView.setOnItemClickListener(new LtAdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(LtAdapterView<?> parent, View view, int position, long id) {
-                LogUtils.d(view.toString() + " " + position + " " + id);
-                mItemClickListener.onItemClick(view, mPagePos, mSubPagePos, position);
-            }
-        });
+//        mGridView.setOnItemClickListener(new LtAdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(LtAdapterView<?> parent, View view, int position, long id) {
+//                LogUtils.d(view.toString() + " " + position + " " + id);
+//                mItemClickListener.onItemClick(view, mPagePos, mSubPagePos, position);
+//            }
+//        });
         return mainLayout;
     }
 
@@ -124,27 +129,18 @@ public class NavigationFragment extends Fragment {
         }
     }
 
-    private void showGridViewByPos(int pos) {
-        if (mDataHolder.infoList != null && mDataHolder.infoList.size() > pos
-                && mDataHolder.infoList.get(pos) != null) {
+    private void showContentByPos(int pos) {
+        if (pos >= mFragmentList.size()) {
+            return;
+        }
 
-            mGridView.setShadowRight(mDataHolder.infoList.get(pos).fadingWidth);
-            RelativeLayout.LayoutParams gvlp = (RelativeLayout.LayoutParams) mGridView.getLayoutParams();
-            gvlp.setMargins(0, 0, mDataHolder.infoList.get(pos).marginRight, 0);
-            mGridView.setLayoutParams(gvlp);
-
-            if (mDataHolder.infoList.get(pos).builtInAdapter != null) {
-                mPageView.setTotalPage(mDataHolder.infoList.get(pos).builtInAdapter.pageCount);
-                mGridView.setPageSpacing(mDataHolder.infoList.get(pos).builtInAdapter.columnSpacing);
-                mGridView.setAdapter(new ContentAdapt(mActivity, mDataHolder.infoList.get(pos).builtInAdapter));
-            } else {
-                if (mDataHolder.infoList.get(pos).customAdapter != null) {
-                    mPageView.setTotalPage(mDataHolder.infoList.get(pos).customAdapter.getPageCount());
-                    mGridView.setPageSpacing(mDataHolder.infoList.get(pos).customAdapter.getColumnSpacing());
-                    mGridView.setAdapter(mDataHolder.infoList.get(pos).customAdapter);
-                }
+        FragmentTransaction fragTransaction = mActivity.getFragmentManager().beginTransaction();
+        for (int i = 0; i < mFragmentList.size(); ++i) {
+            if (i != pos) {
+                fragTransaction.hide(mFragmentList.get(i));
             }
         }
+        fragTransaction.show(mFragmentList.get(pos)).commitAllowingStateLoss();
     }
 
     public void setDataHolder(Activity activity, NavigationFragment.DataHolder holder) {
@@ -155,7 +151,7 @@ public class NavigationFragment extends Fragment {
     }
 
     public static class DataHolder {
-        private List<ContentViewInfo> infoList;
+        private List<ContentViewProxy> infoList;
         private SubMenu.DataHolder subHolder;
         private int subMenuWidth;
         private int subMenuMarginRight;
@@ -163,7 +159,7 @@ public class NavigationFragment extends Fragment {
         public DataHolder() {
         }
 
-        public DataHolder infoList(List<ContentViewInfo> list) {
+        public DataHolder infoList(List<ContentViewProxy> list) {
             infoList = list;
             return this;
         }

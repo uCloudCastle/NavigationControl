@@ -1,4 +1,4 @@
-package com.china_liantong.navigationcontrol;
+package com.china_liantong.navigationcontrol.fragment;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -7,7 +7,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-import com.china_liantong.navigationcontrol.fragment.NavigationFragment;
+import com.china_liantong.navigationcontrol.NavigationBar;
+import com.china_liantong.navigationcontrol.NavigationControl;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.utils.LogUtils;
 
@@ -68,7 +69,7 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
             fragTransaction.add(mId, fragment);
         }
         fragTransaction.commit();
-        showFragmentInPos(0);
+        showFragmentByPos(0);
     }
 
     @Override
@@ -79,12 +80,12 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
 
         if (newPos >= 0 && newPos < mFragmentList.size()) {
             LogUtils.d("replace fragment : " + newPos);
-            showFragmentInPos(newPos);
+            showFragmentByPos(newPos);
             mCurPos = newPos;
         }
     }
 
-    private void showFragmentInPos(int pos) {
+    private void showFragmentByPos(int pos) {
         if (pos >= mFragmentList.size()) {
             return;
         }
@@ -97,7 +98,7 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
         fragTransaction.show(mFragmentList.get(pos)).commitAllowingStateLoss();
 
         if (mItemClickListener != null) {
-            mItemClickListener.onPageChanged(pos);
+            mItemClickListener.onPageChanged(pos, 0);
         }
     }
 }
