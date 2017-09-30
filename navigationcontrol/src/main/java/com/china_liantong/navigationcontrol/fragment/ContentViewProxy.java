@@ -2,10 +2,15 @@ package com.china_liantong.navigationcontrol.fragment;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.View;
 
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.adapt.ContentAdapt;
+import com.china_liantong.navigationcontrol.utils.LogUtils;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
 import com.china_liantong.navigationcontrol.widgets.PageView;
 
@@ -14,74 +19,64 @@ import com.china_liantong.navigationcontrol.widgets.PageView;
  */
 
 public class ContentViewProxy {
-    public interface DataLoadNotifier {
-        void onDataLoadStart();
-        void onDataLoadDone(boolean success);
-        void onPageChanged(int newPage);
-    }
-
-    public abstract class CustomViewHolder {
-        abstract View getLoadingView();
-        abstract View getLoadFailView();
-        abstract View getContentView();
-        abstract int getTotalPage();
+    public interface InfoChangeNotifier {
+        void notifyDataLoadStart();
+        void notifyDataLoadDone(boolean success);
+        void notifyPageChanged(int curPage, int totalPage);
     }
 
     // *************** BuiltIn Construction
     public ContentViewProxy(BuiltInAdapter adapter) {
+        this();
         builtInAdapter = adapter;
     }
 
     // *************** Custom Construction
     public ContentViewProxy(CustomViewHolder holder) {
+        this();
         customViewHolder = holder;
-        mNotifier = new DataLoadNotifier() {
-            @Override
-            public void onDataLoadStart() {
-                updateContentView(customViewHolder.getLoadingView());
-            }
-
-            @Override
-            public void onDataLoadDone(boolean success) {
-                if (success) {
-                    mPageView.setTotalPage(customViewHolder.getTotalPage());
-                    updateContentView(customViewHolder.getContentView());
-                } else {
-                    updateContentView(customViewHolder.getLoadFailView());
-                }
-            }
-
-            @Override
-            public void onPageChanged(int newPage) {
-                if (mPageView != null) {
-                    mPageView.setCurrentPage(newPage);
-                }
-            }
-        };
+        if (customViewHolder != null && customViewHolder.getContentView() != null) {
+            updateContentView(customViewHolder.getContentView());
+        }
     }
 
-    public DataLoadNotifier getNotifier() {
+    public void setBuiltInAdapter(BuiltInAdapter adapter) {
+        builtInAdapter = adapter;
+    }
+
+    public BuiltInAdapter getBuiltInAdapter() {
+        return builtInAdapter;
+    }
+
+    public void setCustomViewHolder(CustomViewHolder holder) {
+        customViewHolder = holder;
+    }
+
+    public CustomViewHolder getCustomViewHolder() {
+        return customViewHolder;
+    }
+
+    public InfoChangeNotifier getNotifier() {
         return mNotifier;
     }
 
+    private static final int HANDLER_ACTION_SHOW_LOADING = 0;
+    private static final int HANDLER_ACTION_SHOW_LOAD_SUCCESS = 1;
+    private static final int HANDLER_ACTION_SHOW_LOAD_FAIL = 2;
+    private static final int HANDLER_ACTION_SET_PAGE = 3;
+    private InfoChangeNotifier mNotifier;
+    private View mRootView;
+    private BuiltInAdapter builtInAdapter;
+    private CustomViewHolder customViewHolder;
+    private ContentUpdateListener mUpdateListener;
+    private PageView mPageView;
+    private Activity mActivity;
+
     void init(Activity activity, PageView pageView) {
+        mActivity = activity;
         mPageView = pageView;
         if (builtInAdapter != null) {
-            LtGridView gridView = new LtGridView(activity);
-            gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
-            gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
-            gridView.setFocusDrawable(activity.getResources().getDrawable(R.drawable.app_selected));
-            gridView.setFadingEdgeEnabled(true);
-            gridView.setFadingEdgeDrawable(activity.getResources().getDrawable(R.drawable.gridview_shading));
-            gridView.setFocusScaleAnimEnabled(false);
-            gridView.setSelectPadding((int) activity.getResources().getDimension(R.dimen.gridview_select_padding_left),
-                    (int) activity.getResources().getDimension(R.dimen.gridview_select_padding_top),
-                    (int) activity.getResources().getDimension(R.dimen.gridview_select_padding_right),
-                    (int) activity.getResources().getDimension(R.dimen.gridview_select_padding_bottom));
-
-            mPageView.setTotalPage(builtInAdapter.pageCount);
-            gridView.setPageSpacing(builtInAdapter.columnSpacing);
-            gridView.setAdapter(new ContentAdapt(activity, builtInAdapter));
+            LtGridView gridView = createBuiltInGridView();
             updateContentView(gridView);
         }
     }
@@ -96,6 +91,25 @@ public class ContentViewProxy {
         return mRootView;
     }
 
+    private LtGridView createBuiltInGridView() {
+        LtGridView gridView = new LtGridView(mActivity);
+        gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
+        gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
+        gridView.setFocusDrawable(mActivity.getResources().getDrawable(R.drawable.app_selected));
+        gridView.setFadingEdgeEnabled(true);
+        gridView.setFadingEdgeDrawable(mActivity.getResources().getDrawable(R.drawable.gridview_shading));
+        gridView.setFocusScaleAnimEnabled(false);
+        gridView.setSelectPadding((int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_left),
+                (int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_top),
+                (int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_right),
+                (int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_bottom));
+
+        mPageView.setTotalPage(builtInAdapter.pageCount);
+        gridView.setPageSpacing(builtInAdapter.columnSpacing);
+        gridView.setAdapter(new ContentAdapt(mActivity, builtInAdapter));
+        return gridView;
+    }
+
     private void updateContentView(View view) {
         mRootView = view;
         if (mUpdateListener != null) {
@@ -103,12 +117,48 @@ public class ContentViewProxy {
         }
     }
 
-    private DataLoadNotifier mNotifier;
-    private View mRootView;
-    private BuiltInAdapter builtInAdapter;
-    private CustomViewHolder customViewHolder;
-    private ContentUpdateListener mUpdateListener;
-    private PageView mPageView;
+    public static class CustomViewHolder {
+        View mLoadingView;
+        View mLoadFailView;
+        View mContentView;
+
+        public CustomViewHolder(View loadingView,
+                                View loadFailView, View contentView) {
+            mLoadingView = loadingView;
+            mLoadFailView = loadFailView;
+            mContentView = contentView;
+        }
+
+        public View getLoadingView() {
+            return mLoadingView;
+        }
+
+        public View getLoadFailView() {
+            return mLoadFailView;
+        }
+
+        public View getContentView() {
+            return mContentView;
+        }
+
+        public void setLoadingView(View view) {
+            if (view != null) {
+                mLoadingView = view;
+            }
+        }
+
+        public void setLoadFailView(View view) {
+            if (view != null) {
+                mLoadFailView = view;
+            }
+        }
+
+        public void setContentView(View view) {
+            if (view != null) {
+                mContentView = view;
+            }
+        }
+    }
 
     public static class BuiltInAdapter {
         public static final int CONTENT_ITEM_STYLE_BACKGROUND_COVERED = 0;
@@ -230,6 +280,97 @@ public class ContentViewProxy {
             fadingWidth = width;
             return this;
         }
+    }
+
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case HANDLER_ACTION_SHOW_LOADING: {
+                    LogUtils.d("111");
+                    if (customViewHolder == null) {
+                        return;
+                    }
+                    LogUtils.d("222");
+                    View view = customViewHolder.getLoadingView();
+                    if (view != null) {
+                        LogUtils.d("333");
+                        updateContentView(view);
+                    }
+                    break;
+                }
+                case HANDLER_ACTION_SHOW_LOAD_SUCCESS: {
+                    View view = null;
+                    if (builtInAdapter != null) {
+                        view = createBuiltInGridView();
+                    } else if (customViewHolder != null) {
+                        view = customViewHolder.getContentView();
+                    }
+                    if (view != null) {
+                        updateContentView(view);
+                    }
+                    break;
+                }
+                case HANDLER_ACTION_SHOW_LOAD_FAIL: {
+                    if (customViewHolder == null) {
+                        return;
+                    }
+                    View view = customViewHolder.getLoadFailView();
+                    if (view != null) {
+                        updateContentView(view);
+                    }
+                    break;
+                }
+                case HANDLER_ACTION_SET_PAGE: {
+                    if (mPageView != null) {
+                        Bundle bundle = msg.getData();
+                        int totalPage = bundle.getInt("totalPage");
+                        int curPage = bundle.getInt("curPage");
+                        mPageView.setTotalPage(totalPage);
+                        mPageView.setCurrentPage(curPage);
+                    }
+                }
+                default:
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
+
+    // *************** Default Construction
+    public ContentViewProxy() {
+        mNotifier = new InfoChangeNotifier() {
+            @Override
+            public void notifyDataLoadStart() {
+                mHandler.removeMessages(HANDLER_ACTION_SHOW_LOADING);
+                Message msg = mHandler.obtainMessage(HANDLER_ACTION_SHOW_LOADING);
+                mHandler.sendMessage(msg);
+            }
+
+            @Override
+            public void notifyDataLoadDone(boolean success) {
+                if (success) {
+                    mHandler.removeMessages(HANDLER_ACTION_SHOW_LOAD_SUCCESS);
+                    Message msg = mHandler.obtainMessage(HANDLER_ACTION_SHOW_LOAD_SUCCESS);
+                    mHandler.sendMessage(msg);
+                } else {
+                    mHandler.removeMessages(HANDLER_ACTION_SHOW_LOAD_FAIL);
+                    Message msg = mHandler.obtainMessage(HANDLER_ACTION_SHOW_LOAD_FAIL);
+                    mHandler.sendMessage(msg);
+                }
+            }
+
+            @Override
+            public void notifyPageChanged(int curPage, int totalPage) {
+                mHandler.removeMessages(HANDLER_ACTION_SET_PAGE);
+                Message msg = mHandler.obtainMessage(HANDLER_ACTION_SET_PAGE);
+                Bundle bundle = new Bundle();
+                bundle.putInt("totalPage", totalPage);
+                bundle.putInt("curPage", curPage);
+                msg.setData(bundle);
+                mHandler.sendMessage(msg);
+            }
+        };
     }
 
     interface ContentUpdateListener {

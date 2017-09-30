@@ -5,7 +5,9 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.china_liantong.navigationcontrol.NavigationBar;
@@ -21,17 +23,35 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.china_liantong.navigationcontrol.fragment.ContentViewProxy.BuiltInAdapter.CONTENT_ITEM_STYLE_BACKGROUND_COVERED;
-import static com.china_liantong.navigationcontrol.fragment.ContentViewProxy.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_LEFT;
 import static com.china_liantong.navigationcontrol.fragment.ContentViewProxy.BuiltInAdapter.CONTENT_ITEM_STYLE_ICON_TOP;
-import static com.china_liantong.navigationcontrol.fragment.ContentViewProxy.BuiltInAdapter.CONTENT_ITEM_STYLE_ONLY_TEXT;
 
 public class MainActivity extends Activity {
     NavigationControl mNavigationControl;
+    TextView loadingView;
+    TextView loadFailView;
+    ContentViewProxy proxy_4_1;
+    ContentViewProxy proxy_4_2;
+    ContentViewProxy proxy_4_3;
+    ContentViewProxy proxy_5_2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        loadingView = new TextView(MainActivity.this);
+        loadingView.setBackgroundColor(getResources().getColor(R.color.common_light_grey));
+        loadingView.setText("加载中...");
+        loadingView.setTextSize(36);
+        loadingView.setGravity(Gravity.CENTER);
+        loadingView.setTextColor(Color.WHITE);
+
+        loadFailView = new TextView(MainActivity.this);
+        loadFailView.setBackgroundColor(getResources().getColor(R.color.common_light_grey));
+        loadFailView.setText("加载失败");
+        loadFailView.setTextSize(36);
+        loadFailView.setGravity(Gravity.CENTER);
+        loadFailView.setTextColor(Color.WHITE);
 
         String[] list = new String[]{"已安装", "推荐", "游戏", "动态加载-我的消费", "动态加载-自定义View", "运动竞技", "教育", "公开课", "亲子栏目"};
         mNavigationControl = (NavigationControl) findViewById(R.id.mainactivity_navigationcontrol);
@@ -62,7 +82,7 @@ public class MainActivity extends Activity {
         nfHolderList.add(getFragmentDemo2());
         nfHolderList.add(getFragmentDemo3());
         nfHolderList.add(getFragmentDemo4());
-        //nfHolderList.add(getFragmentDemo5());
+        nfHolderList.add(getFragmentDemo5());
 
         /* ************ Set Config and Show() ********** */
         mNavigationControl.navigationControlHolder(ncHolder)
@@ -79,6 +99,27 @@ public class MainActivity extends Activity {
             public void onPageChanged(int page, int subpage) {
                 Toast.makeText(MainActivity.this, "onPageChanged : "
                         + page + " " + subpage, Toast.LENGTH_SHORT).show();
+                if (page == 3 && subpage == 0) {
+                    if (proxy_4_1.getBuiltInAdapter() != null) {                   // 已经下载好
+                        return;
+                    }
+                    new Thread(new DynamicLoadRunnable(MainActivity.this, proxy_4_1, page, subpage)).start();
+                } else if (page == 3 && subpage == 1) {
+                    if (proxy_4_2.getBuiltInAdapter() != null) {                   // 已经下载好
+                        return;
+                    }
+                    new Thread(new DynamicLoadRunnable(MainActivity.this, proxy_4_2, page, subpage)).start();
+                } else if (page == 3 && subpage == 2) {
+                    if (proxy_4_3.getBuiltInAdapter() != null) {                   // 已经下载好
+                        return;
+                    }
+                    new Thread(new DynamicLoadRunnable(MainActivity.this, proxy_4_3, page, subpage)).start();
+                } else if (page == 4 && subpage == 1) {
+                    if (proxy_5_2.getCustomViewHolder().getContentView() != null) {                   // 已经下载好
+                        return;
+                    }
+                    new Thread(new DynamicLoadRunnable(MainActivity.this, proxy_5_2, page, subpage)).start();
+                }
             }
         });
     }
@@ -121,11 +162,11 @@ public class MainActivity extends Activity {
                 .fadingWidth(DensityUtils.dp2px(this, 80));
         ContentViewProxy info = new ContentViewProxy(adapter);
 
-        List<ContentViewProxy> contentViewProxies = new ArrayList<>();
-        contentViewProxies.add(info);
+        List<ContentViewProxy> proxies = new ArrayList<>();
+        proxies.add(info);
 
         return new NavigationFragment.DataHolder()
-                .infoList(contentViewProxies);
+                .infoList(proxies);
     }
 
     private NavigationFragment.DataHolder getFragmentDemo2() {
@@ -159,11 +200,11 @@ public class MainActivity extends Activity {
                 .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1}});
         ContentViewProxy info = new ContentViewProxy(adapter);
 
-        List<ContentViewProxy> contentViewProxies = new ArrayList<>();
-        contentViewProxies.add(info);
+        List<ContentViewProxy> proxies = new ArrayList<>();
+        proxies.add(info);
 
         return new NavigationFragment.DataHolder()
-                .infoList(contentViewProxies);
+                .infoList(proxies);
     }
 
     private NavigationFragment.DataHolder getFragmentDemo3() {
@@ -255,12 +296,12 @@ public class MainActivity extends Activity {
                 .fadingWidth(DensityUtils.dp2px(this, 80));;
         ContentViewProxy info2 = new ContentViewProxy(adapter2);
 
-        List<ContentViewProxy> contentViewProxies = new ArrayList<>();
-        contentViewProxies.add(info1);
-        contentViewProxies.add(info2);
+        List<ContentViewProxy> proxies = new ArrayList<>();
+        proxies.add(info1);
+        proxies.add(info2);
 
         return new NavigationFragment.DataHolder()
-                .infoList(contentViewProxies)
+                .infoList(proxies)
                 .subHolder(subMenuHolder)
                 .subMenuWidth(DensityUtils.dp2px(this, 175))
                 .subMenuMarginRight(10);
@@ -283,167 +324,53 @@ public class MainActivity extends Activity {
                 .rowSpacing(DensityUtils.dp2px(this, 10));
 
         // grid view
-        // info1
-        String[][] titleList1 = new String[][]{{"2014年 本月", "2014年 07月", "2014年 06月", "2014年 05月", "2014年 04月", "2014年 03月",
-                "2014年 02月", "2014年 01月", "2013年 12月", "2013年 11月", "2013年 10月", "2013年 09月"}};
-        String[][] subtitleList1 = new String[][]{{"12.00", "43.00", "7.00", "1125.00", "586.00", "63.00",
-                "367.00", "12.00", "71.00", "422.00", "9.00", "68.00"}};
-        ContentViewProxy.BuiltInAdapter adapter1 = new ContentViewProxy.BuiltInAdapter()
-                .pageCount(1)
-                .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ONLY_TEXT})
-                .perPageItemCount(new int[]{12})
-                .titles(titleList1)
-                .subtitles(subtitleList1)
-                .titleSize(20)
-                .titleColor(Color.LTGRAY)
-                .subtitleSize(36)
-                .subtitleColor(Color.LTGRAY)
-                .rows(3)
-                .columns(4)
-                .rowSpacing(10)
-                .columnSpacing(10)
-                .itemStartIndex(new int[][]{ {0, 3, 6, 9, 1, 4, 7, 10, 2, 5, 8, 11} })
-                .itemRowSize(new int[][]{ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} })
-                .itemColumnSize(new int[][]{ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} })
-                .marginRight(DensityUtils.dp2px(this, 50));
-        ContentViewProxy info1 = new ContentViewProxy(adapter1);
-
-        // info2
-        Drawable[][] picList2 = new Drawable[][]{
-                {getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5)},
-                {getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5),
-                        getResources().getDrawable(R.drawable.content_1_5)}};
-        String[][] titleList2 = new String[][]{{"宠物斗地主", "宠物斗地主", "宠物斗地主",
-                "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主"},
-                {"宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主"}
-        };
-        String[][] subtitleList2 = new String[][]{{"购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"},
-                {"购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"}};
-        ContentViewProxy.BuiltInAdapter adapter2 = new ContentViewProxy.BuiltInAdapter()
-                .pageCount(2)
-                .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ICON_LEFT, CONTENT_ITEM_STYLE_ICON_LEFT})
-                .perPageItemCount(new int[]{9, 6})
-                .pictures(picList2)
-                .titles(titleList2)
-                .subtitles(subtitleList2)
-                .titleSize(19)
-                .titleColor(Color.WHITE)
-                .subtitleSize(15)
-                .subtitleColor(Color.LTGRAY)
-                .rows(3)
-                .columns(3)
-                .rowSpacing(10)
-                .columnSpacing(10)
-                .itemStartIndex(new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8}, {0, 1, 2, 3, 4, 5}})
-                .itemRowSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}})
-                .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}})
-                .fadingWidth(DensityUtils.dp2px(this, 80));
-        ContentViewProxy info2 = new ContentViewProxy(adapter2);
-
-        // info3
-        Drawable[][] picList3 = new Drawable[][]{
-                {getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1)},
-                {getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1),
-                        getResources().getDrawable(R.drawable.content_1_1)}};
-        String[][] titleList3 = new String[][]{{"宠物斗地主", "宠物斗地主", "宠物斗地主",
-                "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主"},
-                {"宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主", "宠物斗地主"}
-        };
-        String[][] subtitleList3 = new String[][]{{"购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"},
-                {"购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元",
-                        "购买时间: 2016/01/12 12:30\n有效期: 永久\n金额: 5:00元"}};
-        ContentViewProxy.BuiltInAdapter adapter3 = new ContentViewProxy.BuiltInAdapter()
-                .pageCount(2)
-                .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ICON_LEFT, CONTENT_ITEM_STYLE_ICON_LEFT})
-                .perPageItemCount(new int[]{9, 6})
-                .pictures(picList3)
-                .titles(titleList3)
-                .subtitles(subtitleList3)
-                .titleSize(19)
-                .titleColor(Color.WHITE)
-                .subtitleSize(15)
-                .subtitleColor(Color.LTGRAY)
-                .rows(3)
-                .columns(3)
-                .rowSpacing(10)
-                .columnSpacing(10)
-                .itemStartIndex(new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8}, {0, 1, 2, 3, 4, 5}})
-                .itemRowSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}})
-                .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1}})
-                .fadingWidth(DensityUtils.dp2px(this, 80));
-        ContentViewProxy info3 = new ContentViewProxy(adapter3);
-
-        List<ContentViewProxy> contentViewProxies = new ArrayList<>();
-        contentViewProxies.add(info1);
-        contentViewProxies.add(info2);
-        contentViewProxies.add(info3);
+        // info1          有loading view
+        proxy_4_1 = new ContentViewProxy(new ContentViewProxy.CustomViewHolder(loadingView, loadFailView, null));
+        // info2          无loading view
+        proxy_4_2 = new ContentViewProxy();
+        // info3          loading view + load fail view
+        proxy_4_3 = new ContentViewProxy(new ContentViewProxy.CustomViewHolder(loadingView, loadFailView, null));
+        List<ContentViewProxy> proxies = new ArrayList<>();
+        proxies.add(proxy_4_1);
+        proxies.add(proxy_4_2);
+        proxies.add(proxy_4_3);
 
         return new NavigationFragment.DataHolder()
-                .infoList(contentViewProxies)
+                .infoList(proxies)
                 .subHolder(subMenuHolder)
                 .subMenuWidth(DensityUtils.dp2px(this, 175))
                 .subMenuMarginRight(10);
     }
 
-//    private NavigationFragment.DataHolder getFragmentDemo5() {
-//        // no submenu
-//        // grid view
-//        //ContentViewProxy info = new ContentViewProxy();
-//        //info.customAdapter = new DemoAdapt(MainActivity.this);
-//
-//        List<ContentViewProxy> contentViewProxies = new ArrayList<>();
-//        contentViewProxies.add(info);
-//
-//        return new NavigationFragment.DataHolder()
-//                .infoList(contentViewProxies);
-//    }
+    private NavigationFragment.DataHolder getFragmentDemo5() {
+        // submenu
+        String[] subList = new String[]{"静态自定义View", "动态自定义View"};
+        List<Pair<String, Drawable>> pairList = new ArrayList<>();
+        pairList.add(new Pair<>(subList[0], getResources().getDrawable(R.drawable.sub_1)));
+        pairList.add(new Pair<>(subList[1], getResources().getDrawable(R.drawable.sub_2)));
+        SubMenu.DataHolder subMenuHolder = new SubMenu.DataHolder()
+                .subPairs(pairList)
+                .itemStyle(SubMenu.DataHolder.SUBMENU_ITEM_STYLE_ICON_LEFT)
+                .fullDisplayNumber(4)
+                .textColor(Color.WHITE)
+                .textSize(20)
+                .rowSpacing(8);
+
+        // proxy 1         静态自定义View
+        View view = new View(MainActivity.this);
+        view.setBackground(getResources().getDrawable(R.drawable.content_3_3));
+        ContentViewProxy proxy1 = new ContentViewProxy(new ContentViewProxy.CustomViewHolder(null, null, view));
+
+        // proxy 2         动态自定义View
+        proxy_5_2 = new ContentViewProxy(new ContentViewProxy.CustomViewHolder(loadingView, loadFailView, null));
+        List<ContentViewProxy> proxies = new ArrayList<>();
+        proxies.add(proxy1);
+        proxies.add(proxy_5_2);
+
+        return new NavigationFragment.DataHolder()
+                .infoList(proxies)
+                .subHolder(subMenuHolder)
+                .subMenuWidth(DensityUtils.dp2px(this, 275))
+                .subMenuMarginRight(10);
+    }
 }
