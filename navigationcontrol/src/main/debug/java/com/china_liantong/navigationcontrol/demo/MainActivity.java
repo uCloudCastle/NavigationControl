@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
         loadFailView.setGravity(Gravity.CENTER);
         loadFailView.setTextColor(Color.WHITE);
 
-        String[] list = new String[]{"已安装", "推荐", "游戏", "动态加载-我的消费", "动态加载-自定义View", "运动竞技", "教育", "公开课", "亲子栏目"};
+        String[] list = new String[]{"已安装", "推荐", "游戏", "动态加载-我的消费", "自定义View", "运动竞技", "教育", "公开课", "亲子栏目"};
         mNavigationControl = (NavigationControl) findViewById(R.id.mainactivity_navigationcontrol);
 
         /* ************ 主界面 Config Data ********** */
@@ -344,7 +344,7 @@ public class MainActivity extends Activity {
 
     private NavigationFragment.DataHolder getFragmentDemo5() {
         // submenu
-        String[] subList = new String[]{"静态自定义View", "动态自定义View"};
+        String[] subList = new String[]{"静态加载", "动态加载"};
         List<Pair<String, Drawable>> pairList = new ArrayList<>();
         pairList.add(new Pair<>(subList[0], getResources().getDrawable(R.drawable.sub_1)));
         pairList.add(new Pair<>(subList[1], getResources().getDrawable(R.drawable.sub_2)));
@@ -370,7 +370,7 @@ public class MainActivity extends Activity {
         return new NavigationFragment.DataHolder()
                 .infoList(proxies)
                 .subHolder(subMenuHolder)
-                .subMenuWidth(DensityUtils.dp2px(this, 275))
+                .subMenuWidth(DensityUtils.dp2px(this, 225))
                 .subMenuMarginRight(10);
     }
 }
