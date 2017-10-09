@@ -8,9 +8,11 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 
+import com.china_liantong.navigationcontrol.NavigationControlListener;
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.adapt.ContentAdapt;
 import com.china_liantong.navigationcontrol.utils.LogUtils;
+import com.china_liantong.navigationcontrol.widgets.LtAdapterView;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
 import com.china_liantong.navigationcontrol.widgets.PageView;
 
@@ -19,6 +21,11 @@ import com.china_liantong.navigationcontrol.widgets.PageView;
  */
 
 public class ContentViewProxy {
+    private NavigationControlListener mClientListener;
+    private View mSelectedGridViewItem;
+    private int mSelectedPosition;
+    private boolean gridViewHasFocus = false;
+
     public interface InfoChangeNotifier {
         void notifyDataLoadStart();
         void notifyDataLoadDone(boolean success);
@@ -72,9 +79,10 @@ public class ContentViewProxy {
     private PageView mPageView;
     private Activity mActivity;
 
-    void init(Activity activity, PageView pageView) {
+    void init(Activity activity, PageView pageView, NavigationControlListener listener) {
         mActivity = activity;
         mPageView = pageView;
+        mClientListener = listener;
         if (builtInAdapter != null) {
             LtGridView gridView = createBuiltInGridView();
             updateContentView(gridView);
@@ -107,6 +115,47 @@ public class ContentViewProxy {
         mPageView.setTotalPage(builtInAdapter.pageCount);
         gridView.setPageSpacing(builtInAdapter.columnSpacing);
         gridView.setAdapter(new ContentAdapt(mActivity, builtInAdapter));
+        gridView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                LogUtils.d(" " + hasFocus);
+                gridViewHasFocus = hasFocus;
+                if (hasFocus && mSelectedGridViewItem != null) {
+                    mClientListener.onBuiltInItemGetFocus(mSelectedGridViewItem, mSelectedPosition);
+                }
+            }
+        });
+
+        gridView.setOnItemSelectedListener(new LtAdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(LtAdapterView<?> parent, View view, int position, long id) {
+                mSelectedGridViewItem = view;
+                mSelectedPosition = position;
+                if (!gridViewHasFocus) {
+                    return;
+                }
+
+                if (mClientListener != null) {
+                    mClientListener.onBuiltInItemGetFocus(view, position);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(LtAdapterView<?> parent) {}
+
+            @Override
+            public void onItemGoingTo(View view, int position) {}
+        });
+
+        gridView.setOnItemClickListener(new LtAdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(LtAdapterView<?> parent, View view, int position, long id) {
+                if (mClientListener != null) {
+                    mClientListener.onBuiltInItemClick(view, position);
+                }
+            }
+        });
+
         return gridView;
     }
 
@@ -287,14 +336,11 @@ public class ContentViewProxy {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case HANDLER_ACTION_SHOW_LOADING: {
-                    LogUtils.d("111");
                     if (customViewHolder == null) {
                         return;
                     }
-                    LogUtils.d("222");
                     View view = customViewHolder.getLoadingView();
                     if (view != null) {
-                        LogUtils.d("333");
                         updateContentView(view);
                     }
                     break;

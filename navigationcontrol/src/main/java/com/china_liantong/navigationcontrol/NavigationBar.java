@@ -14,7 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
-import com.china_liantong.navigationcontrol.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,19 +23,17 @@ import java.util.List;
  * Created by randal on 2017/9/14.
  */
 
-public class NavigationBar extends RelativeLayout implements ViewTreeObserver.OnGlobalFocusChangeListener {
+public class NavigationBar extends RelativeLayout {
     private Context mContext;
     private ArrayList<TextView> mTextViews = new ArrayList<>();
     private ArrayList<Rect> mRects = new ArrayList<>();
     private View mFocusView;
 
-    private View mGetFocusView;
     private DataHolder mDataHolder;
     private NavigationBarListener mListener;
-    private int mFirstItemTag;
     private int mLastPaddingLeft;
-    private boolean animDisable = false;
-    private boolean needCircle = false;
+    private int curSelectedPos = 0;
+    private View mFocusTransmitter;
 
     public NavigationBar(Context context) {
         this(context, null);
@@ -45,7 +42,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
     public NavigationBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        getViewTreeObserver().addOnGlobalFocusChangeListener(this);
+        setFocusListener();
     }
 
     public void setDataHolder(DataHolder holder) {
@@ -57,6 +54,75 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
 
     public void setNavigationBarListener(NavigationBarListener l) {
         if (l != null) mListener = l;
+    }
+
+    private void setFocusListener() {
+        setFocusable(true);
+        setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) {
+                    if (event.getAction() == KeyEvent.ACTION_UP) {
+                        setFocusStyle(curSelectedPos);
+                    }
+                    return false;
+                }
+                if (mTextViews.size() <= 1) {
+                    return false;
+                }
+
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_DPAD_LEFT: {
+                        int toPos = curSelectedPos - 1;
+                        if (curSelectedPos == 0) {
+                            toPos = mTextViews.size() - 1;
+                        }
+                        setNormalStyle(curSelectedPos);
+                        setFocusStyle(toPos);
+                        asyncMoveViews(curSelectedPos, toPos);
+                        curSelectedPos = toPos;
+                        return true;
+                    }
+                    case KeyEvent.KEYCODE_DPAD_RIGHT: {
+                        int toPos = curSelectedPos + 1;
+                        if (curSelectedPos == mTextViews.size() - 1) {
+                            toPos = 0;
+                        }
+                        setNormalStyle(curSelectedPos);
+                        setFocusStyle(toPos);
+                        asyncMoveViews(curSelectedPos, toPos);
+                        curSelectedPos = toPos;
+                        return true;
+                    }
+                    case KeyEvent.KEYCODE_DPAD_DOWN: {
+                        mFocusTransmitter.requestFocus();
+                        setUnFocusStyle(curSelectedPos);
+                        return false;
+                    }
+                    case KeyEvent.KEYCODE_DPAD_UP: {
+                        setFocusStyle(curSelectedPos);
+                        return false;
+                    }
+                }
+                return false;
+            }
+        });
+
+        mFocusTransmitter = new View(mContext);
+        mFocusTransmitter.setFocusable(true);
+        mFocusTransmitter.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    NavigationBar.this.requestFocus();
+                    setFocusStyle(curSelectedPos);
+                }
+                return false;
+            }
+        });
+        RelativeLayout.LayoutParams trParams = new RelativeLayout.LayoutParams(1, 1);
+        trParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+        addView(mFocusTransmitter, trParams);
     }
 
     private void initView() {
@@ -74,16 +140,11 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         for (int i = 0; i < mDataHolder.titles.size(); ++i) {
             TextView view = new TextView(mContext);
             view.setText(mDataHolder.titles.get(i));
-            view.setFocusable(true);
             view.setLines(1);
             view.setTextColor(mDataHolder.textColor);
             view.setTextSize(mDataHolder.textSize);
             view.setId(CommonUtils.generateViewId());
 
-            if (i == 0) {
-                mFirstItemTag = mDataHolder.titles.get(0).hashCode();
-            }
-            view.setTag(mFirstItemTag + i);
             RelativeLayout.LayoutParams itemParams = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             itemParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
@@ -94,10 +155,7 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
             addView(view, itemParams);
             mTextViews.add(view);
         }
-        initListener();
-    }
 
-    private void initListener() {
         getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
@@ -106,42 +164,6 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
                 return true;
             }
         });
-
-        final int size = mTextViews.size();
-        if (size >= 2) {
-            mTextViews.get(0).setOnKeyListener(new OnKeyListener() {
-                @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                        if (needCircle) {
-                            mTextViews.get(size - 1).requestFocus();
-                            needCircle = false;
-                            return true;
-                        }
-                        needCircle = true;
-                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                        needCircle = false;
-                    }
-                    return false;
-                }
-            });
-            mTextViews.get(size - 1).setOnKeyListener(new OnKeyListener() {
-                @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                        if (needCircle) {
-                            mTextViews.get(0).requestFocus();
-                            needCircle = false;
-                            return true;
-                        }
-                        needCircle = true;
-                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                        needCircle = false;
-                    }
-                    return false;
-                }
-            });
-        }
     }
 
     private void asyncRelayout() {
@@ -172,58 +194,26 @@ public class NavigationBar extends RelativeLayout implements ViewTreeObserver.On
         focusViewParams.setMargins((int) getResources().getDimension(R.dimen.navigation_bar_content_spacing) - mDataHolder.drawableMargin,
                 0, 0, -mDataHolder.drawableMargin);
         mFocusView.setLayoutParams(focusViewParams);
+        setFocusStyle(0);
     }
 
-    @Override
-    public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-        LogUtils.d(LogUtils.printObject(oldFocus) + " " + LogUtils.printObject(newFocus));
-        if (!checkIfInnerView(oldFocus) && checkIfInnerView(newFocus)) {     // outer to inner
-            if (mGetFocusView != null && mGetFocusView.getTag() != newFocus.getTag()) {
-                animDisable = true;
-                mGetFocusView.requestFocus();
-                return;
-            }
-            mGetFocusView = newFocus;
-            setFocusStyle((TextView) newFocus);
-        } else if (checkIfInnerView(oldFocus) && !checkIfInnerView(newFocus)) {    // inner to outer
-            setUnFocusStyle((TextView) oldFocus);
-        } else if (checkIfInnerView(oldFocus) && checkIfInnerView(newFocus)) {     // inner to inner
-            mGetFocusView = newFocus;
-            setNormalStyle((TextView) oldFocus);
-            setFocusStyle((TextView) newFocus);
-            if (animDisable) {
-                animDisable = false;
-                return;
-            }
-            asyncMoveViews((int) oldFocus.getTag() - mFirstItemTag, (int) newFocus.getTag() - mFirstItemTag);
-        }
+    private void setNormalStyle(int pos) {
+        mTextViews.get(pos).setTextColor(mDataHolder.textColor);
+        mTextViews.get(pos).setTextSize(mDataHolder.textSize);
     }
 
-    private boolean checkIfInnerView(View view) {
-        if (view == null || view.getTag() == null) {
-            return false;
-        }
-        int tag = (int) view.getTag();
-        return ((tag >= mFirstItemTag) && (tag <= mFirstItemTag + mTextViews.size() - 1));
-    }
-
-    private void setNormalStyle(TextView v) {
-        v.setTextColor(mDataHolder.textColor);
-        v.setTextSize(mDataHolder.textSize);
-    }
-
-    private void setUnFocusStyle(TextView v) {
-        v.setTextColor(mDataHolder.textFocusColor);
-        v.setTextSize(mDataHolder.textFocusSize);
+    private void setUnFocusStyle(int pos) {
+        mTextViews.get(pos).setTextColor(mDataHolder.textFocusColor);
+        mTextViews.get(pos).setTextSize(mDataHolder.textFocusSize);
         mFocusView.setBackground(mDataHolder.selectDrawable);
     }
 
-    private void setFocusStyle(TextView v) {
-        v.setTextColor(mDataHolder.textFocusColor);
-        v.setTextSize(mDataHolder.textFocusSize);
+    private void setFocusStyle(int pos) {
+        mTextViews.get(pos).setTextColor(mDataHolder.textFocusColor);
+        mTextViews.get(pos).setTextSize(mDataHolder.textFocusSize);
         mFocusView.setBackground(mDataHolder.focusDrawable);
         if (mListener != null) {
-            mListener.onItemGetFocus((int) v.getTag() - mFirstItemTag);
+            mListener.onItemGetFocus(pos);
         }
     }
 

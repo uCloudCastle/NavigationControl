@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 import com.china_liantong.navigationcontrol.NavigationBar;
-import com.china_liantong.navigationcontrol.NavigationControl;
+import com.china_liantong.navigationcontrol.NavigationControlListener;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
 import com.china_liantong.navigationcontrol.utils.LogUtils;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public class FragmentContainer extends FrameLayout implements NavigationBar.NavigationBarListener {
     private Activity mActivity;
     private FragmentManager mFgManager;
-    private NavigationControl.OnItemClickListener mItemClickListener;
+    private NavigationControlListener mClientListener;
     private List<NavigationFragment> mFragmentList = new ArrayList<>();
 
     private List<NavigationFragment.DataHolder> mDataHolders;
@@ -47,10 +47,10 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
         }
     }
 
-    public void setOnItemClickListener(NavigationControl.OnItemClickListener l) {
-        mItemClickListener = l;
+    public void setClientListener(NavigationControlListener l) {
+        mClientListener = l;
         for (NavigationFragment fragment : mFragmentList) {
-            fragment.setOnItemClickListener(l);
+            fragment.setClientListener(l);
         }
     }
 
@@ -96,9 +96,10 @@ public class FragmentContainer extends FrameLayout implements NavigationBar.Navi
             }
         }
         fragTransaction.show(mFragmentList.get(pos)).commitAllowingStateLoss();
+        mFragmentList.get(pos).resetSubMenuIfExist();
 
-        if (mItemClickListener != null) {
-            mItemClickListener.onPageChanged(pos, 0);
+        if (mClientListener != null) {
+            mClientListener.onPageChanged(pos, 0);
         }
     }
 }

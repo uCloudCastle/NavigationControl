@@ -3,7 +3,6 @@ package com.china_liantong.navigationcontrol;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -52,17 +51,12 @@ public class NavigationControl extends LinearLayout {
         navBar.setNavigationBarListener(mFragmentContainer);
     }
 
-    public boolean setOnItemClickListener(OnItemClickListener l) {
+    public boolean setListener(NavigationControlListener l) {
         if (mFragmentContainer != null && l != null) {
-            mFragmentContainer.setOnItemClickListener(l);
+            mFragmentContainer.setClientListener(l);
             return true;
         }
         return false;
-    }
-
-    public interface OnItemClickListener {
-        void onBuiltInItemClick(View focusView, int page, int subpage, int position);
-        void onPageChanged(int page, int subpage);
     }
 
     public NavigationControl navigationControlHolder(NavigationControl.DataHolder holder) {

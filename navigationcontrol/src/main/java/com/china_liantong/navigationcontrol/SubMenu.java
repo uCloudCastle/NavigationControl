@@ -51,6 +51,12 @@ public class SubMenu extends FrameLayout {
         }
     }
 
+    public void reset() {
+        if (lastSelectedView != null) {
+            lastSelectedView.setBackground(getResources().getDrawable(R.drawable.item_background_darkblue));
+        }
+    }
+
     public void setSubMenuListener(SubMenuListener l) {
         if (l != null) mListener = l;
     }
@@ -156,7 +162,7 @@ public class SubMenu extends FrameLayout {
                                    View convertView, ViewGroup parent) {
             View icon = convertView.findViewById(R.id.item_submenu_icon);
             TextView text = (TextView) convertView.findViewById(R.id.item_submenu_text);
-            SlantedTextView tag= (SlantedTextView) convertView.findViewById(R.id.item_submenu_tag);
+            SlantedTextView tag = (SlantedTextView) convertView.findViewById(R.id.item_submenu_tag);
 
             int actualIndex = indexPage * mDataHolder.fullDisplayNumber + position;
             text.setText(mDataHolder.pairs.get(actualIndex).first);

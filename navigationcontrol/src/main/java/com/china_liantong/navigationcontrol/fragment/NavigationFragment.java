@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import com.china_liantong.navigationcontrol.NavigationControl;
+import com.china_liantong.navigationcontrol.NavigationControlListener;
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.SubMenu;
 import com.china_liantong.navigationcontrol.utils.CommonUtils;
@@ -28,7 +28,7 @@ public class NavigationFragment extends Fragment {
     private Activity mActivity;
     private DataHolder mDataHolder;
     private List<ContentFragment> mFragmentList = new ArrayList<>();
-    private NavigationControl.OnItemClickListener mItemClickListener;
+    private NavigationControlListener mClientListener;
 
     private int mPagePos;
     private int mSubPagePos;
@@ -82,11 +82,11 @@ public class NavigationFragment extends Fragment {
         framelp.addRule(RelativeLayout.RIGHT_OF, subMenuId);
         mainLayout.addView(mContentLayout, framelp);
 
-        if (mDataHolder.infoList != null && mDataHolder.infoList.size() > 0) {
+        if (mDataHolder.proxyList != null && mDataHolder.proxyList.size() > 0) {
             FragmentTransaction fragTransaction = mActivity.getFragmentManager().beginTransaction();
-            for (int i = 0; i < mDataHolder.infoList.size(); ++i) {
+            for (int i = 0; i < mDataHolder.proxyList.size(); ++i) {
                 ContentFragment fragment = new ContentFragment();
-                fragment.init(mActivity, mPageView, mDataHolder.infoList.get(i));
+                fragment.init(mActivity, mPageView, mDataHolder.proxyList.get(i), mClientListener);
                 mFragmentList.add(fragment);
                 fragTransaction.add(frameId, fragment);
             }
@@ -101,8 +101,8 @@ public class NavigationFragment extends Fragment {
                 mSubPagePos = newPos;
                 showContentByPos(newPos);
 
-                if (mItemClickListener != null) {
-                    mItemClickListener.onPageChanged(mPagePos, mSubPagePos);
+                if (mClientListener != null) {
+                    mClientListener.onPageChanged(mPagePos, mSubPagePos);
                 }
             }
         });
@@ -117,15 +117,22 @@ public class NavigationFragment extends Fragment {
         return mainLayout;
     }
 
+    public void resetSubMenuIfExist() {
+        if (mSubMenu != null) {
+            mSubMenu.reset();
+        }
+    }
+
+
     public void setPagePos(int pos) {
         if (pos >= 0) {
             mPagePos = pos;
         }
     }
 
-    public void setOnItemClickListener(NavigationControl.OnItemClickListener l) {
+    public void setClientListener(NavigationControlListener l) {
         if (l != null) {
-            mItemClickListener = l;
+            mClientListener = l;
         }
     }
 
@@ -151,7 +158,7 @@ public class NavigationFragment extends Fragment {
     }
 
     public static class DataHolder {
-        private List<ContentViewProxy> infoList;
+        private List<ContentViewProxy> proxyList;
         private SubMenu.DataHolder subHolder;
         private int subMenuWidth;
         private int subMenuMarginRight;
@@ -160,7 +167,7 @@ public class NavigationFragment extends Fragment {
         }
 
         public DataHolder infoList(List<ContentViewProxy> list) {
-            infoList = list;
+            proxyList = list;
             return this;
         }
 

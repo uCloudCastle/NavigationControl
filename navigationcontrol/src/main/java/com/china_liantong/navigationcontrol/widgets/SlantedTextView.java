@@ -100,7 +100,7 @@ public class SlantedTextView extends View {
         int w = getWidth();
         int h = getHeight();
 
-        if (w != h) throw new IllegalStateException("SlantedTextView's width must equal to height");
+        //if (w != h) throw new IllegalStateException("SlantedTextView's width must equal to height");
 
         switch (mMode) {
             case MODE_LEFT:

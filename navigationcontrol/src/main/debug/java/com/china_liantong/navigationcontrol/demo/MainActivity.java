@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.china_liantong.navigationcontrol.NavigationBar;
 import com.china_liantong.navigationcontrol.NavigationControl;
+import com.china_liantong.navigationcontrol.NavigationControlListener;
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.SubMenu;
 import com.china_liantong.navigationcontrol.fragment.ContentViewProxy;
@@ -88,11 +89,17 @@ public class MainActivity extends Activity {
         mNavigationControl.navigationControlHolder(ncHolder)
                 .navigationBarHolder(nbHolder)
                 .navigationFragmentHolder(nfHolderList).init();
-        mNavigationControl.setOnItemClickListener(new NavigationControl.OnItemClickListener() {
+        mNavigationControl.setListener(new NavigationControlListener() {
             @Override
-            public void onBuiltInItemClick(View view, int page, int subpage, int position) {
-                Toast.makeText(MainActivity.this, "OnItemClick : " + page
-                        + " " + subpage + " " + position, Toast.LENGTH_SHORT).show();
+            public void onBuiltInItemGetFocus(View focusView, int position) {
+                Toast.makeText(MainActivity.this, "OnBuiltInItemGetFocus : " + focusView.toString()
+                         + " " + position, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onBuiltInItemClick(View view, int position) {
+                Toast.makeText(MainActivity.this, "OnBuiltInItemClick : " + view.toString()
+                        + " " + position, Toast.LENGTH_SHORT).show();
             }
 
             @Override

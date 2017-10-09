@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.china_liantong.navigationcontrol.NavigationControlListener;
 import com.china_liantong.navigationcontrol.utils.LogUtils;
 import com.china_liantong.navigationcontrol.widgets.PageView;
 
@@ -20,14 +21,14 @@ public class ContentFragment extends Fragment {
     private RelativeLayout mRootLayout;
     private ContentViewProxy mContentProxy;
 
-    public void init(Activity activity, PageView pageView, ContentViewProxy proxy) {
+    public void init(Activity activity, PageView pageView, ContentViewProxy proxy, NavigationControlListener listener) {
         if (activity == null || pageView == null || proxy == null) {
             LogUtils.e("param error");
             return;
         }
         mActivity = activity;
         mContentProxy = proxy;
-        mContentProxy.init(activity, pageView);
+        mContentProxy.init(activity, pageView, listener);
     }
 
     @Override
