@@ -103,61 +103,9 @@ public class MainActivity extends Activity {
             public void onBuiltInItemClick(View view, int position, int hierarchy) {
                 Toast.makeText(MainActivity.this, "OnBuiltInItemClick : " + view.toString()
                         + " pos = " + position + " hierarchy = " + hierarchy, Toast.LENGTH_SHORT).show();
-
-                Drawable[][] picList = new Drawable[][]{
-                        {getResources().getDrawable(R.drawable.content_1_5),
-                                getResources().getDrawable(R.drawable.content_1_5),
-                                getResources().getDrawable(R.drawable.content_1_5),
-                                getResources().getDrawable(R.drawable.content_1_5),
-                                getResources().getDrawable(R.drawable.content_1_5),
-                                getResources().getDrawable(R.drawable.content_1_5),
-                                getResources().getDrawable(R.drawable.content_1_5),
-                                getResources().getDrawable(R.drawable.content_1_5),
-                                getResources().getDrawable(R.drawable.content_1_5),
-                                getResources().getDrawable(R.drawable.content_1_5)}};
-                String[][] titleList = null;
-                if (mCurrentPage == 1 && mCurrentSubPage == 0 && position == 1) {
-                    if (hierarchy == 0) {                                                      // 进入二级模组
-                        titleList = new String[][]{{"二级模组", "进入三级模组", "二级模组", "二级模组", "二级模组",
-                                "二级模组", "二级模组", "二级模组", "二级模组", "二级模组"}};
-                        ContentViewProxy.BuiltInAdapter adapter = new ContentViewProxy.BuiltInAdapter()
-                                .pageCount(1)
-                                .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ICON_TOP, CONTENT_ITEM_STYLE_ICON_TOP})
-                                .perPageItemCount(new int[]{10})
-                                .pictures(picList)
-                                .titles(titleList)
-                                .titleSize(20)
-                                .titleColor(Color.WHITE)
-                                .rows(2)
-                                .columns(5)
-                                .rowSpacing(10)
-                                .columnSpacing(10)
-                                .itemStartIndex(new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}})
-                                .itemRowSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}})
-                                .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}});
-                        ContentViewProxy proxy = new ContentViewProxy(adapter);
-                        proxy_2.getNotifier().notifyEnterNextHierarchy(proxy);
-                    } else if (hierarchy == 1) {                                                    // 进入三级模组
-                        titleList = new String[][]{{"三级模组", "三级模组", "三级模组", "三级模组", "三级模组",
-                                "三级模组", "三级模组", "三级模组"}};
-                        ContentViewProxy.BuiltInAdapter adapter = new ContentViewProxy.BuiltInAdapter()
-                                .pageCount(1)
-                                .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ICON_TOP, CONTENT_ITEM_STYLE_ICON_TOP})
-                                .perPageItemCount(new int[]{8})
-                                .pictures(picList)
-                                .titles(titleList)
-                                .titleSize(20)
-                                .titleColor(Color.WHITE)
-                                .rows(2)
-                                .columns(5)
-                                .rowSpacing(10)
-                                .columnSpacing(10)
-                                .itemStartIndex(new int[][]{{0, 1, 2, 3, 4, 5, 6, 7}})
-                                .itemRowSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1}})
-                                .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1}});
-                        ContentViewProxy proxy = new ContentViewProxy(adapter);
-                        proxy_2.getNotifier().notifyEnterNextHierarchy(proxy);
-                    }
+                if (mCurrentPage == 1 && mCurrentSubPage == 0) {
+                    HierarchyTester.setContext(MainActivity.this);
+                    HierarchyTester.testHierarchyModule(proxy_2, position, hierarchy);
                 }
             }
 
