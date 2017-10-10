@@ -96,14 +96,14 @@ public class NavigationFragment extends Fragment implements ContentFragment.Hier
             }
             fragTransaction.commit();
         }
-        showContent(0);
+        showContent(0, false);
 
         mSubMenu.setSubMenuListener(new SubMenu.SubMenuListener() {
             @Override
             public void onItemGetFocus(int newPos) {
                 LogUtils.d("submenu get Focus : " + newPos);
                 mSubPagePos = newPos;
-                showContent(newPos);
+                showContent(newPos, false);
 
                 if (mClientListener != null) {
                     mClientListener.onPageChanged(mPagePos, mSubPagePos);
@@ -132,7 +132,7 @@ public class NavigationFragment extends Fragment implements ContentFragment.Hier
         }
     }
 
-    private void showContent(int pos) {
+    private void showContent(int pos, boolean resumeFocus) {
         if (pos >= mContentList.size()) {
             return;
         }
@@ -145,6 +145,9 @@ public class NavigationFragment extends Fragment implements ContentFragment.Hier
         }
         fragTransaction.show(mContentList.get(pos)).commitAllowingStateLoss();
         mPageView.setTotalPage(mContentList.get(pos).getPageCount());
+        if (resumeFocus) {
+            mContentList.get(pos).getProxy().resumeGridViewFocus();
+        }
     }
 
     private void addHierarchy(ContentFragment fragment) {
@@ -183,9 +186,10 @@ public class NavigationFragment extends Fragment implements ContentFragment.Hier
         fragTransaction.remove(mHierarchyStack.pop());
         if (mHierarchyStack.size() > 0) {
             fragTransaction.show(mHierarchyStack.peek());
+            mHierarchyStack.peek().getProxy().resumeGridViewFocus();
             mPageView.setTotalPage(mHierarchyStack.peek().getPageCount());
         } else {
-            showContent(mSubPagePos);
+            showContent(mSubPagePos, true);
         }
         fragTransaction.commitAllowingStateLoss();
     }

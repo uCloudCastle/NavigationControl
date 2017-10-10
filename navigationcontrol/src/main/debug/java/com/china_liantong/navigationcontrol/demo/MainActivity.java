@@ -79,22 +79,6 @@ public class MainActivity extends Activity {
                 .textFocusColor(Color.WHITE)
                 .titleSpacing(DensityUtils.dp2px(this, 50));
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    try {
-//                        Thread.sleep(5000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    View rootview = MainActivity.this.getWindow().getDecorView();
-//                    View ff = rootview.findFocus();
-//                    LogUtils.d(ff.toString());
-//                }
-//            }
-//        }).start();
-
         /* ************ NavigationFragment Config Data ********** */
         // 添加 NavigationFragment.DataHolder 到 List
         ArrayList<NavigationFragment.DataHolder> nfHolderList = new ArrayList<>();

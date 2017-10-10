@@ -38,6 +38,10 @@ public class ContentFragment extends Fragment {
         }
     }
 
+    ContentViewProxy getProxy() {
+        return mContentProxy;
+    }
+
     int getPageCount() {
         if (mContentProxy.getBuiltInAdapter() != null) {
             return mContentProxy.getBuiltInAdapter().pageCount;

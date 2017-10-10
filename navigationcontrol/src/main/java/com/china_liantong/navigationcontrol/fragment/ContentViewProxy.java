@@ -107,11 +107,25 @@ public class ContentViewProxy {
 
     void setHierarchy(int h) {
         mHierarchy = h;
-        if (h > 0) {
-            //mGridView.onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, null);
-            //mGridView.requestFocus();
-            //mGridView.setFocusToPosition(2);
-            //mGridView.setSelection(0);
+        if (h > 0 && mGridView != null) {
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mGridView.requestFocus();
+                    mGridView.setFocusToPosition(0);
+                }
+            });
+        }
+    }
+
+    void resumeGridViewFocus() {
+        if (mGridView != null) {
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mGridView.requestFocus();
+                }
+            });
         }
     }
 
@@ -144,7 +158,9 @@ public class ContentViewProxy {
         mGridView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK && mHierarchy > 0) {
+                if (event.getAction() == KeyEvent.ACTION_UP
+                        && keyCode == KeyEvent.KEYCODE_BACK
+                        && mHierarchy > 0) {
                     mUpdateListener.onReturnPreHierarchy();
                     return true;
                 }
