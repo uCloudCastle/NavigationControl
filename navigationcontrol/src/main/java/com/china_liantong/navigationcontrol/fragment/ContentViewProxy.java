@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.china_liantong.navigationcontrol.NavigationControlListener;
 import com.china_liantong.navigationcontrol.R;
@@ -84,8 +87,8 @@ public class ContentViewProxy {
         mPageView = pageView;
         mClientListener = listener;
         if (builtInAdapter != null) {
-            LtGridView gridView = createBuiltInGridView();
-            updateContentView(gridView);
+            FrameLayout layout = createBuiltInGridView();
+            updateContentView(layout);
         }
     }
 
@@ -99,7 +102,7 @@ public class ContentViewProxy {
         return mRootView;
     }
 
-    private LtGridView createBuiltInGridView() {
+    private FrameLayout createBuiltInGridView() {
         LtGridView gridView = new LtGridView(mActivity);
         gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
         gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
@@ -112,17 +115,28 @@ public class ContentViewProxy {
                 (int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_right),
                 (int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_bottom));
 
-        mPageView.setTotalPage(builtInAdapter.pageCount);
         gridView.setPageSpacing(builtInAdapter.columnSpacing);
         gridView.setAdapter(new ContentAdapt(mActivity, builtInAdapter));
+        gridView.setShadowRight(builtInAdapter.fadingWidth);
+
         gridView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                LogUtils.d(" " + hasFocus);
                 gridViewHasFocus = hasFocus;
                 if (hasFocus && mSelectedGridViewItem != null) {
                     mClientListener.onBuiltInItemGetFocus(mSelectedGridViewItem, mSelectedPosition);
                 }
+            }
+        });
+
+        gridView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                LogUtils.d("dfd " + keyCode);
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -147,6 +161,13 @@ public class ContentViewProxy {
             public void onItemGoingTo(View view, int position) {}
         });
 
+        gridView.setOnPageChangeListener(new LtAdapterView.OnPageChangeListener() {
+            @Override
+            public void onPageChanged(int curPage) {
+                mPageView.setCurrentPage(curPage + 1);
+            }
+        });
+
         gridView.setOnItemClickListener(new LtAdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(LtAdapterView<?> parent, View view, int position, long id) {
@@ -156,7 +177,12 @@ public class ContentViewProxy {
             }
         });
 
-        return gridView;
+        FrameLayout gridLayout = new FrameLayout(mActivity);
+        FrameLayout.LayoutParams gridParams = new FrameLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        gridParams.setMargins(0, 0, builtInAdapter.marginRight, 0);
+        gridLayout.addView(gridView, gridParams);
+        return gridLayout;
     }
 
     private void updateContentView(View view) {

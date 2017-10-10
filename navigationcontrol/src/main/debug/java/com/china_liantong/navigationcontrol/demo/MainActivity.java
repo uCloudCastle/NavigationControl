@@ -30,6 +30,9 @@ public class MainActivity extends Activity {
     NavigationControl mNavigationControl;
     TextView loadingView;
     TextView loadFailView;
+    int mCurrentPage;
+    int mCurrentSubPage;
+    ContentViewProxy proxy_2;
     ContentViewProxy proxy_4_1;
     ContentViewProxy proxy_4_2;
     ContentViewProxy proxy_4_3;
@@ -100,12 +103,48 @@ public class MainActivity extends Activity {
             public void onBuiltInItemClick(View view, int position) {
                 Toast.makeText(MainActivity.this, "OnBuiltInItemClick : " + view.toString()
                         + " " + position, Toast.LENGTH_SHORT).show();
+                if (mCurrentPage == 1 && mCurrentSubPage == 0 && position == 1) {        // 排行榜
+
+                    Drawable[][] picList = new Drawable[][]{
+                            {getResources().getDrawable(R.drawable.content_1_5),
+                                    getResources().getDrawable(R.drawable.content_1_5),
+                                    getResources().getDrawable(R.drawable.content_1_5),
+                                    getResources().getDrawable(R.drawable.content_1_5),
+                                    getResources().getDrawable(R.drawable.content_1_5),
+                                    getResources().getDrawable(R.drawable.content_1_5),
+                                    getResources().getDrawable(R.drawable.content_1_5),
+                                    getResources().getDrawable(R.drawable.content_1_5),
+                                    getResources().getDrawable(R.drawable.content_1_5),
+                                    getResources().getDrawable(R.drawable.content_1_5)}};
+                    String[][] titleList = new String[][]{{"二级模组", "二级模组", "二级模组", "二级模组", "二级模组",
+                            "二级模组-2", "二级模组", "二级模组", "二级模组", "二级模组"}};
+                    ContentViewProxy.BuiltInAdapter adapter = new ContentViewProxy.BuiltInAdapter()
+                            .pageCount(1)
+                            .perPageStyle(new int[]{CONTENT_ITEM_STYLE_ICON_TOP, CONTENT_ITEM_STYLE_ICON_TOP})
+                            .perPageItemCount(new int[]{10})
+                            .pictures(picList)
+                            .titles(titleList)
+                            .titleSize(20)
+                            .titleColor(Color.WHITE)
+                            .rows(2)
+                            .columns(5)
+                            .rowSpacing(10)
+                            .columnSpacing(10)
+                            .itemStartIndex(new int[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}})
+                            .itemRowSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}})
+                            .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}});
+                    proxy_2.setBuiltInAdapter(adapter);
+                    proxy_2.getNotifier().notifyDataLoadDone(true);
+                }
             }
 
             @Override
             public void onPageChanged(int page, int subpage) {
                 Toast.makeText(MainActivity.this, "onPageChanged : "
                         + page + " " + subpage, Toast.LENGTH_SHORT).show();
+                mCurrentPage = page;
+                mCurrentSubPage = subpage;
+
                 if (page == 3 && subpage == 0) {
                     if (proxy_4_1.getBuiltInAdapter() != null) {                   // 已经下载好
                         return;
@@ -205,10 +244,10 @@ public class MainActivity extends Activity {
                 .itemStartIndex(new int[][]{{0, 11, 20, 29, 40, 60, 71}})
                 .itemRowSize(new int[][]{{11, 9, 9, 11, 20, 11, 9}})
                 .itemColumnSize(new int[][]{{1, 1, 1, 1, 1, 1, 1}});
-        ContentViewProxy info = new ContentViewProxy(adapter);
+        proxy_2 = new ContentViewProxy(adapter);
 
         List<ContentViewProxy> proxies = new ArrayList<>();
-        proxies.add(info);
+        proxies.add(proxy_2);
 
         return new NavigationFragment.DataHolder()
                 .infoList(proxies);

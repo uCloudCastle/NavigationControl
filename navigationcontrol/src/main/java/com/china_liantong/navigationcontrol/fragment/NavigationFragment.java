@@ -148,6 +148,9 @@ public class NavigationFragment extends Fragment {
             }
         }
         fragTransaction.show(mFragmentList.get(pos)).commitAllowingStateLoss();
+        if (mDataHolder.proxyList.get(pos).getBuiltInAdapter() != null) {
+            mPageView.setTotalPage(mDataHolder.proxyList.get(pos).getBuiltInAdapter().pageCount);
+        }
     }
 
     public void setDataHolder(Activity activity, NavigationFragment.DataHolder holder) {
