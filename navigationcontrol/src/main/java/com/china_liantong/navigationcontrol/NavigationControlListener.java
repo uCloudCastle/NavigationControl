@@ -7,7 +7,7 @@ import android.view.View;
  */
 
 public interface NavigationControlListener {
-    void onBuiltInItemGetFocus(View focusView, int position);
-    void onBuiltInItemClick(View focusView, int position);
+    void onBuiltInItemGetFocus(View focusView, int position, int hierarchy);
+    void onBuiltInItemClick(View focusView, int position, int hierarchy);
     void onPageChanged(int page, int subpage);
 }

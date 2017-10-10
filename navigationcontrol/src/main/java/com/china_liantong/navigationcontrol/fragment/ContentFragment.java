@@ -20,6 +20,7 @@ public class ContentFragment extends Fragment {
     private Activity mActivity;
     private RelativeLayout mRootLayout;
     private ContentViewProxy mContentProxy;
+    private HierarchyChangeListener mHyChangeListener;
 
     public void init(Activity activity, PageView pageView, ContentViewProxy proxy, NavigationControlListener listener) {
         if (activity == null || pageView == null || proxy == null) {
@@ -29,6 +30,20 @@ public class ContentFragment extends Fragment {
         mActivity = activity;
         mContentProxy = proxy;
         mContentProxy.init(activity, pageView, listener);
+    }
+
+    void setHierarchyChangeListener(HierarchyChangeListener l) {
+        if (l != null) {
+            mHyChangeListener = l;
+        }
+    }
+
+    int getPageCount() {
+        if (mContentProxy.getBuiltInAdapter() != null) {
+            return mContentProxy.getBuiltInAdapter().pageCount;
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -42,6 +57,20 @@ public class ContentFragment extends Fragment {
             @Override
             public void onContentViewUpdate() {
                 setContentView(mContentProxy.getContentView());
+            }
+
+            @Override
+            public void onEnterNextHierarchy(ContentViewProxy proxy) {
+                if (mHyChangeListener != null) {
+                    mHyChangeListener.onEnterNextHierarchy(proxy);
+                }
+            }
+
+            @Override
+            public void onReturnPreHierarchy() {
+                if (mHyChangeListener != null) {
+                    mHyChangeListener.onReturnPreHierarchy();
+                }
             }
         });
 
@@ -62,5 +91,10 @@ public class ContentFragment extends Fragment {
         mRootLayout.addView(content, new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT));
+    }
+
+    interface HierarchyChangeListener {
+        void onEnterNextHierarchy(ContentViewProxy proxy);
+        void onReturnPreHierarchy();
     }
 }

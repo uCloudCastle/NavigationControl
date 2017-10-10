@@ -14,7 +14,6 @@ import android.widget.RelativeLayout;
 import com.china_liantong.navigationcontrol.NavigationControlListener;
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.adapt.ContentAdapt;
-import com.china_liantong.navigationcontrol.utils.LogUtils;
 import com.china_liantong.navigationcontrol.widgets.LtAdapterView;
 import com.china_liantong.navigationcontrol.widgets.LtGridView;
 import com.china_liantong.navigationcontrol.widgets.PageView;
@@ -33,6 +32,8 @@ public class ContentViewProxy {
         void notifyDataLoadStart();
         void notifyDataLoadDone(boolean success);
         void notifyPageChanged(int curPage, int totalPage);
+        void notifyEnterNextHierarchy(ContentViewProxy proxy);
+        void notifyReturnPreHierarchy();
     }
 
     // *************** BuiltIn Construction
@@ -81,6 +82,8 @@ public class ContentViewProxy {
     private ContentUpdateListener mUpdateListener;
     private PageView mPageView;
     private Activity mActivity;
+    private LtGridView mGridView;
+    private int mHierarchy;
 
     void init(Activity activity, PageView pageView, NavigationControlListener listener) {
         mActivity = activity;
@@ -102,45 +105,54 @@ public class ContentViewProxy {
         return mRootView;
     }
 
+    void setHierarchy(int h) {
+        mHierarchy = h;
+        if (h > 0) {
+            //mGridView.onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, null);
+            //mGridView.requestFocus();
+            //mGridView.setFocusToPosition(2);
+            //mGridView.setSelection(0);
+        }
+    }
+
     private FrameLayout createBuiltInGridView() {
-        LtGridView gridView = new LtGridView(mActivity);
-        gridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
-        gridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
-        gridView.setFocusDrawable(mActivity.getResources().getDrawable(R.drawable.app_selected));
-        gridView.setFadingEdgeEnabled(true);
-        gridView.setFadingEdgeDrawable(mActivity.getResources().getDrawable(R.drawable.gridview_shading));
-        gridView.setFocusScaleAnimEnabled(false);
-        gridView.setSelectPadding((int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_left),
+        mGridView = new LtGridView(mActivity);
+        mGridView.setScrollOrientation(LtGridView.ScrollOrientation.SCROLL_HORIZONTAL);
+        mGridView.setScrollMode(LtGridView.ScrollMode.SCROLL_MODE_PAGE);
+        mGridView.setFocusDrawable(mActivity.getResources().getDrawable(R.drawable.app_selected));
+        mGridView.setFadingEdgeEnabled(true);
+        mGridView.setFadingEdgeDrawable(mActivity.getResources().getDrawable(R.drawable.gridview_shading));
+        mGridView.setFocusScaleAnimEnabled(false);
+        mGridView.setSelectPadding((int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_left),
                 (int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_top),
                 (int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_right),
                 (int) mActivity.getResources().getDimension(R.dimen.gridview_select_padding_bottom));
 
-        gridView.setPageSpacing(builtInAdapter.columnSpacing);
-        gridView.setAdapter(new ContentAdapt(mActivity, builtInAdapter));
-        gridView.setShadowRight(builtInAdapter.fadingWidth);
-
-        gridView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mGridView.setPageSpacing(builtInAdapter.columnSpacing);
+        mGridView.setAdapter(new ContentAdapt(mActivity, builtInAdapter));
+        mGridView.setShadowRight(builtInAdapter.fadingWidth);
+        mGridView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 gridViewHasFocus = hasFocus;
                 if (hasFocus && mSelectedGridViewItem != null) {
-                    mClientListener.onBuiltInItemGetFocus(mSelectedGridViewItem, mSelectedPosition);
+                    mClientListener.onBuiltInItemGetFocus(mSelectedGridViewItem, mSelectedPosition, mHierarchy);
                 }
             }
         });
 
-        gridView.setOnKeyListener(new View.OnKeyListener() {
+        mGridView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                LogUtils.d("dfd " + keyCode);
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && mHierarchy > 0) {
+                    mUpdateListener.onReturnPreHierarchy();
                     return true;
                 }
                 return false;
             }
         });
 
-        gridView.setOnItemSelectedListener(new LtAdapterView.OnItemSelectedListener() {
+        mGridView.setOnItemSelectedListener(new LtAdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(LtAdapterView<?> parent, View view, int position, long id) {
                 mSelectedGridViewItem = view;
@@ -150,7 +162,7 @@ public class ContentViewProxy {
                 }
 
                 if (mClientListener != null) {
-                    mClientListener.onBuiltInItemGetFocus(view, position);
+                    mClientListener.onBuiltInItemGetFocus(view, position, mHierarchy);
                 }
             }
 
@@ -161,18 +173,18 @@ public class ContentViewProxy {
             public void onItemGoingTo(View view, int position) {}
         });
 
-        gridView.setOnPageChangeListener(new LtAdapterView.OnPageChangeListener() {
+        mGridView.setOnPageChangeListener(new LtAdapterView.OnPageChangeListener() {
             @Override
             public void onPageChanged(int curPage) {
                 mPageView.setCurrentPage(curPage + 1);
             }
         });
 
-        gridView.setOnItemClickListener(new LtAdapterView.OnItemClickListener() {
+        mGridView.setOnItemClickListener(new LtAdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(LtAdapterView<?> parent, View view, int position, long id) {
                 if (mClientListener != null) {
-                    mClientListener.onBuiltInItemClick(view, position);
+                    mClientListener.onBuiltInItemClick(view, position, mHierarchy);
                 }
             }
         });
@@ -181,7 +193,7 @@ public class ContentViewProxy {
         FrameLayout.LayoutParams gridParams = new FrameLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         gridParams.setMargins(0, 0, builtInAdapter.marginRight, 0);
-        gridLayout.addView(gridView, gridParams);
+        gridLayout.addView(mGridView, gridParams);
         return gridLayout;
     }
 
@@ -442,10 +454,22 @@ public class ContentViewProxy {
                 msg.setData(bundle);
                 mHandler.sendMessage(msg);
             }
+
+            @Override
+            public void notifyEnterNextHierarchy(ContentViewProxy proxy) {
+                mUpdateListener.onEnterNextHierarchy(proxy);
+            }
+
+            @Override
+            public void notifyReturnPreHierarchy() {
+                mUpdateListener.onReturnPreHierarchy();
+            }
         };
     }
 
     interface ContentUpdateListener {
         void onContentViewUpdate();
+        void onEnterNextHierarchy(ContentViewProxy proxy);
+        void onReturnPreHierarchy();
     }
 }

@@ -19,19 +19,22 @@ import com.china_liantong.navigationcontrol.widgets.PageView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Created by randal on 2017/9/18.
  */
 
-public class NavigationFragment extends Fragment {
+public class NavigationFragment extends Fragment implements ContentFragment.HierarchyChangeListener {
     private Activity mActivity;
     private DataHolder mDataHolder;
-    private List<ContentFragment> mFragmentList = new ArrayList<>();
+    private List<ContentFragment> mContentList = new ArrayList<>();
+    private Stack<ContentFragment> mHierarchyStack = new Stack<>();
     private NavigationControlListener mClientListener;
 
-    private int mPagePos;
-    private int mSubPagePos;
+    private int mFrameId;
+    private int mPagePos = 0;
+    private int mSubPagePos = 0;
     private PageView mPageView;
     private SubMenu mSubMenu;
     private FrameLayout mContentLayout;
@@ -73,8 +76,8 @@ public class NavigationFragment extends Fragment {
 
         // content fragment
         mContentLayout = new FrameLayout(mActivity);
-        int frameId = CommonUtils.generateViewId();
-        mContentLayout.setId(frameId);
+        mFrameId = CommonUtils.generateViewId();
+        mContentLayout.setId(mFrameId);
         RelativeLayout.LayoutParams framelp = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -87,33 +90,26 @@ public class NavigationFragment extends Fragment {
             for (int i = 0; i < mDataHolder.proxyList.size(); ++i) {
                 ContentFragment fragment = new ContentFragment();
                 fragment.init(mActivity, mPageView, mDataHolder.proxyList.get(i), mClientListener);
-                mFragmentList.add(fragment);
-                fragTransaction.add(frameId, fragment);
+                fragment.setHierarchyChangeListener(this);
+                mContentList.add(fragment);
+                fragTransaction.add(mFrameId, fragment);
             }
             fragTransaction.commit();
         }
-        showContentByPos(0);
+        showContent(0);
 
         mSubMenu.setSubMenuListener(new SubMenu.SubMenuListener() {
             @Override
             public void onItemGetFocus(int newPos) {
                 LogUtils.d("submenu get Focus : " + newPos);
                 mSubPagePos = newPos;
-                showContentByPos(newPos);
+                showContent(newPos);
 
                 if (mClientListener != null) {
                     mClientListener.onPageChanged(mPagePos, mSubPagePos);
                 }
             }
         });
-
-//        mGridView.setOnItemClickListener(new LtAdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(LtAdapterView<?> parent, View view, int position, long id) {
-//                LogUtils.d(view.toString() + " " + position + " " + id);
-//                mItemClickListener.onItemClick(view, mPagePos, mSubPagePos, position);
-//            }
-//        });
         return mainLayout;
     }
 
@@ -136,21 +132,62 @@ public class NavigationFragment extends Fragment {
         }
     }
 
-    private void showContentByPos(int pos) {
-        if (pos >= mFragmentList.size()) {
+    private void showContent(int pos) {
+        if (pos >= mContentList.size()) {
             return;
         }
 
         FragmentTransaction fragTransaction = mActivity.getFragmentManager().beginTransaction();
-        for (int i = 0; i < mFragmentList.size(); ++i) {
+        for (int i = 0; i < mContentList.size(); ++i) {
             if (i != pos) {
-                fragTransaction.hide(mFragmentList.get(i));
+                fragTransaction.hide(mContentList.get(i));
             }
         }
-        fragTransaction.show(mFragmentList.get(pos)).commitAllowingStateLoss();
-        if (mDataHolder.proxyList.get(pos).getBuiltInAdapter() != null) {
-            mPageView.setTotalPage(mDataHolder.proxyList.get(pos).getBuiltInAdapter().pageCount);
+        fragTransaction.show(mContentList.get(pos)).commitAllowingStateLoss();
+        mPageView.setTotalPage(mContentList.get(pos).getPageCount());
+    }
+
+    private void addHierarchy(ContentFragment fragment) {
+        FragmentTransaction fragTransaction = mActivity.getFragmentManager().beginTransaction();
+        if (mHierarchyStack.size() == 0) {
+            fragTransaction.hide(mContentList.get(mSubPagePos));
+        } else {
+            fragTransaction.hide(mHierarchyStack.peek());
         }
+        fragTransaction.show(fragment).commitAllowingStateLoss();
+        mHierarchyStack.push(fragment);
+        mPageView.setTotalPage(fragment.getPageCount());
+    }
+
+    public NavigationFragment() {
+        super();
+    }
+
+    @Override
+    public void onEnterNextHierarchy(ContentViewProxy proxy) {
+        ContentFragment fragment = new ContentFragment();
+        fragment.init(mActivity, mPageView, proxy, mClientListener);
+        fragment.setHierarchyChangeListener(this);
+        mActivity.getFragmentManager().beginTransaction().add(mFrameId, fragment).commit();
+        proxy.setHierarchy(mHierarchyStack.size() + 1);
+        addHierarchy(fragment);
+    }
+
+    @Override
+    public void onReturnPreHierarchy() {
+        if (mHierarchyStack.size() == 0) {
+            return;
+        }
+
+        FragmentTransaction fragTransaction = mActivity.getFragmentManager().beginTransaction();
+        fragTransaction.remove(mHierarchyStack.pop());
+        if (mHierarchyStack.size() > 0) {
+            fragTransaction.show(mHierarchyStack.peek());
+            mPageView.setTotalPage(mHierarchyStack.peek().getPageCount());
+        } else {
+            showContent(mSubPagePos);
+        }
+        fragTransaction.commitAllowingStateLoss();
     }
 
     public void setDataHolder(Activity activity, NavigationFragment.DataHolder holder) {
