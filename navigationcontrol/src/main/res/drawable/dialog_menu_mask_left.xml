@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient
+                android:angle="270"
+                android:endColor="@color/common_transparency"
+                android:startColor="@color/common_fifty_percent_transparency"/>
+        </shape>
+    </item>
+    <item
+        android:left="100dp">
+        <shape android:shape="line">
+            <stroke
+                android:width="20dp"
+                android:color="@color/common_fifty_percent_transparency"/>
+        </shape>
+    </item>
+</layer-list>

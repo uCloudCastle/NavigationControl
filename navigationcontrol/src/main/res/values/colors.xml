@@ -14,6 +14,7 @@
     <color name="common_fifty_percent_transparency">#7fffffff</color>
     <color name="common_ninety_percent_mask">#1a000000</color>
     <color name="common_forty_percent_mask">#66000000</color>
+    <color name="common_thirty_percent_mask">#b0000000</color>
 
     <!--submenu-->
     <color name="submenu_item_slanted_textview_background">#20b0f8</color>

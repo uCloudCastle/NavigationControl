@@ -77,7 +77,7 @@ public class DynamicLoadRunnable implements Runnable {
                     mProxy.getNotifier().notifyDataLoadStart();
 
                     try {
-                        Thread.sleep(3000);                  // simulate
+                        Thread.sleep(1000);                  // simulate
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
