@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -49,32 +48,39 @@ public class MenuDialog extends Dialog {
         getScreenSize(screen);
         getLocation(location);
 
+        View maskLeftUp = new View(mContext);
+        maskLeftUp.setBackgroundColor(mContext.getResources().getColor(R.color.common_thirty_percent_mask));
+        FrameLayout.LayoutParams luParams = new FrameLayout.LayoutParams(
+                location[0], location[1]);
+        mainLayout.addView(maskLeftUp, luParams);
+
         View maskLeft = new View(mContext);
         maskLeft.setBackgroundColor(mContext.getResources().getColor(R.color.common_thirty_percent_mask));
-        FrameLayout.LayoutParams mlParams = new FrameLayout.LayoutParams(
-                location[0], location[1]);
-        mainLayout.addView(maskLeft, mlParams);
-
-        View maskLeft2 = new View(mContext);
-        maskLeft2.setBackgroundColor(mContext.getResources().getColor(R.color.common_thirty_percent_mask));
-        FrameLayout.LayoutParams mlParams2 = new FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams lParams = new FrameLayout.LayoutParams(
                 location[0], location[3] - location[1]);
-        mlParams2.setMargins(0, location[1], 0, 0);
-        mainLayout.addView(maskLeft2, mlParams2);
+        lParams.setMargins(0, location[1], 0, 0);
+        mainLayout.addView(maskLeft, lParams);
 
-        View maskLeft3 = new View(mContext);
-        maskLeft3.setBackgroundColor(mContext.getResources().getColor(R.color.common_thirty_percent_mask));
-        FrameLayout.LayoutParams mlParams3 = new FrameLayout.LayoutParams(
+        View maskLeftDown = new View(mContext);
+        maskLeftDown.setBackgroundColor(mContext.getResources().getColor(R.color.common_thirty_percent_mask));
+        FrameLayout.LayoutParams ldParams = new FrameLayout.LayoutParams(
                 location[0], screen[1] - location[3]);
-        mlParams2.setMargins(0, location[3], 0, 0);
-        mainLayout.addView(maskLeft3, mlParams3);
+        ldParams.setMargins(0, location[3], 0, 0);
+        mainLayout.addView(maskLeftDown, ldParams);
 
         View maskUp = new View(mContext);
         maskUp.setBackgroundColor(mContext.getResources().getColor(R.color.common_thirty_percent_mask));
-        FrameLayout.LayoutParams muParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, location[1]);
-        muParams.setMargins(location[0], 0, 0, 0);
-        mainLayout.addView(maskUp, muParams);
+        FrameLayout.LayoutParams uParams = new FrameLayout.LayoutParams(
+                location[2] - location[0], location[1]);
+        uParams.setMargins(location[0], 0, 0, 0);
+        mainLayout.addView(maskUp, uParams);
+
+        View maskUpRight = new View(mContext);
+        maskUp.setBackgroundColor(mContext.getResources().getColor(R.color.common_thirty_percent_mask));
+        FrameLayout.LayoutParams urParams = new FrameLayout.LayoutParams(
+                screen[2] - location[2], location[1]);
+        urParams.setMargins(location[2], 0, 0, 0);
+        mainLayout.addView(maskUp, urParams);
 
         View maskRight = new View(mContext);
         maskRight.setBackgroundColor(mContext.getResources().getColor(R.color.common_thirty_percent_mask));

@@ -15,6 +15,7 @@ import com.china_liantong.navigationcontrol.NavigationControl;
 import com.china_liantong.navigationcontrol.NavigationControlListener;
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.SubMenu;
+import com.china_liantong.navigationcontrol.dialog.MenuDialog;
 import com.china_liantong.navigationcontrol.fragment.ContentViewProxy;
 import com.china_liantong.navigationcontrol.fragment.NavigationFragment;
 import com.china_liantong.navigationcontrol.utils.DensityUtils;
@@ -97,6 +98,11 @@ public class MainActivity extends Activity {
             public void onBuiltInItemGetFocus(View focusView, int position, int hierarchy) {
                 Toast.makeText(MainActivity.this, "OnBuiltInItemGetFocus : " + focusView.toString()
                          + " pos = " + position + " hierarchy = " + hierarchy, Toast.LENGTH_SHORT).show();
+                if (mCurrentPage == 3 && mCurrentSubPage == 1 && position == 1) {
+                    MenuDialog dialog = new MenuDialog(MainActivity.this);
+                    dialog.setFocusView(focusView);
+                    dialog.show();
+                }
             }
 
             @Override
