@@ -98,9 +98,16 @@ public class MainActivity extends Activity {
             public void onBuiltInItemGetFocus(View focusView, int position, int hierarchy) {
                 Toast.makeText(MainActivity.this, "OnBuiltInItemGetFocus : " + focusView.toString()
                          + " pos = " + position + " hierarchy = " + hierarchy, Toast.LENGTH_SHORT).show();
-                if (mCurrentPage == 0 && mCurrentSubPage == 0 && position == 1) {
+                if (mCurrentPage == 0 && mCurrentSubPage == 0 && position == 2) {
                     MenuDialog dialog = new MenuDialog(MainActivity.this);
                     dialog.setFocusView(focusView);
+                    dialog.setMenuDialogListener(new MenuDialog.MenuDialogListener() {
+                        @Override
+                        public void onIconClicked(int which) {
+                            //MenuDialog.ICON_DOWN;
+                            Toast.makeText(MainActivity.this, "which = " + which, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     dialog.show();
                 }
             }

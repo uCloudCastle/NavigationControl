@@ -2,12 +2,18 @@ package com.china_liantong.navigationcontrol.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.china_liantong.navigationcontrol.R;
 import com.china_liantong.navigationcontrol.utils.DensityUtils;
@@ -17,13 +23,31 @@ import com.china_liantong.navigationcontrol.utils.DensityUtils;
  */
 
 public class MenuDialog extends Dialog {
+    public static final int ICON_LEFT = 0;
+    public static final int ICON_UP = 1;
+    public static final int ICON_RIGHT = 2;
+    public static final int ICON_DOWN = 3;
+
+    public interface MenuDialogListener {
+        void onIconClicked(int which);
+    }
+
     private static final int GRADIENT_WIDTH = 10;
+    private static final int ICON_SIZE = 66;
+    private static final int ICON_LAYOUT_WIDTH = 80;
 
     private Context mContext;
     private View mFocusView;
     private FrameLayout mLayout;
     private int screen[] = new int[2];
     private int location[] = new int[4];
+    private int mCurrentFocus = -1;
+    private MenuDialogListener mListener;
+
+    private View mIconLeft;
+    private View mIconUp;
+    private View mIconRight;
+    private View mIconDown;
 
     public MenuDialog(Context context) {
         this(context, R.style.CustomDialog);
@@ -36,6 +60,12 @@ public class MenuDialog extends Dialog {
 
     public void setFocusView(View view) {
         mFocusView = view;
+    }
+
+    public void setMenuDialogListener(MenuDialogListener l) {
+        if (l != null) {
+            mListener = l;
+        }
     }
 
     @Override
@@ -53,6 +83,131 @@ public class MenuDialog extends Dialog {
 
         setConstantBackground();
         setGradientBackground();
+        setIcons();
+        setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (keyEvent.getKeyCode()) {
+                        case KeyEvent.KEYCODE_DPAD_LEFT:
+                            mIconLeft.setBackground(mContext.getResources().getDrawable(R.drawable.icn_delete_pre));
+                            mIconUp.setBackground(mContext.getResources().getDrawable(R.drawable.icn_working));
+                            mIconRight.setBackground(mContext.getResources().getDrawable(R.drawable.icn_cancel));
+                            mIconDown.setBackground(mContext.getResources().getDrawable(R.drawable.icn_update));
+                            mCurrentFocus = ICON_LEFT;
+                            break;
+                        case KeyEvent.KEYCODE_DPAD_UP:
+                            mIconLeft.setBackground(mContext.getResources().getDrawable(R.drawable.icn_delete));
+                            mIconUp.setBackground(mContext.getResources().getDrawable(R.drawable.icn_working_pre));
+                            mIconRight.setBackground(mContext.getResources().getDrawable(R.drawable.icn_cancel));
+                            mIconDown.setBackground(mContext.getResources().getDrawable(R.drawable.icn_update));
+                            mCurrentFocus = ICON_UP;
+                            break;
+                        case KeyEvent.KEYCODE_DPAD_RIGHT:
+                            mIconLeft.setBackground(mContext.getResources().getDrawable(R.drawable.icn_delete));
+                            mIconUp.setBackground(mContext.getResources().getDrawable(R.drawable.icn_working));
+                            mIconRight.setBackground(mContext.getResources().getDrawable(R.drawable.icn_cancel_pre));
+                            mIconDown.setBackground(mContext.getResources().getDrawable(R.drawable.icn_update));
+                            mCurrentFocus = ICON_RIGHT;
+                            break;
+                        case KeyEvent.KEYCODE_DPAD_DOWN:
+                            mIconLeft.setBackground(mContext.getResources().getDrawable(R.drawable.icn_delete));
+                            mIconUp.setBackground(mContext.getResources().getDrawable(R.drawable.icn_working));
+                            mIconRight.setBackground(mContext.getResources().getDrawable(R.drawable.icn_cancel));
+                            mIconDown.setBackground(mContext.getResources().getDrawable(R.drawable.icn_update_pre));
+                            mCurrentFocus = ICON_DOWN;
+                            break;
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                            if (mCurrentFocus != -1) {
+                                if (mListener != null) {
+                                    mListener.onIconClicked(mCurrentFocus);
+                                }
+                                dismiss();
+                            }
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    private void setIcons() {
+        LinearLayout leftLayout = new LinearLayout(mContext);
+        leftLayout.setOrientation(LinearLayout.VERTICAL);
+        leftLayout.setGravity(Gravity.CENTER);
+        FrameLayout.LayoutParams lParams = new FrameLayout.LayoutParams(ICON_LAYOUT_WIDTH, location[3] - location[1]);
+        lParams.setMargins(location[0] - ICON_LAYOUT_WIDTH, location[1], 0, 0);
+        mLayout.addView(leftLayout, lParams);
+        mIconLeft = new View(mContext);
+        mIconLeft.setBackground(mContext.getResources().getDrawable(R.drawable.icn_delete));
+        FrameLayout.LayoutParams liParams = new FrameLayout.LayoutParams(ICON_SIZE, ICON_SIZE);
+        leftLayout.addView(mIconLeft, liParams);
+        TextView textLeft = new TextView(mContext);
+        textLeft.setText("卸载");
+        textLeft.setTextSize(22);
+        textLeft.setTextColor(Color.parseColor("#d9d9d9"));
+        FrameLayout.LayoutParams ltParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ltParams.setMargins(0, 8, 0, 0);
+        leftLayout.addView(textLeft, ltParams);
+
+        LinearLayout upLayout = new LinearLayout(mContext);
+        upLayout.setOrientation(LinearLayout.VERTICAL);
+        upLayout.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+        FrameLayout.LayoutParams uParams = new FrameLayout.LayoutParams(ICON_LAYOUT_WIDTH, 100);
+        uParams.setMargins((location[0] + location[2] - ICON_LAYOUT_WIDTH) / 2, location[1] - 102, 0, 0);
+        mLayout.addView(upLayout, uParams);
+        mIconUp = new View(mContext);
+        mIconUp.setBackground(mContext.getResources().getDrawable(R.drawable.icn_working));
+        FrameLayout.LayoutParams uiParams = new FrameLayout.LayoutParams(ICON_SIZE, ICON_SIZE);
+        upLayout.addView(mIconUp, uiParams);
+        TextView textUp = new TextView(mContext);
+        textUp.setText("运行");
+        textUp.setTextSize(22);
+        textUp.setTextColor(Color.parseColor("#d9d9d9"));
+        FrameLayout.LayoutParams utParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        utParams.setMargins(0, 8, 0, 0);
+        upLayout.addView(textUp, utParams);
+
+        LinearLayout rightLayout = new LinearLayout(mContext);
+        rightLayout.setOrientation(LinearLayout.VERTICAL);
+        rightLayout.setGravity(Gravity.CENTER);
+        FrameLayout.LayoutParams rParams = new FrameLayout.LayoutParams(ICON_LAYOUT_WIDTH, location[3] - location[1]);
+        rParams.setMargins(location[2], location[1], 0, 0);
+        mLayout.addView(rightLayout, rParams);
+        mIconRight = new View(mContext);
+        mIconRight.setBackground(mContext.getResources().getDrawable(R.drawable.icn_cancel));
+        FrameLayout.LayoutParams riParams = new FrameLayout.LayoutParams(ICON_SIZE, ICON_SIZE);
+        rightLayout.addView(mIconRight, riParams);
+        TextView textRight = new TextView(mContext);
+        textRight.setText("退订");
+        textRight.setTextSize(22);
+        textRight.setTextColor(Color.parseColor("#d9d9d9"));
+        FrameLayout.LayoutParams rtParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rtParams.setMargins(0, 8, 0, 0);
+        rightLayout.addView(textRight, rtParams);
+
+        LinearLayout downLayout = new LinearLayout(mContext);
+        downLayout.setOrientation(LinearLayout.VERTICAL);
+        downLayout.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+        FrameLayout.LayoutParams dParams = new FrameLayout.LayoutParams(ICON_LAYOUT_WIDTH, 100);
+        dParams.setMargins((location[0] + location[2] - ICON_LAYOUT_WIDTH) / 2, location[3], 0, 0);
+        mLayout.addView(downLayout, dParams);
+        mIconDown = new View(mContext);
+        mIconDown.setBackground(mContext.getResources().getDrawable(R.drawable.icn_update));
+        FrameLayout.LayoutParams diParams = new FrameLayout.LayoutParams(ICON_SIZE, ICON_SIZE);
+        downLayout.addView(mIconDown, diParams);
+        TextView textDown = new TextView(mContext);
+        textDown.setText("更新");
+        textDown.setTextSize(22);
+        textDown.setTextColor(Color.parseColor("#d9d9d9"));
+        FrameLayout.LayoutParams dtParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dtParams.setMargins(0, 8, 0, 0);
+        downLayout.addView(textDown, dtParams);
     }
 
     private void setGradientBackground() {
